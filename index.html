@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ninety</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+<script>
+  (function(h,o,u,n,d) {
+    h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
+    d=o.createElement(u);d.async=1;d.src=n;d.crossOrigin=''
+    n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
+  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js','DD_RUM')
+  window.DD_RUM.onReady(function() {
+    window.DD_RUM.init({
+        applicationId: 'df3f2e88-77f1-4435-869f-40158dbf8d3b',
+        clientToken: 'pub83536f3da3bed2913e475de9e185406a',
+        site: 'datadoghq.com',
+        service: 'slay-the-umpire',
+        env: 'dev',        // e.g. 'prod', 'staging-1', 'dev'
+        version: '0.1',  // e.g. '1.0.0'
+        sessionSampleRate: 100,     // capture 100% of sessions
+        sessionReplaySampleRate: 100,  // capture 20% of sessions with replay
+        trackResources: true,     // Enable Resource tracking
+        trackUserInteractions: true,  // Enable Action tracking
+        trackLongTasks: true,     // Enable Long Tasks tracking
+    });
+  })
+</script>
+<script src="game/logger.js"></script>
+<script>
+  // Global error surfacing — log and visually surface uncaught errors
+  (function () {
+    function surface(msg) {
+      try { console.error('Uncaught:', msg); } catch (_) {}
+      try {
+        let toast = document.getElementById('global-error-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'global-error-toast';
+          toast.className = 'global-error-toast';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toast.classList.remove('show'), 6000);
+      } catch (_) {}
+    }
+    window.addEventListener('error', function (e) {
+      surface((e && e.message) || 'Unknown script error');
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      const r = e && e.reason;
+      surface('Promise: ' + (r && r.message ? r.message : String(r)));
+    });
+  })();
+</script>
+</head>
+<body>
+  <div id="menu-screen">
+    <div class="menu-panel">
+      <h1 class="menu-title">Ninety</h1>
+      <p class="menu-subtitle">A tactical card-match game</p>
+      <button id="menu-friendly" class="menu-btn">Start a Friendly Match</button>
+      <button id="menu-simulate" class="menu-btn">Simulate a Match</button>
+      <button id="menu-tournament" class="menu-btn">Tournament</button>
+      <button id="menu-world-cup" class="menu-btn">World Cup 2026</button>
+    </div>
+  </div>
+  <div id="sim-setup-screen" class="hidden">
+    <div class="menu-panel">
+      <h1 class="menu-title">Simulate Match</h1>
+      <p class="menu-subtitle">Both teams play automatically, no pitch view</p>
+      <div class="setup-block">
+        <label class="setup-label" for="sim-team-home">Home team</label>
+        <select id="sim-team-home" class="team-select"></select>
+      </div>
+      <div class="setup-block">
+        <label class="setup-label" for="sim-team-away">Away team</label>
+        <select id="sim-team-away" class="team-select"></select>
+      </div>
+      <div class="setup-actions">
+        <button id="sim-start" class="menu-btn primary">Simulate</button>
+        <button id="sim-back" class="menu-btn">Back</button>
+      </div>
+    </div>
+  </div>
+  <div id="tournament-setup-screen" class="hidden">
+    <div class="menu-panel tournament-setup-panel">
+      <h1 class="menu-title">Tournament</h1>
+      <p class="menu-subtitle">Pick 4 teams to play a round-robin tournament</p>
+      <div class="tournament-team-slots">
+        <div class="tournament-team-slot">
+          <label class="setup-label">Team 1</label>
+          <select id="tour-team-1" class="team-select"></select>
+          <select id="tour-ctrl-1" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai">AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+          </select>
+        </div>
+        <div class="tournament-team-slot">
+          <label class="setup-label">Team 2</label>
+          <select id="tour-team-2" class="team-select"></select>
+          <select id="tour-ctrl-2" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai" selected>AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+          </select>
+        </div>
+        <div class="tournament-team-slot">
+          <label class="setup-label">Team 3</label>
+          <select id="tour-team-3" class="team-select"></select>
+          <select id="tour-ctrl-3" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai" selected>AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+          </select>
+        </div>
+        <div class="tournament-team-slot">
+          <label class="setup-label">Team 4</label>
+          <select id="tour-team-4" class="team-select"></select>
+          <select id="tour-ctrl-4" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai" selected>AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+          </select>
+        </div>
+      </div>
+      <div class="setup-actions">
+        <button id="tour-start" class="menu-btn primary">Start Tournament</button>
+        <button id="tour-back" class="menu-btn">Back</button>
+      </div>
+    </div>
+  </div>
+  <div id="tournament-screen" class="hidden">
+    <div class="tournament-container">
+      <h1 class="menu-title">Tournament</h1>
+      <div id="tournament-table-wrap">
+        <table id="tournament-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Team</th>
+              <th>P</th>
+              <th>W</th>
+              <th>D</th>
+              <th>L</th>
+              <th>GF</th>
+              <th>GA</th>
+              <th>GD</th>
+              <th>Pts</th>
+            </tr>
+          </thead>
+          <tbody id="tournament-table-body"></tbody>
+        </table>
+      </div>
+      <div id="tournament-schedule">
+        <h2 class="tournament-section-title">Schedule</h2>
+        <div id="tournament-schedule-list"></div>
+      </div>
+      <div class="tournament-actions">
+        <button id="tour-play-next" class="menu-btn primary">Play Next Match</button>
+        <button id="tour-cancel" class="menu-btn">Cancel Tournament</button>
+      </div>
+    </div>
+  </div>
+  <div id="friendly-setup-screen" class="hidden">
+    <div class="menu-panel">
+      <h1 class="menu-title">Friendly Match</h1>
+      <div class="setup-block">
+        <label class="setup-label" for="team-home">Home team</label>
+        <select id="team-home" class="team-select"></select>
+        <div class="controller-row">
+          <label class="setup-label">Home controller</label>
+          <select id="controller-home" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai">AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+            <option value="ai:wide-and-tackle">AI (Wide + Tackle)</option>
+            <option value="ai:half-overload">AI (Half + Overload)</option>
+          </select>
+        </div>
+      </div>
+      <div class="setup-block">
+        <label class="setup-label" for="team-away">Away team</label>
+        <select id="team-away" class="team-select"></select>
+        <div class="controller-row">
+          <label class="setup-label">Away controller</label>
+          <select id="controller-away" class="controller-select">
+            <option value="human">Human</option>
+            <option value="ai">AI (Basic Coach)</option>
+            <option value="ai:own-half-marker">AI (Own-Half Marker)</option>
+            <option value="ai:loose-tackler">AI (Loose Tackler)</option>
+            <option value="ai:wide-cross-coach">AI (Wide Cross)</option>
+            <option value="ai:midfield-overload">AI (Midfield Overload)</option>
+            <option value="ai:wide-and-tackle">AI (Wide + Tackle)</option>
+            <option value="ai:half-overload">AI (Half + Overload)</option>
+          </select>
+        </div>
+      </div>
+      <div class="setup-actions">
+        <button id="menu-start" class="menu-btn primary">Start Match</button>
+        <button id="menu-back" class="menu-btn">Back</button>
+      </div>
+    </div>
+  </div>
+  <div id="world-cup-screen" class="hidden">
+    <div class="world-cup-container">
+      <h1 class="menu-title">World Cup 2026</h1>
+      <p class="menu-subtitle">48 teams · 12 groups · USA, Mexico & Canada</p>
+      <button id="wc-continue" class="wc-continue-btn">Continue</button>
+      <div id="world-cup-phase" class="world-cup-phase"></div>
+      <div id="wc-next-match"></div>
+      <div id="world-cup-actions" class="world-cup-actions">
+        <button id="wc-view-fixtures" class="menu-btn">Fixtures</button>
+        <button id="wc-view-schedule" class="menu-btn">Schedule</button>
+        <button id="wc-view-top" class="menu-btn">Top Players</button>
+        <button id="wc-view-my-team" class="menu-btn">My Team</button>
+        <button id="wc-view-standings" class="menu-btn">Team Stats</button>
+        <button id="wc-save-load" class="menu-btn">Save / Load</button>
+        <button id="wc-back" class="menu-btn">Quit</button>
+      </div>
+      <div id="world-cup-content"></div>
+    </div>
+  </div>
+  <div id="wc-setup-overlay" class="modal-overlay hidden">
+    <div class="shot-modal wc-setup-modal">
+      <div class="shot-modal-content">
+        <div class="shot-modal-label wc-setup-title">Choose your World Cup teams</div>
+        <p class="wc-setup-note">Mark which teams human players control. All others are AI. You can control more than one team.</p>
+        <div class="wc-setup-actions">
+          <button id="wc-setup-all-ai" class="menu-btn">All AI</button>
+          <label class="wc-setup-randomize">
+            <input type="checkbox" id="wc-setup-randomize">
+            Randomize groups
+          </label>
+          <button id="wc-setup-start" class="menu-btn primary">Start World Cup</button>
+        </div>
+        <div id="wc-setup-list" class="wc-setup-list"></div>
+      </div>
+    </div>
+  </div>
+  <div id="board">
+    <aside id="panel-local-team" class="side-panel"></aside>
+    <div id="stadium">
+      <div id="scoreboard"></div>
+      <div id="match-log"></div>
+      <div id="pitch"></div>
+      <div id="benches">
+        <div id="bench-local-team" class="side-bench"></div>
+        <div id="bench-away-team" class="side-bench"></div>
+      </div>
+    </div>
+    <aside id="panel-away-team" class="side-panel"></aside>
+  </div>
+  <div id="game-status"></div>
+  <div id="hint"></div>
+  <script src="actions/action.js"></script>
+  <script src="actions/pass.js"></script>
+  <script src="actions/long-pass.js"></script>
+  <script src="actions/tackle.js"></script>
+  <script src="actions/marking.js"></script>
+  <script src="actions/press.js"></script>
+  <script src="actions/move.js"></script>
+  <script src="actions/long-ball.js"></script>
+  <script src="actions/shoot.js"></script>
+  <script src="actions/goalkeeping-action.js"></script>
+  <script src="actions/off-ball-play.js"></script>
+  <script src="actions/dribbling.js"></script>
+  <script src="actions/sprint.js"></script>
+  <script src="actions/side-attack.js"></script>
+  <script src="actions/overlap.js"></script>
+  <script src="actions/finish.js"></script>
+  <script src="actions/cross.js"></script>
+  <script src="actions/offside-trap.js"></script>
+  <script src="actions/tactical-fault.js"></script>
+  <script src="actions/dirty-tricks.js"></script>
+  <script src="actions/park-the-bus.js"></script>
+  <script src="actions/fallback.js"></script>
+  <script src="actions/counter-attack.js"></script>
+  <script src="actions/intensity.js"></script>
+  <script src="actions/inspiration.js"></script>
+  <script src="actions/cramp.js"></script>
+  <script src="actions/playmaking.js"></script>
+  <script src="actions/hard-tackle.js"></script>
+  <script src="actions/long-shot.js"></script>
+  <script src="actions/full-pressure.js"></script>
+  <script src="actions/feint-turn.js"></script>
+  <script src="actions/coach-instructions.js"></script>
+  <script src="actions/possession.js"></script>
+  <script src="actions/tiki-taka.js"></script>
+  <script src="actions/argento-pride.js"></script>
+  <script src="actions/pep-style.js"></script>
+  <script src="actions/eureka.js"></script>
+  <script src="actions/joga-bonito.js"></script>
+  <script src="actions/german-efficiency.js"></script>
+  <script src="actions/sun-in-their-eyes.js"></script>
+  <script src="actions/ouch.js"></script>
+  <script src="actions/draw-foul.js"></script>
+  <script src="actions/touch-of-magic.js"></script>
+  <script src="actions/broken-defense.js"></script>
+  <script src="actions/forced-press.js"></script>
+  <script src="actions/frozen-defense.js"></script>
+  <script src="actions/risky-tackle.js"></script>
+  <script src="actions/flair.js"></script>
+  <script src="actions/hand-of-god.js"></script>
+  <script src="actions/slip.js"></script>
+  <script src="actions/short-sprint.js"></script>
+  <script src="actions/siiiiu.js"></script>
+  <script src="actions/expert-tackle.js"></script>
+  <script src="actions/tackling-madness.js"></script>
+  <script src="actions/brittle-little-bones.js"></script>
+  <script src="actions/cannonball.js"></script>
+  <script src="actions/combo.js"></script>
+  <script src="actions/run-and-cross.js"></script>
+  <script src="actions/injury-risk.js"></script>
+  <script src="actions/heads-in-the-clouds.js"></script>
+  <script src="actions/full-defense.js"></script>
+  <script src="actions/full-attack.js"></script>
+  <script src="actions/coming-home.js"></script>
+  <script src="actions/underdog-bite.js"></script>
+  <script src="actions/total-football.js"></script>
+  <script src="actions/atlas-wall.js"></script>
+  <script src="actions/garra-charrua.js"></script>
+  <script src="actions/nordic-hammer.js"></script>
+  <script src="actions/teranga-roar.js"></script>
+  <script src="actions/mark-them-up.js"></script>
+  <script src="actions/last-ditch-block.js"></script>
+  <script src="actions/clearance.js"></script>
+  <script src="actions/compact-shape.js"></script>
+  <script src="actions/defensive-wall.js"></script>
+  <script src="actions/through-ball.js"></script>
+  <script src="actions/one-two.js"></script>
+  <script src="actions/volley.js"></script>
+  <script src="actions/switch-play.js"></script>
+  <script src="actions/underlap.js"></script>
+  <script src="actions/overload.js"></script>
+  <script src="actions/trigger-press.js"></script>
+  <script src="actions/tactical-sub.js"></script>
+  <script src="actions/trigger-man-marking.js"></script>
+  <script src="actions/park-the-midfield.js"></script>
+  <script src="actions/desperation.js"></script>
+  <script src="actions/game-management.js"></script>
+  <script src="actions/time-wasting.js"></script>
+  <script src="actions/tempo-control.js"></script>
+  <script src="actions/shithousery.js"></script>
+  <script src="actions/hold.js"></script>
+  <script src="actions/growing-menace.js"></script>
+  <script src="actions/peak-fitness.js"></script>
+  <script src="actions/ghost-run.js"></script>
+  <script src="actions/fortress-mentality.js"></script>
+  <script src="actions/the-script.js"></script>
+  <script src="actions/video-session.js"></script>
+  <script src="actions/do-or-die.js"></script>
+  <script src="actions/no-pain-no-gain.js"></script>
+  <script src="actions/switch-gears.js"></script>
+  <script src="actions/big-match-mentality.js"></script>
+  <script src="actions/extra-time.js"></script>
+  <script src="actions/red-mist.js"></script>
+  <script src="actions/lost-dressing-room.js"></script>
+  <script src="actions/fatigue.js"></script>
+  <script src="actions/morale-collapse.js"></script>
+  <script src="actions/suspension-shadow.js"></script>
+  <script src="actions/tactical-confusion.js"></script>
+  <script src="actions/goalkeeper-blunder.js"></script>
+  <script src="actions/captains-mutiny.js"></script>
+  <script src="actions/weather-woes.js"></script>
+  <script src="actions/one-two-wall.js"></script>
+  <script src="actions/muscle-memory.js"></script>
+  <script src="actions/second-wind.js"></script>
+  <script src="actions/rabona.js"></script>
+  <script src="actions/hat-trick-hero.js"></script>
+  <script src="actions/time-wall.js"></script>
+  <script src="actions/yellow-card.js"></script>
+  <script src="actions/veteran-bench.js"></script>
+  <script src="actions/header-finish.js"></script>
+  <script src="actions/second-ball-header.js"></script>
+  <script src="actions/run-and-cross-flank.js"></script>
+  <script src="actions/dribble-and-cross.js"></script>
+  <script src="actions/knockdown-finish.js"></script>
+  <script src="actions/high-mobility.js"></script>
+  <script src="actions/always-moving.js"></script>
+  <script src="game/starting-decks.js"></script>
+  <script src="game/player.js"></script>
+  <script src="game/coach.js"></script>
+  <script src="game/coaches/all.js"></script>
+  <script src="game/team.js"></script>
+  <script src="teams/abstract-team.js"></script>
+  <script src="teams/spain.js"></script>
+  <script src="teams/argentina.js"></script>
+  <script src="teams/brazil.js"></script>
+  <script src="teams/ecuador.js"></script>
+  <script src="teams/uruguay.js"></script>
+  <script src="teams/colombia.js"></script>
+  <script src="teams/paraguay.js"></script>
+  <script src="teams/japan.js"></script>
+  <script src="teams/iran.js"></script>
+  <script src="teams/uzbekistan.js"></script>
+  <script src="teams/south-korea.js"></script>
+  <script src="teams/jordan.js"></script>
+  <script src="teams/australia.js"></script>
+  <script src="teams/qatar.js"></script>
+  <script src="teams/saudi-arabia.js"></script>
+  <script src="teams/iraq.js"></script>
+  <script src="teams/morocco.js"></script>
+  <script src="teams/tunisia.js"></script>
+  <script src="teams/egypt.js"></script>
+  <script src="teams/algeria.js"></script>
+  <script src="teams/ghana.js"></script>
+  <script src="teams/cape-verde.js"></script>
+  <script src="teams/south-africa.js"></script>
+  <script src="teams/ivory-coast.js"></script>
+  <script src="teams/senegal.js"></script>
+  <script src="teams/dr-congo.js"></script>
+  <script src="teams/canada.js"></script>
+  <script src="teams/mexico.js"></script>
+  <script src="teams/united-states.js"></script>
+  <script src="teams/panama.js"></script>
+  <script src="teams/curacao.js"></script>
+  <script src="teams/haiti.js"></script>
+  <script src="teams/new-zealand.js"></script>
+  <script src="teams/england.js"></script>
+  <script src="teams/france.js"></script>
+  <script src="teams/croatia.js"></script>
+  <script src="teams/portugal.js"></script>
+  <script src="teams/norway.js"></script>
+  <script src="teams/germany.js"></script>
+  <script src="teams/netherlands.js"></script>
+  <script src="teams/belgium.js"></script>
+  <script src="teams/austria.js"></script>
+  <script src="teams/switzerland.js"></script>
+  <script src="teams/scotland.js"></script>
+  <script src="teams/sweden.js"></script>
+  <script src="teams/turkiye.js"></script>
+  <script src="teams/czechia.js"></script>
+  <script src="teams/bosnia-and-herzegovina.js"></script>
+  <script src="game/mocks.js"></script>
+  <script src="game/world-cup.js"></script>
+  <script src="ui/player-token.js"></script>
+  <script src="ui/ball.js"></script>
+  <script src="game/game-controller.js"></script>
+  <script src="game/ai-defense.js"></script>
+  <script src="game/ai-offense.js"></script>
+  <script src="game/ai-players.js"></script>
+  <script src="events/registry.js"></script>
+  <script src="events/player-rumble.js"></script>
+  <script src="events/fast-track-staff.js"></script>
+  <script src="events/fan-protest.js"></script>
+  <script src="events/rival-taunt.js"></script>
+  <script src="events/weather-warning.js"></script>
+  <script src="events/scouting-report.js"></script>
+  <script src="events/captains-demand.js"></script>
+  <script src="events/media-frenzy.js"></script>
+  <script src="events/referee-complaint.js"></script>
+  <script src="events/injury-scare.js"></script>
+  <script src="events/dressing-room-leak.js"></script>
+  <script src="events/formation-dilemma.js"></script>
+  <script src="events/rival-scout.js"></script>
+  <script src="events/fan-tifo.js"></script>
+  <script src="events/social-media-storm.js"></script>
+  <script src="events/pundit-trash-talk.js"></script>
+  <script src="events/the-benefactor.js"></script>
+  <script src="events/team-bonding-barbecue.js"></script>
+  <script src="events/the-old-physio.js"></script>
+  <script src="events/federation-prize-draw.js"></script>
+  <script src="events/kit-mans-cooler.js"></script>
+  <script src="events/the-card-merchant.js"></script>
+  <script src="events/the-mad-professor.js"></script>
+  <script src="events/the-pundits-skull.js"></script>
+  <script src="events/the-vision.js"></script>
+  <script src="events/the-strange-catering.js"></script>
+  <script src="events/the-finishing-school.js"></script>
+  <script src="events/the-training-ground.js"></script>
+  <script src="events/the-tunnel.js"></script>
+  <script src="events/kit-upgrade.js"></script>
+  <script src="events/the-scout.js"></script>
+  <script src="ui/can-play.js"></script>
+  <script src="ui/world-cup-ui.js"></script>
+  <script src="ui/ui.js"></script>
+  <script src="game/card-resolution.js"></script>
+  <script src="game/match-lifecycle.js"></script>
+  <script src="game/ai-turn.js"></script>
+  <script src="game/tournament.js"></script>
+  <script src="game/save-load.js"></script>
+  <script src="game/wc-save.js"></script>
+  <script src="ui/click-handlers.js"></script>
+  <script src="ui/training-mode.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
