@@ -39,6 +39,8 @@ class GameController {
     this.timeWall = {};
     this.heldCards = {};
     this.matchHeldCards = {};
+    this.matchEffect = null;
+    this.pendingMatchEffect = null;
     this.ghostRun = {};
     this.fortressMentality = {};
     this.doOrDie = {};
@@ -145,6 +147,8 @@ class GameController {
       }
     }
     this.comboExtraPlays = {};
+
+    this._rollMatchEffect();
 
     if (this.turn === Math.floor(this.maxTurns / 2) + 1) {
       this.halftimePending = true;
@@ -762,6 +766,35 @@ class GameController {
 
   endTurn() {
     this.startTurn();
+  }
+
+  _rollMatchEffect() {
+    if (typeof MATCH_EFFECTS === 'undefined') return;
+    if (Math.random() >= 0.1) return;
+
+    if (this.matchEffect) {
+      try {
+        this.matchEffect.revoke();
+      } catch (_) {}
+      this.matchEffect = null;
+    }
+
+    let next = null;
+    try {
+      next = randomMatchEffect();
+    } catch (_) {
+      next = null;
+    }
+    if (!next) return;
+
+    this.matchEffect = next;
+    try {
+      next.apply();
+    } catch (_) {}
+    if (typeof logMatch === 'function') {
+      logMatch('', `A match effect takes hold: ${next.char} ${next.name} — ${next.description}`);
+    }
+    this.pendingMatchEffect = next;
   }
 
   recordGoal(team, scorer, extra) {

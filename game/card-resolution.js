@@ -142,6 +142,13 @@ function resolvePenalty(team, holder) {
 function resolveFault(holder, committer) {
   const foulTeam = TEAMS[committer.team];
   if (foulTeam) game.recordFoul(foulTeam, committer);
+  if (holder && game && game.matchEffect && game.matchEffect instanceof HeavyRainEffect) {
+    if (!holder.injured && !holder.sentOff) {
+      holder.addEffect('injured', Infinity);
+      logMatch(holder.team, `${holder.name} is injured by the heavy rain mistake!`, 'injury');
+      humanNotice('INJURY!');
+    }
+  }
   resetPositions();
   logMatch('', 'The referee calls the fault — all players return to their positions.');
   const team = TEAMS[holder.team];

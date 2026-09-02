@@ -157,6 +157,8 @@ const _saveLoad = {
           suspensionShadowActive: game.suspensionShadowActive,
           firstPlayedThisTurn: { ...game.firstPlayedThisTurn },
           comboExtraPlays: { ...game.comboExtraPlays },
+          matchEffectName: game.matchEffect ? game.matchEffect.name : null,
+          pendingMatchEffectName: game.pendingMatchEffect ? game.pendingMatchEffect.name : null,
           currentTeamName: game.currentTeam && game.currentTeam.name,
         },
         inPlay: {},
@@ -318,6 +320,20 @@ const _saveLoad = {
 
     if (g.currentTeamName && TEAMS[g.currentTeamName]) {
       game.currentTeam = TEAMS[g.currentTeamName];
+    }
+
+    if (game.matchEffect) {
+      try {
+        game.matchEffect.revoke();
+      } catch (_) {}
+    }
+    game.matchEffect = null;
+    game.pendingMatchEffect = null;
+    if (g.matchEffectName) {
+      const restored = resolveMatchEffect(g.matchEffectName);
+      if (restored) {
+        game.matchEffect = restored;
+      }
     }
 
     const cardById = {};

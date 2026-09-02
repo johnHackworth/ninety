@@ -1182,6 +1182,14 @@ function renderScoreboard() {
   center.className = 'scoreboard-center';
   center.textContent = centerLabel;
 
+  if (game.matchEffect) {
+    const fx = document.createElement('div');
+    fx.className = 'scoreboard-match-effect';
+    fx.title = game.matchEffect.description;
+    fx.textContent = `${game.matchEffect.char} ${game.matchEffect.name}`;
+    center.appendChild(fx);
+  }
+
   el.appendChild(sideEl(home));
   el.appendChild(center);
   el.appendChild(sideEl(away));
@@ -1959,6 +1967,38 @@ function flyInHands() {
   }
 }
 
+function showMatchEffectAnimation(effect) {
+  if (typeof simulationMode !== 'undefined' && simulationMode) return;
+  if (!isHumanGame()) return;
+  if (!effect) return;
+  if (document.getElementById('match-effect-animation')) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'match-effect-animation';
+  overlay.className = 'match-effect-overlay';
+
+  const card = createActionCard(effect);
+  card.classList.add('match-effect-card');
+  card.classList.remove('action-card', 'rarity-0');
+  const nameEl = card.querySelector('.action-card-name');
+  if (nameEl) nameEl.textContent = `${effect.char} ${effect.name}`;
+
+  const tag = document.createElement('div');
+  tag.className = 'match-effect-tag';
+  tag.textContent = 'MATCH EFFECT';
+  overlay.appendChild(tag);
+  overlay.appendChild(card);
+
+  document.body.appendChild(overlay);
+  void overlay.offsetWidth;
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    overlay.classList.add('fade');
+    setTimeout(() => overlay.remove(), 1000);
+  }, 3000);
+}
+
 function renderGame() {
   if (simulationMode) return;
   if (!panelSlots || !document.getElementById('pitch')) return;
@@ -1970,6 +2010,11 @@ function renderGame() {
     captureHandFadeOut();
   }
   renderScoreboard();
+  if (game && game.pendingMatchEffect) {
+    const pending = game.pendingMatchEffect;
+    game.pendingMatchEffect = null;
+    showMatchEffectAnimation(pending);
+  }
   renderGameStatus();
   renderPoints();
   renderInPlay();
