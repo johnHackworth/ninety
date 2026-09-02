@@ -761,8 +761,10 @@ async function wcContinueStep() {
 
   let phaseTrigger = wcPendingTrainingPhases;
   wcPendingTrainingPhases = null;
-  wcPendingTrainingMatch = null;
-  if (!phaseTrigger || !phaseTrigger.variants || phaseTrigger.variants.length === 0) {
+  if (
+    (!phaseTrigger || !phaseTrigger.variants || phaseTrigger.variants.length === 0) &&
+    wcPendingTrainingMatch !== start.match
+  ) {
     phaseTrigger = wcRollTrainingPhases(start.match);
   }
   if (
@@ -777,6 +779,7 @@ async function wcContinueStep() {
     renderWorldCupView();
     return;
   }
+  wcPendingTrainingMatch = null;
   wcHumanPlaying = true;
   wcMatchMode = true;
   wcMatchInProgress = start.match;
