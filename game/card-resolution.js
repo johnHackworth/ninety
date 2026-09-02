@@ -2373,20 +2373,29 @@ function resolveRiskyTackle(tacklerEl) {
 
   forceBrittleFault(team, result);
 
+  if (strictRefereeFoul(team, tackler, result.holder, action)) return;
+
   if (!result.won) {
     logMatch(
       team.name,
-      `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
+      permissiveRefereeActive()
+        ? `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball, and the permissive referee waves play on.`
+        : `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
     );
-    const wasPenalty = resolveFault(result.holder, tackler);
-    const playResult = game.playAction(team, action, {
-      endTurn: true,
-      nextTeam: board.getOpponent(team),
-    });
-    if (!playResult.success) logAlert(playResult.reason);
-    const fouledTeam = board.getOpponent(team);
-    if (wasPenalty) grantPenaltyShootCard(fouledTeam);
-    else grantFreeKickCards(fouledTeam, ball);
+    if (!permissiveRefereeActive()) {
+      const wasPenalty = resolveFault(result.holder, tackler);
+      const playResult = game.playAction(team, action, {
+        endTurn: true,
+        nextTeam: board.getOpponent(team),
+      });
+      if (!playResult.success) logAlert(playResult.reason);
+      const fouledTeam = board.getOpponent(team);
+      if (wasPenalty) grantPenaltyShootCard(fouledTeam);
+      else grantFreeKickCards(fouledTeam, ball);
+    } else {
+      const playResult = game.playAction(team, action);
+      if (!playResult.success) logAlert(playResult.reason);
+    }
     applyEnragedRivalTackle(team, tackler, result.holder);
     renderGame();
     return;
@@ -2421,6 +2430,53 @@ function forceBrittleFault(team, result) {
   );
   return true;
 }
+
+function strictRefereeActive() {
+  return !!(
+    game &&
+    game.matchEffect &&
+    typeof StrictRefereeEffect !== 'undefined' &&
+    game.matchEffect instanceof StrictRefereeEffect
+  );
+}
+
+function permissiveRefereeActive() {
+  return !!(
+    game &&
+    game.matchEffect &&
+    typeof PermissiveRefereeEffect !== 'undefined' &&
+    game.matchEffect instanceof PermissiveRefereeEffect
+  );
+}
+
+function foulFreeKick(team, holder, tackler, action) {
+  logMatch(
+    board.getOpponent(team).name,
+    `${holder.name} keeps the ball after a foul on ${tackler.name}'s challenge (free kick).`
+  );
+  const wasPenalty = resolveFault(holder, tackler);
+  const playResult = game.playAction(team, action, {
+    endTurn: true,
+    nextTeam: board.getOpponent(team),
+  });
+  if (!playResult.success) logAlert(playResult.reason);
+  const fouledTeam = board.getOpponent(team);
+  if (wasPenalty) grantPenaltyShootCard(fouledTeam);
+  else grantFreeKickCards(fouledTeam, ball);
+}
+
+function strictRefereeFoul(team, tackler, holder, action) {
+  if (!strictRefereeActive()) return false;
+  if (!holder) return false;
+  if (Math.random() >= 0.5) return false;
+  logMatch(
+    board.getOpponent(team).name,
+    `The strict referee stops play — ${tackler.name}'s tackle on ${holder.name} is a foul.`
+  );
+  humanNotice('FOUL!');
+  foulFreeKick(team, holder, tackler, action);
+  return true;
+}
 function resolveTackle(tacklerEl) {
   const pending = pendingTackle;
   if (!pending) return;
@@ -2439,6 +2495,8 @@ function resolveTackle(tacklerEl) {
   }
 
   forceBrittleFault(team, result);
+
+  if (strictRefereeFoul(team, tackler, result.holder, action)) return;
 
   if (!result.won) {
     if (game.suspensionShadowActive === team.name) {
@@ -2459,17 +2517,24 @@ function resolveTackle(tacklerEl) {
     }
     logMatch(
       team.name,
-      `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
+      permissiveRefereeActive()
+        ? `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball, and the permissive referee waves play on.`
+        : `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
     );
-    const wasPenalty = resolveFault(result.holder, tackler);
-    const playResult = game.playAction(team, action, {
-      endTurn: true,
-      nextTeam: board.getOpponent(team),
-    });
-    if (!playResult.success) logAlert(playResult.reason);
-    const fouledTeam = board.getOpponent(team);
-    if (wasPenalty) grantPenaltyShootCard(fouledTeam);
-    else grantFreeKickCards(fouledTeam, ball);
+    if (!permissiveRefereeActive()) {
+      const wasPenalty = resolveFault(result.holder, tackler);
+      const playResult = game.playAction(team, action, {
+        endTurn: true,
+        nextTeam: board.getOpponent(team),
+      });
+      if (!playResult.success) logAlert(playResult.reason);
+      const fouledTeam = board.getOpponent(team);
+      if (wasPenalty) grantPenaltyShootCard(fouledTeam);
+      else grantFreeKickCards(fouledTeam, ball);
+    } else {
+      const playResult = game.playAction(team, action);
+      if (!playResult.success) logAlert(playResult.reason);
+    }
     applyEnragedRivalTackle(team, tackler, result.holder);
     renderGame();
     return;

@@ -430,6 +430,13 @@ class GameController {
       this.inPlay[team.name] = [];
       this._wrapInPlayProxies();
       this.actionPoints[team.name] = this.pointsPerTurn;
+      const matchEffect = this.matchEffect;
+      if (matchEffect && typeof EarlyWhistleEffect !== 'undefined' && matchEffect instanceof EarlyWhistleEffect) {
+        this.actionPoints[team.name] -= 1;
+      }
+      if (matchEffect && typeof LateWhistleEffect !== 'undefined' && matchEffect instanceof LateWhistleEffect) {
+        this.actionPoints[team.name] += 1;
+      }
       if (firstTurnOfHalf && team.hasTeamEffect('flyingStart')) {
         this.actionPoints[team.name] += 1;
         logMatch(team.name, 'Flying Start: +1 action point for the opening minute.');
@@ -519,6 +526,17 @@ class GameController {
       cost += 1;
     }
     if (this.timeWall[team.name] && (
+      action instanceof MoveAction ||
+      action instanceof SprintAction ||
+      action instanceof ShortSprintAction ||
+      action instanceof DribblingAction ||
+      action instanceof FeintTurnAction
+    )) {
+      cost += 1;
+    }
+    const snowing = this.matchEffect && typeof SnowEffect !== 'undefined' &&
+      this.matchEffect instanceof SnowEffect;
+    if (snowing && (
       action instanceof MoveAction ||
       action instanceof SprintAction ||
       action instanceof ShortSprintAction ||
@@ -656,11 +674,17 @@ class GameController {
     counts[actor.name] = (counts[actor.name] || 0) + 1;
 
     const limit = actor.age < 21 ? 8 : 10;
+    const hardLimit = 15;
+    const heatwave =
+      this.matchEffect && typeof HeatwaveEffect !== 'undefined' &&
+      this.matchEffect instanceof HeatwaveEffect;
+    const effLimit = heatwave ? Math.floor(limit / 2) : limit;
+    const effHardLimit = heatwave ? Math.floor(hardLimit / 2) : hardLimit;
     const count = counts[actor.name];
 
-    if (count > 15) {
+    if (count > effHardLimit) {
       this._exhaustByCards(team, actor);
-    } else if (count > limit) {
+    } else if (count > effLimit) {
       if (actor.carriedFatigue) {
         this._exhaustByCards(team, actor);
       } else if (!actor.hasEffect('matchFatigued')) {

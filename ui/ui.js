@@ -1979,7 +1979,8 @@ function showMatchEffectAnimation(effect) {
 
   const card = createActionCard(effect);
   card.classList.add('match-effect-card');
-  card.classList.remove('action-card', 'rarity-0');
+  card.classList.remove('rarity-0');
+  if (card.classList.contains('category-effect')) card.classList.remove('category-effect');
   const nameEl = card.querySelector('.action-card-name');
   if (nameEl) nameEl.textContent = `${effect.char} ${effect.name}`;
 

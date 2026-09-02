@@ -26,12 +26,21 @@ class LongPassAction extends Action {
     const markers = playersAtTarget.filter((player) => player.team !== team.name);
     const receiver = receivers[0];
 
+    let effectivePassing = passer.passing;
+    const wind =
+      typeof game !== 'undefined' &&
+      game &&
+      game.matchEffect &&
+      typeof StrongWindEffect !== 'undefined' &&
+      game.matchEffect instanceof StrongWindEffect;
+    if (wind && Math.abs(dx) > 2) effectivePassing -= 2;
+
     if (markers.length > 0 && receiver) {
       const bestMarker = markers.reduce((a, b) => (a.marking >= b.marking ? a : b));
       if (Action.interceptionBlocked(team)) {
         return { success: true, receiver, intercepted: false };
       }
-      if (receiver.tacticalThinking + passer.passing > bestMarker.marking) {
+      if (receiver.tacticalThinking + effectivePassing > bestMarker.marking) {
         return { success: true, receiver, intercepted: false };
       }
       return { success: false, intercepted: true, interceptor: bestMarker };

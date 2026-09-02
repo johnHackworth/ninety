@@ -3,6 +3,19 @@ const MATCH_EFFECTS = [
   LightRainEffect,
   LocalPressureEffect,
   ShiningSunEffect,
+  ThunderstormEffect,
+  FogEffect,
+  HeatwaveEffect,
+  SnowEffect,
+  StrongWindEffect,
+  HostileCrowdEffect,
+  WinningStreakRoarEffect,
+  StrictRefereeEffect,
+  PermissiveRefereeEffect,
+  EarlyWhistleEffect,
+  LateWhistleEffect,
+  LocalScornEffect,
+  GentleBreezeEffect,
 ];
 
 const MATCH_EFFECTS_INDEX = {};
