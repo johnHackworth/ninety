@@ -1345,6 +1345,7 @@ const CARD_TYPES = [
 // ---- Main menu / match setup ----
 const menuScreen = document.getElementById('menu-screen');
 const setupScreen = document.getElementById('friendly-setup-screen');
+const rulesScreen = document.getElementById('rules-screen');
 const boardEl = document.getElementById('board');
 
 const homeTeamSelect = document.getElementById('team-home');
@@ -1385,9 +1386,12 @@ const TEAM_NAMES = Object.keys(TEAM_CLASSES);
 
 document.getElementById('menu-friendly').addEventListener('click', showSetupScreen);
 document.getElementById('menu-back').addEventListener('click', showMainMenu);
+document.getElementById('menu-rules').addEventListener('click', showGameRulesScreen);
+document.getElementById('rules-back').addEventListener('click', showMainMenu);
 document.getElementById('menu-simulate').addEventListener('click', showSimSetupScreen);
 document.getElementById('menu-tournament').addEventListener('click', showTournamentSetup);
 document.getElementById('menu-world-cup').addEventListener('click', showWorldCupView);
+document.getElementById('menu-load-wc').addEventListener('click', openWcLoadModal);
 document.getElementById('sim-back').addEventListener('click', showMainMenu);
 document.getElementById('tour-back').addEventListener('click', showMainMenu);
 document.getElementById('tour-cancel').addEventListener('click', cancelTournament);

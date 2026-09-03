@@ -2,6 +2,7 @@ function tickAi() {
   if (noticeOverlayActive) return;
   if (aiTurnTimeout) return;
   if (!game) return;
+  if (typeof wcShootout !== 'undefined' && wcShootout && !wcShootout.done) return;
   const team = game.currentTeam;
   if (!team || team.controller.type !== 'ai') return;
   if (game.finished || game.halftimePending) return;
@@ -14,6 +15,7 @@ function tickAi() {
 function runAiTurn() {
   if (noticeOverlayActive) return;
   if (!game) return;
+  if (typeof wcShootout !== 'undefined' && wcShootout && !wcShootout.done) return;
   const team = game.currentTeam;
   if (!team || team.controller.type !== 'ai') return;
   if (game.finished || game.halftimePending) return;

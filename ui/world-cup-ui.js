@@ -227,6 +227,7 @@ function showWorldCupScreen() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.remove('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -790,7 +791,42 @@ async function wcContinueStep() {
   showBoard();
 }
 
+function wcShootoutOrder(team) {
+  return [...team.currentPlayers].sort((a, b) => b.shooting - a.shooting);
+}
+
+function wcScatterAllLeft() {
+  const cells = [];
+  for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < 4; x++) cells.push([x, y]);
+  shuffleArray(cells);
+  const st = wcShootout;
+  if (!st) return;
+  const players = [
+    ...(TEAMS[st.home] ? TEAMS[st.home].currentPlayers : []),
+    ...(TEAMS[st.away] ? TEAMS[st.away].currentPlayers : []),
+  ];
+  let ci = 0;
+  for (const p of players) {
+    let done = false;
+    for (let tries = 0; tries < cells.length && !done; tries++) {
+      const [x, y] = cells[ci % cells.length];
+      ci += 1;
+      if (board.getPlayersAt(x, y).length === 0) {
+        placePlayerOn(p, x, y);
+        done = true;
+      }
+    }
+    if (!done) {
+      for (let y = 0; y < HEIGHT && !done; y++) for (let x = 0; x < 4; x++) {
+        if (board.getPlayersAt(x, y).length === 0) { placePlayerOn(p, x, y); done = true; break; }
+      }
+    }
+  }
+}
+
 function wcStartShootout(m) {
+  const homeTeam = TEAMS[m.home];
+  const awayTeam = TEAMS[m.away];
   wcShootout = {
     m,
     home: m.home,
@@ -799,19 +835,70 @@ function wcStartShootout(m) {
     awayScore: 0,
     round: 1,
     kicking: 'home',
+    homeOrder: wcShootoutOrder(homeTeam),
+    awayOrder: wcShootoutOrder(awayTeam),
+    homeSide: homeTeam.side,
+    awaySide: awayTeam.side,
+    done: false,
   };
-  wcShootoutStep();
+  for (const name of [wcShootout.home, wcShootout.away]) {
+    game.inPlay[name].length = 0;
+    game.actionPoints[name] = 0;
+  }
+  wcScatterAllLeft();
+  moveBall(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2));
+  matchState.possession = null;
+  updatePossession();
+  renderGame();
+  wcShootoutKick();
 }
 
-function wcShootoutStep() {
+function wcShootoutKick() {
   const st = wcShootout;
-  if (!st) return;
+  if (!st || st.done) return;
+  const teamName = st.kicking;
+  const team = TEAMS[teamName];
+  const oppName = teamName === 'home' ? st.away : st.home;
+  const opp = TEAMS[oppName];
+  const order = teamName === 'home' ? st.homeOrder : st.awayOrder;
+  const idx = (st.round - 1) % Math.max(1, order.length);
+  const shooter = order[idx];
+  if (!shooter) { wcShootoutEnd(st); return; }
 
+  wcScatterAllLeft();
+  placePlayerOn(shooter, 7, 3);
+  const oppGk = opp.currentGoalkeeper || opp.currentPlayers.find(p => p.position === 'GK');
+  if (oppGk) placePlayerOn(oppGk, 8, 3);
+
+  matchState.possession = tokenElForPlayer(shooter);
+  moveBall(7, 3);
+
+  game.currentTeam = team;
+  game.actionPoints[teamName] = 0;
+  game.inPlay[teamName].length = 0;
+  const shoot = new ShootAction({ ephemeral: true, exhaust: true, free: true });
+  game.inPlay[teamName].push(shoot);
+
+  if (team.side !== 'left') team.side = 'left';
+
+  renderGame();
+
+  logMatch(teamName, `Penalty shootout — ${shooter.name} steps up to take the kick for ${teamName}.`);
+
+  const human = wcControllerForTeam(teamName).type === 'human';
+  if (human && !st.done) {
+    wcShootoutPromptHuman(st, shooter, shoot);
+  } else if (!st.done) {
+    setTimeout(() => wcShootoutShoot(team, shoot, { ai: true }), 800);
+  }
+}
+
+function wcShootoutPromptHuman(st, shooter, shootAction) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
 
   const modal = document.createElement('div');
-  modal.className = 'wc-modal shot-modal halftime-modal shootout-modal';
+  modal.className = 'wc-modal shot-modal halftime-modal';
 
   const content = document.createElement('div');
   content.className = 'shot-modal-content halftime-content';
@@ -832,119 +919,27 @@ function wcShootoutStep() {
     st.round > 5 ? `Sudden death · round ${st.round - 5}` : `Round ${st.round} of 5`;
   content.appendChild(roundNote);
 
-  const kickerName = st.kicking === 'home' ? st.home : st.away;
   const kickerNote = document.createElement('div');
   kickerNote.className = 'halftime-kickoff';
-  kickerNote.textContent = `${kickerName} to kick.`;
+  kickerNote.textContent = `${shooter.name} takes the penalty for ${st.kicking === 'home' ? st.home : st.away}.`;
   content.appendChild(kickerNote);
-
-  const humanKicks = wcControllerForTeam(kickerName).type === 'human';
 
   const prompt = document.createElement('div');
   prompt.className = 'shootout-prompt';
-  prompt.textContent = humanKicks ? 'Choose where to shoot:' : 'Pick a direction to dive:';
+  prompt.textContent = 'Play your Shoot card to take the penalty.';
   content.appendChild(prompt);
 
-  const row = document.createElement('div');
-  row.className = 'shootout-choices';
-  for (const dir of ['L', 'C', 'R']) {
-    const btn = document.createElement('button');
-    btn.className = 'menu-btn shootout-btn';
-    btn.textContent = dir === 'L' ? 'Left' : dir === 'C' ? 'Centre' : 'Right';
-    btn.addEventListener('click', () => {
-      overlay.remove();
-      document.removeEventListener('keydown', onKey);
-      if (humanKicks) wcShootoutShot(st, dir);
-      else wcShootoutDive(st, dir);
-    });
-    row.appendChild(btn);
-  }
-  content.appendChild(row);
-
-  modal.appendChild(content);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  function onKey(e) {
-    if (e.key === 'Escape') {
-      overlay.remove();
-      document.removeEventListener('keydown', onKey);
-    }
-  }
-  document.addEventListener('keydown', onKey);
-}
-
-function wcShootoutShot(st, dir) {
-  const teamName = st.kicking === 'home' ? st.home : st.away;
-  const base = Math.min(0.85, Math.max(0.25, 0.5 + (wcTeamStrength(teamName) - 50) / 40));
-  const keeperDir = ['L', 'C', 'R'][Math.floor(Math.random() * 3)];
-  const pGoal = keeperDir === dir ? base - 0.4 : base;
-  const scored = Math.random() < pGoal;
-  if (scored) st[st.kicking === 'home' ? 'homeScore' : 'awayScore'] += 1;
-  const dirText = (d) => (d === 'L' ? 'left' : d === 'C' ? 'centre' : 'right');
-  wcShootoutResult(
-    st,
-    scored ? 'GOAL!' : 'SAVED!',
-    `${teamName} shoots ${dirText(dir)}; the keeper dives ${dirText(keeperDir)}.`
-  );
-}
-
-function wcShootoutDive(st, dir) {
-  const teamName = st.kicking === 'home' ? st.home : st.away;
-  const oppName = st.kicking === 'home' ? st.away : st.home;
-  const shotDir = ['L', 'C', 'R'][Math.floor(Math.random() * 3)];
-  const keeperStrength = wcTeamStrength(oppName);
-  const pSave =
-    shotDir === dir
-      ? Math.min(0.75, Math.max(0.2, 0.45 + (keeperStrength - 50) / 80))
-      : 0.12;
-  const saved = Math.random() < pSave;
-  const scored = !saved;
-  if (scored) st[st.kicking === 'home' ? 'homeScore' : 'awayScore'] += 1;
-  const dirText = (d) => (d === 'L' ? 'left' : d === 'C' ? 'centre' : 'right');
-  wcShootoutResult(
-    st,
-    saved ? 'SAVED!' : 'GOAL!',
-    `${teamName} shoots ${dirText(shotDir)}; your keeper dives ${dirText(dir)}.`
-  );
-}
-
-function wcShootoutResult(st, header, detail) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-
-  const modal = document.createElement('div');
-  modal.className = 'wc-modal shot-modal halftime-modal';
-
-  const content = document.createElement('div');
-  content.className = 'shot-modal-content halftime-content';
-
-  const title = document.createElement('div');
-  title.className = 'halftime-title';
-  title.textContent = header;
-  content.appendChild(title);
-
-  const scoreLine = document.createElement('div');
-  scoreLine.className = 'halftime-score';
-  scoreLine.textContent = `${wcTeamName(st.home)} ${st.homeScore} - ${st.awayScore} ${wcTeamName(st.away)}`;
-  content.appendChild(scoreLine);
-
-  const note = document.createElement('div');
-  note.className = 'halftime-kickoff';
-  note.textContent = detail;
-  content.appendChild(note);
-
   const btn = document.createElement('button');
-  btn.className = 'shot-modal-close';
-  btn.textContent = 'Continue';
+  btn.className = 'menu-btn shootout-btn';
+  btn.textContent = 'Shoot';
   btn.addEventListener('click', () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
-    wcShootoutNextKick(st);
+    wcShootoutShoot(TEAMS[st.kicking], shootAction, { ai: false });
   });
+  content.appendChild(btn);
 
   modal.appendChild(content);
-  modal.appendChild(btn);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
@@ -952,34 +947,69 @@ function wcShootoutResult(st, header, detail) {
     if (e.key === 'Escape' || e.key === 'Enter') {
       overlay.remove();
       document.removeEventListener('keydown', onKey);
-      wcShootoutNextKick(st);
+      wcShootoutShoot(TEAMS[st.kicking], shootAction, { ai: false });
     }
   }
   document.addEventListener('keydown', onKey);
 }
 
-function wcShootoutNextKick(st) {
-  if (st.kicking === 'home') {
-    st.kicking = 'away';
-  } else {
-    st.round += 1;
-    st.kicking = 'home';
+function wcShootoutShoot(team, action, { ai = false } = {}) {
+  const st = wcShootout;
+  if (!st || st.done) return;
+  const teamName = team.name;
+  const oppName = teamName === 'home' ? st.away : st.home;
+  const opp = TEAMS[oppName];
+  const order = teamName === 'home' ? st.homeOrder : st.awayOrder;
+  const shooter = order[(st.round - 1) % Math.max(1, order.length)];
+  const keeperCard = opp.drawGoalkeepingCard();
+
+  if (team.side !== 'left') team.side = 'left';
+  const result = resolveShot({
+    team, shooter, board, goalkeepingCard: keeperCard, shootingBonus: 2,
+  });
+
+  const trueSide = teamName === 'home' ? st.homeSide : st.awaySide;
+  if (team.side !== trueSide) team.side = trueSide;
+
+  game.inPlay[teamName] = (game.inPlay[teamName] || []).filter(c => c !== action);
+  if (keeperCard) opp.discardGoalkeeping(keeperCard);
+
+  let scored = false;
+  if (result.success && result.scored) {
+    scored = true;
+    st[teamName === 'home' ? 'homeScore' : 'awayScore'] += 1;
   }
 
+  if (ai) {
+    logMatch(teamName, scored
+      ? `GOAL! ${shooter.name} scores the penalty for ${teamName}.`
+      : `${shooter.name}'s penalty is saved by ${result.goalkeeper ? result.goalkeeper.name : 'the keeper'}.`);
+    renderGame();
+    setTimeout(() => wcShootoutAdvance(st), 700);
+  } else {
+    showShotResultModal({
+      result,
+      attackerCard: action,
+      goalkeepingCard: keeperCard,
+      onClose: () => { renderGame(); wcShootoutAdvance(st); },
+    });
+  }
+}
+
+function wcShootoutAdvance(st) {
+  if (st.done) return;
+  st.kicking = st.kicking === 'home' ? 'away' : 'home';
+  if (st.kicking === 'home') st.round += 1;
   const lead = Math.abs(st.homeScore - st.awayScore);
   if (st.round <= 5) {
-    const kicksLeft = st.kicking === 'away' ? 1 + (5 - st.round) * 2 : (5 - st.round) * 2;
-    if (lead > kicksLeft) {
-      wcShootoutEnd(st);
-      return;
-    }
+    const kicksLeft = st.kicking === 'away'
+      ? 1 + (5 - st.round) * 2
+      : (5 - st.round) * 2;
+    if (lead > kicksLeft) { wcShootoutEnd(st); return; }
   } else {
-    if (lead > 0) {
-      wcShootoutEnd(st);
-      return;
-    }
+    if (lead > 0) { wcShootoutEnd(st); return; }
   }
-  wcShootoutStep();
+  wcShootoutKick();
 }
 
 function wcShootoutEnd(st) {
@@ -3556,6 +3586,72 @@ function openWcSaveLoadModal() {
   });
 
   renderList();
+}
+
+function openWcLoadModal() {
+  const saves = WcSave.list();
+  if (saves.length === 0) {
+    showToast('No saved World Cups found.', 'info');
+    return;
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'shot-modal wc-setup-modal wc-save-modal';
+
+  const title = document.createElement('div');
+  title.className = 'shot-modal-label wc-setup-title';
+  title.textContent = 'Load World Cup';
+  modal.appendChild(title);
+
+  const note = document.createElement('p');
+  note.className = 'wc-setup-note';
+  note.textContent = 'Select a saved tournament to continue.';
+  modal.appendChild(note);
+
+  const close = showModalOverlay(modal, { closeKeys: ['Escape'], closeOnOverlay: true });
+
+  const listEl = document.createElement('div');
+  listEl.className = 'wc-save-list';
+  modal.appendChild(listEl);
+
+  for (const s of saves) {
+    const row = document.createElement('div');
+    row.className = 'wc-save-row';
+
+    const info = document.createElement('div');
+    info.className = 'wc-save-info';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'wc-save-name';
+    nameEl.textContent = s.name;
+    const meta = document.createElement('div');
+    meta.className = 'wc-save-meta';
+    meta.textContent = `${s.label} · ${new Date(s.savedAt).toLocaleString()}`;
+    info.appendChild(nameEl);
+    info.appendChild(meta);
+    row.appendChild(info);
+
+    const actions = document.createElement('div');
+    actions.className = 'wc-save-actions';
+
+    const loadBtn = document.createElement('button');
+    loadBtn.className = 'menu-btn primary';
+    loadBtn.textContent = 'Load';
+    loadBtn.addEventListener('click', () => {
+      const res = WcSave.load(s.name);
+      if (res.ok) {
+        close();
+        showWorldCupScreen();
+        renderWorldCupView();
+        showToast(`Restored World Cup "${s.name}".`, 'info');
+      } else {
+        showToast(res.reason || 'Load failed.', 'error');
+      }
+    });
+    actions.appendChild(loadBtn);
+
+    row.appendChild(actions);
+    listEl.appendChild(row);
+  }
 }
 
 function wcDownloadSave(name, json) {

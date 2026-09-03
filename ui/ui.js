@@ -1182,6 +1182,13 @@ function renderScoreboard() {
   center.className = 'scoreboard-center';
   center.textContent = centerLabel;
 
+  if (typeof wcShootout !== 'undefined' && wcShootout && !wcShootout.done) {
+    const pen = document.createElement('div');
+    pen.className = 'scoreboard-penalties';
+    pen.textContent = `Pens: ${wcShootout.homeScore} - ${wcShootout.awayScore}`;
+    center.appendChild(pen);
+  }
+
   if (game.matchEffect) {
     const fx = document.createElement('div');
     fx.className = 'scoreboard-match-effect';
@@ -2687,6 +2694,19 @@ function showMainMenu() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
+  boardEl.classList.add('hidden');
+  gameStatusEl.classList.add('hidden');
+  hintEl.classList.add('hidden');
+}
+function showGameRulesScreen() {
+  menuScreen.classList.add('hidden');
+  setupScreen.classList.add('hidden');
+  simSetupScreen.classList.add('hidden');
+  tournamentSetupScreen.classList.add('hidden');
+  tournamentScreen.classList.add('hidden');
+  worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.remove('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -2698,6 +2718,7 @@ function showSetupScreen() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -2709,6 +2730,7 @@ function showSimSetupScreen() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -2720,6 +2742,7 @@ function showTournamentSetup() {
   tournamentSetupScreen.classList.remove('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -2731,6 +2754,7 @@ function showTournamentView() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.remove('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
@@ -2743,6 +2767,7 @@ function showBoard() {
   tournamentSetupScreen.classList.add('hidden');
   tournamentScreen.classList.add('hidden');
   worldCupScreen.classList.add('hidden');
+  rulesScreen.classList.add('hidden');
   boardEl.classList.remove('hidden');
   gameStatusEl.classList.remove('hidden');
   hintEl.classList.remove('hidden');
