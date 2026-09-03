@@ -2003,13 +2003,43 @@ function resolveOneTwo(x, y) {
     return;
   }
 
+  const startCell = board.getPlayerCell(p.player);
+  if (
+    puddlesActive() &&
+    result.dribbled &&
+    startCell &&
+    startCell.x >= 3 &&
+    startCell.x <= 5 &&
+    Math.random() < 0.1
+  ) {
+    const marker = result.marker;
+    logMatch(
+      board.getOpponent(p.team).name,
+      `${p.player.name} slips in a puddle and the ball squirts to ${marker ? marker.name : 'the other team'}!`
+    );
+    if (marker && tokenElForPlayer(marker)) {
+      matchState.possession = tokenElForPlayer(marker);
+      updatePossession();
+    }
+    const playResult = game.playAction(p.team, p.action, {
+      endTurn: true,
+      nextTeam: board.getOpponent(p.team),
+    });
+    if (!playResult.success) logAlert(playResult.reason);
+    renderGame();
+    return;
+  }
+
+  const el = tokenElForPlayer(p.player);
+  if (el) moveTokenToCell(el, x, y);
+
   if (result.intercepted && result.interceptor) {
     shakeScreen();
     moveBall(x, y);
     matchState.lastBallMove = { x, y };
-    const el = tokenElForPlayer(result.interceptor);
-    if (el) {
-      matchState.possession = el;
+    const interceptorEl = tokenElForPlayer(result.interceptor);
+    if (interceptorEl) {
+      matchState.possession = interceptorEl;
       updatePossession();
     }
     logMatch(p.team.name, `One-two pass from ${p.passer.name} is intercepted by ${result.interceptor.name}!`);
@@ -2376,13 +2406,18 @@ function resolveRiskyTackle(tacklerEl) {
   if (strictRefereeFoul(team, tackler, result.holder, action)) return;
 
   if (!result.won) {
+    const wavePlayOn = permissiveRefereeActive() || blindSpotWavesOff();
     logMatch(
       team.name,
-      permissiveRefereeActive()
-        ? `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball, and the permissive referee waves play on.`
+      wavePlayOn
+        ? `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball, and ${
+            permissiveRefereeActive()
+              ? 'the permissive referee waves play on'
+              : 'the referee misses the foul in his blind spot'
+          }.`
         : `${tackler.name}'s risky tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
     );
-    if (!permissiveRefereeActive()) {
+    if (!wavePlayOn) {
       const wasPenalty = resolveFault(result.holder, tackler);
       const playResult = game.playAction(team, action, {
         endTurn: true,
@@ -2396,6 +2431,7 @@ function resolveRiskyTackle(tacklerEl) {
       const playResult = game.playAction(team, action);
       if (!playResult.success) logAlert(playResult.reason);
     }
+    addTackleBooking(board.getOpponent(team), result.holder);
     applyEnragedRivalTackle(team, tackler, result.holder);
     renderGame();
     return;
@@ -2407,6 +2443,8 @@ function resolveRiskyTackle(tacklerEl) {
   updatePossession();
   game.recordRecovery(team, tackler);
   tryCounterPress(team);
+
+  addTackleBooking(team, tackler);
 
   logMatch(
     team.name,
@@ -2477,6 +2515,46 @@ function strictRefereeFoul(team, tackler, holder, action) {
   foulFreeKick(team, holder, tackler, action);
   return true;
 }
+
+function blindSpotWavesOff() {
+  return !!(
+    game &&
+    game.matchEffect &&
+    typeof BlindSpotRefereeEffect !== 'undefined' &&
+    game.matchEffect instanceof BlindSpotRefereeEffect &&
+    Math.random() < 0.5
+  );
+}
+
+function cardHappyRefereeActive() {
+  return !!(
+    game &&
+    game.matchEffect &&
+    typeof CardHappyRefereeEffect !== 'undefined' &&
+    game.matchEffect instanceof CardHappyRefereeEffect
+  );
+}
+
+function addTackleBooking(team, player) {
+  if (!cardHappyRefereeActive()) return;
+  game.matchBookings = game.matchBookings || {};
+  const n = (game.matchBookings[team.name] || 0) + 1;
+  game.matchBookings[team.name] = n;
+  logMatch(team.name, `${player.name} is booked after that tackle (booking #${n}).`);
+  if (n >= 2) {
+    logMatch(team.name, `${team.name} hit two bookings — their next turn is skipped.`);
+    game.skipOpponentNextTurn[team.name] = true;
+  }
+}
+
+function puddlesActive() {
+  return !!(
+    game &&
+    game.matchEffect &&
+    typeof WetPitchPuddlesEffect !== 'undefined' &&
+    game.matchEffect instanceof WetPitchPuddlesEffect
+  );
+}
 function resolveTackle(tacklerEl) {
   const pending = pendingTackle;
   if (!pending) return;
@@ -2515,13 +2593,18 @@ function resolveTackle(tacklerEl) {
       renderGame();
       return;
     }
+    const wavePlayOn = permissiveRefereeActive() || blindSpotWavesOff();
     logMatch(
       team.name,
-      permissiveRefereeActive()
-        ? `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball, and the permissive referee waves play on.`
+      wavePlayOn
+        ? `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball, and ${
+            permissiveRefereeActive()
+              ? 'the permissive referee waves play on'
+              : 'the referee misses the foul in his blind spot'
+          }.`
         : `${tackler.name}'s tackle fails — ${result.holder.name} keeps the ball (foul / free kick).`
     );
-    if (!permissiveRefereeActive()) {
+    if (!wavePlayOn) {
       const wasPenalty = resolveFault(result.holder, tackler);
       const playResult = game.playAction(team, action, {
         endTurn: true,
@@ -2535,6 +2618,7 @@ function resolveTackle(tacklerEl) {
       const playResult = game.playAction(team, action);
       if (!playResult.success) logAlert(playResult.reason);
     }
+    addTackleBooking(board.getOpponent(team), result.holder);
     applyEnragedRivalTackle(team, tackler, result.holder);
     renderGame();
     return;
@@ -2546,6 +2630,8 @@ function resolveTackle(tacklerEl) {
   updatePossession();
   game.recordRecovery(team, tackler);
   tryCounterPress(team);
+
+  addTackleBooking(team, tackler);
 
   logMatch(team.name, `${tackler.name} wins the ball with a tackle (tackling ${tackler.tackling}).`);
 

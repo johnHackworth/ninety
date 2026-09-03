@@ -28,7 +28,12 @@ class MarkingAction extends Action {
       return { success: false, reason: 'marker must be in the same cell as the ball holder' };
     }
 
-    const won = marker.marking + 5 > holder.tacticalThinking;
+    let won = marker.marking + 5 > holder.tacticalThinking;
+
+    if (beesActive() && beesInOuterRegion(markerCell, board)) {
+      won = marker.marking - 3 + 5 > holder.tacticalThinking;
+    }
+
     return { success: true, marker, holder, won };
   }
 }

@@ -148,6 +148,8 @@ class GameController {
     }
     this.comboExtraPlays = {};
 
+    this._dogRolledThisTurn = false;
+
     this._rollMatchEffect();
 
     if (this.turn === Math.floor(this.maxTurns / 2) + 1) {
@@ -516,33 +518,26 @@ class GameController {
     }
     let cost = base;
     const hasWeatherWoes = this.inPlay[team.name] && this.inPlay[team.name].some((c) => c instanceof WeatherWoesAction);
-    if (hasWeatherWoes && (
-      action instanceof MoveAction ||
-      action instanceof SprintAction ||
-      action instanceof ShortSprintAction ||
-      action instanceof DribblingAction ||
-      action instanceof FeintTurnAction
-    )) {
+    const isMovement = (a) =>
+      a instanceof MoveAction ||
+      a instanceof SprintAction ||
+      a instanceof ShortSprintAction ||
+      a instanceof DribblingAction ||
+      a instanceof FeintTurnAction;
+    if (hasWeatherWoes && isMovement(action)) {
       cost += 1;
     }
-    if (this.timeWall[team.name] && (
-      action instanceof MoveAction ||
-      action instanceof SprintAction ||
-      action instanceof ShortSprintAction ||
-      action instanceof DribblingAction ||
-      action instanceof FeintTurnAction
-    )) {
+    if (this.timeWall[team.name] && isMovement(action)) {
       cost += 1;
     }
     const snowing = this.matchEffect && typeof SnowEffect !== 'undefined' &&
       this.matchEffect instanceof SnowEffect;
-    if (snowing && (
-      action instanceof MoveAction ||
-      action instanceof SprintAction ||
-      action instanceof ShortSprintAction ||
-      action instanceof DribblingAction ||
-      action instanceof FeintTurnAction
-    )) {
+    if (snowing && isMovement(action)) {
+      cost += 1;
+    }
+    const sandstorm = this.matchEffect && typeof SandstormEffect !== 'undefined' &&
+      this.matchEffect instanceof SandstormEffect;
+    if (sandstorm && isMovement(action)) {
       cost += 1;
     }
     return cost;
@@ -824,6 +819,18 @@ class GameController {
   recordGoal(team, scorer, extra) {
     if (this.finished) return { success: false, reason: 'game over' };
     this.score[team.name] = (this.score[team.name] || 0) + 1;
+    this.matchEffect =
+      this.matchEffect ||
+      (this.pendingMatchEffectName ? resolveMatchEffectByName(this.pendingMatchEffectName) : this.matchEffect);
+    if (
+      this.matchEffect &&
+      typeof GiantTifoEffect !== 'undefined' &&
+      this.matchEffect instanceof GiantTifoEffect
+    ) {
+      try {
+        this.matchEffect.syncBoost();
+      } catch (_) {}
+    }
     this.stats[team.name].goals += 1;
     this._statPlayer(scorer).goals += 1;
     if (typeof celebrateGoal === 'function') {

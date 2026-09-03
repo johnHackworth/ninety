@@ -1836,10 +1836,34 @@ let substitutionWindowOpen = false;
 let lastSimAction = null;
 
 
+function dogInterruptRoll(team, action) {
+  const dog =
+    typeof game !== 'undefined' &&
+    game &&
+    game.matchEffect &&
+    typeof DogOnFieldEffect !== 'undefined' &&
+    game.matchEffect instanceof DogOnFieldEffect;
+  if (!dog) return false;
+  if (game._dogRolledThisTurn) return false;
+  game._dogRolledThisTurn = true;
+  if (Math.random() >= 0.1) return false;
+  logMatch(team.name, `A dog sprints onto the pitch and sends ${action.name} dead — the card is wasted!`);
+  return true;
+}
+
 function executeAction(team, action, work) {
   if (deferredPlayActive) return;
   substitutionWindowOpen = false;
   deferredPlayActive = true;
+
+  if (dogInterruptRoll(team, action)) {
+    const playResult = game.playAction(team, action, { noSwitch: true });
+    if (!playResult.success) logAlert(playResult.reason);
+    renderGame();
+    deferredPlayActive = false;
+    return;
+  }
+
   if (simulationMode) {
     try {
       work();

@@ -47,3 +47,20 @@ class Action {
     throw new Error(`${this.constructor.name} must implement play().`);
   }
 }
+
+function beesActive() {
+  return !!(
+    typeof game !== 'undefined' &&
+    game &&
+    game.matchEffect &&
+    typeof BeesCornerEffect !== 'undefined' &&
+    game.matchEffect instanceof BeesCornerEffect
+  );
+}
+
+function beesInOuterRegion(cell, board) {
+  if (!cell || !board) return false;
+  const lastX = (board.width !== undefined ? board.width : 9) - 1;
+  const lastY = (board.height !== undefined ? board.height : 7) - 1;
+  return cell.x === 0 || cell.x === lastX || cell.y === 0 || cell.y === lastY;
+}

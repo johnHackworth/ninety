@@ -16,6 +16,16 @@ const MATCH_EFFECTS = [
   LateWhistleEffect,
   LocalScornEffect,
   GentleBreezeEffect,
+  DogOnFieldEffect,
+  BeesCornerEffect,
+  GullsEffect,
+  GiantTifoEffect,
+  StreakerEffect,
+  RockBandEffect,
+  BlindSpotRefereeEffect,
+  CardHappyRefereeEffect,
+  SandstormEffect,
+  WetPitchPuddlesEffect,
 ];
 
 const MATCH_EFFECTS_INDEX = {};

@@ -90,6 +90,24 @@ function resolveShot({
 
   const goalkeepingMargin =
     defendingTeam.hasTeamEffect && defendingTeam.hasTeamEffect('ironGlove') ? 1 : 0;
+
+  const gulls =
+    typeof game !== 'undefined' &&
+    game &&
+    game.matchEffect &&
+    typeof GullsEffect !== 'undefined' &&
+    game.matchEffect instanceof GullsEffect;
+  if (gulls) shooting = Math.floor(shooting * 0.85);
+
+  const streaker =
+    typeof game !== 'undefined' &&
+    game &&
+    game.matchEffect &&
+    typeof StreakerEffect !== 'undefined' &&
+    game.matchEffect instanceof StreakerEffect;
+  const centerColumn = Math.floor(board.width / 2);
+  if (streaker && shooterCell.x === centerColumn) shooting -= 2;
+
   const scored =
     shooting > goalkeeping + goalkeepingMargin && !(goalkeepingCard && goalkeepingCard.hitPost);
 

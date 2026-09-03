@@ -39,6 +39,10 @@ class TackleAction extends Action {
     let won = tackler.tackling + 5 > holder.dribbling;
     let forcedFault = false;
 
+    if (beesActive() && beesInOuterRegion(tacklerCell, board)) {
+      won = tackler.tackling - 3 + 5 > holder.dribbling;
+    }
+
     if (Action.consumeTackleFear(tackler)) {
       won = false;
     }
