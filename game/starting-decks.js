@@ -125,6 +125,8 @@ class StartingDeck {
     'run-and-cross-flank': RunAndCrossFlankAction,
     'dribble-and-cross': DribbleAndCrossAction,
     'knockdown-finish': KnockdownFinishAction,
+    'scouting-report': ScoutingReportAction,
+    'eagle-eye': EagleEyeAction,
   };
 
   static registry = {};

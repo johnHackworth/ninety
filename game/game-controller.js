@@ -45,6 +45,8 @@ class GameController {
     this.fortressMentality = {};
     this.doOrDie = {};
     this.videoSession = {};
+    this.revealedHand = {};
+    this.revealedHandTurn = {};
 
     this.lastMoveWasSkip = false;
     this.onConsecutiveSkip = null;
@@ -161,6 +163,7 @@ class GameController {
     this.defensiveWall = {};
     this.muscleMemory = {};
     this.timeWall = {};
+    this.revealedHandTurn = {};
     if (typeof matchState !== 'undefined' && matchState) {
       matchState.lastShotSave = false;
       matchState.lastLongBallReceiver = null;

@@ -1103,7 +1103,7 @@ function renderInPlay() {
         card.addEventListener('click', () => {
           executeAction(pendingHold.team, pendingHold.action, () => resolveHold(action));
         });
-      } else if (!isCurrent && !isPenaltyCard) {
+      } else if ((team.controller.type === 'ai' || !isCurrent) && !isPenaltyCard && !(game.revealedHand && game.revealedHand[team.name]) && !(game.revealedHandTurn && game.revealedHandTurn[team.name])) {
         card.classList.add('face-down');
       } else if (isPending) {
         card.classList.add('active');

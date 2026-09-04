@@ -652,6 +652,14 @@ function dispatchActionPlay(team, action, isPending = false) {
     beginRunAndCrossTargeting(team, action);
     return;
   }
+  if (action instanceof ScoutingReportAction) {
+    executeAction(team, action, () => action.resolve(team));
+    return;
+  }
+  if (action instanceof EagleEyeAction) {
+    executeAction(team, action, () => action.resolve(team));
+    return;
+  }
   if (action instanceof YellowCardAction) {
     beginYellowCardTargeting(team, action);
     return;
@@ -1336,6 +1344,8 @@ const CARD_TYPES = [
   RunAndCrossFlankAction,
   DribbleAndCrossAction,
   KnockdownFinishAction,
+  ScoutingReportAction,
+  EagleEyeAction,
 ];
 
 

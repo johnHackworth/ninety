@@ -154,6 +154,8 @@ const _saveLoad = {
           tempoControl: { ...game.tempoControl },
           tempoControlIntensityCost: { ...game.tempoControlIntensityCost },
           skipOpponentNextTurn: { ...game.skipOpponentNextTurn },
+          revealedHand: { ...game.revealedHand },
+          revealedHandTurn: { ...game.revealedHandTurn },
           suspensionShadowActive: game.suspensionShadowActive,
           firstPlayedThisTurn: { ...game.firstPlayedThisTurn },
           comboExtraPlays: { ...game.comboExtraPlays },
@@ -313,6 +315,8 @@ const _saveLoad = {
     game.tempoControl = g.tempoControl || {};
     game.tempoControlIntensityCost = g.tempoControlIntensityCost || {};
     game.skipOpponentNextTurn = g.skipOpponentNextTurn || {};
+    game.revealedHand = g.revealedHand || {};
+    game.revealedHandTurn = g.revealedHandTurn || {};
     game.suspensionShadowActive = g.suspensionShadowActive || null;
     game.firstPlayedThisTurn = g.firstPlayedThisTurn || {};
     game.comboExtraPlays = g.comboExtraPlays || {};
