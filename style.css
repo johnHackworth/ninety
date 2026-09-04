@@ -92,8 +92,7 @@ h1 {
   grid-template-columns: minmax(0, 1fr) 384px;
   grid-template-rows: auto;
   gap: 12px;
-  align-items: start;
-  max-height: 100vh;
+  align-items: stretch;
 }
 
 #pitch-column {
@@ -101,12 +100,13 @@ h1 {
   flex-direction: column;
   gap: 8px;
   min-width: 0;
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
 }
 
 #pitch-wrapper {
   position: relative;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .column-ticks {
@@ -154,32 +154,16 @@ h1 {
   gap: 6px;
 }
 
-#panel-local-team .in-play-hand:not(.playing-hand),
+#panel-local-team .in-play-hand,
 #panel-away-team .in-play-hand {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
-  justify-items: center;
-  gap: 6px 8px;
-}
-
-#panel-local-team .in-play-hand:not(.playing-hand) .action-card.face-down,
-#panel-away-team .in-play-hand .action-card.face-down {
-  width: 58px;
-  height: 82px;
-  padding: 0;
-}
-
-#panel-local-team .in-play-hand:not(.playing-hand) .action-card.face-down::after,
-#panel-away-team .in-play-hand .action-card.face-down::after {
-  font-size: 14px;
+  margin: 0 auto;
 }
 
 #right-rail {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
+  min-height: 0;
 }
 
 .rail-team {
@@ -193,18 +177,25 @@ h1 {
 }
 
 .rail-team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  text-align: center;
+}
+
+.rail-team-name {
+  flex-shrink: 0;
 }
 
 .rail-ap-row {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .rail-ap-dots {
@@ -237,20 +228,42 @@ h1 {
   gap: 6px;
 }
 
+.rail-decks .deck {
+  flex: 0 0 auto;
+}
+
 .rail-decks .deck-back {
-  width: 52px;
-  height: 60px;
+  width: 64px;
+  aspect-ratio: 16 / 21;
   font-size: 8px;
   flex-direction: column;
   gap: 2px;
+  padding: 4px;
+  display: flex;
+}
+
+.rail-decks .deck-type {
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  text-align: center;
 }
 
 .rail-decks .deck-team {
   font-size: 8px;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .rail-decks .deck-count {
-  font-size: 8px;
+  font-size: 7px;
+  text-align: center;
+  opacity: 0.7;
 }
 
 #rail-controls {
@@ -381,7 +394,8 @@ h1 {
 
 #match-log {
   width: 100%;
-  max-height: 180px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   background: #0e1710;
   border: 2px solid rgba(255, 255, 255, 0.25);
@@ -446,8 +460,7 @@ h1 {
 }
 
 #benches {
-  display: flex;
-  width: 100%;
+  display: none;
 }
 
 .side-bench {
@@ -702,7 +715,7 @@ h1 {
 
 .ball {
   position: absolute;
-  width: 26%;
+  width: 18.2%;
   aspect-ratio: 1;
   border-radius: 50%;
   left: 50%;
@@ -751,7 +764,7 @@ h1 {
 .player-tooltip {
   display: none;
   position: absolute;
-  bottom: calc(100% + 6px);
+  top: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
   width: 220px;
@@ -761,6 +774,19 @@ h1 {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
   z-index: 100;
   overflow: hidden;
+}
+
+.player-tooltip.in-match-log {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .player-tooltip-header {
@@ -918,10 +944,6 @@ h1 {
   padding-top: 1px;
 }
 
-.player-token:hover .player-tooltip {
-  display: block;
-}
-
 .player-token.selected {
   outline: 3px solid #ffd24d;
   outline-offset: 2px;
@@ -995,12 +1017,15 @@ h1 {
 }
 
 .in-play-hand {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
   justify-content: center;
-  justify-items: center;
-  gap: 8px 12px;
+  align-items: flex-start;
   max-width: 100%;
+  overflow: visible;
+}
+
+.in-play-hand .action-card {
+  margin: 0 -6px;
 }
 
 .hand-fade-overlay {
@@ -1025,6 +1050,11 @@ h1 {
   will-change: transform, opacity;
 }
 
+.action-card.hand-slide {
+  transition: transform 0.4s cubic-bezier(0.22, 0.8, 0.24, 1);
+  will-change: transform;
+}
+
 .played-card-overlay {
   position: fixed;
   inset: 0;
@@ -1046,6 +1076,7 @@ h1 {
 
 @media (prefers-reduced-motion: reduce) {
   .action-card.hand-fly-in,
+  .action-card.hand-slide,
   .hand-fade-overlay .in-play-hand,
   .played-card-clone {
     transition: none;
@@ -1374,10 +1405,7 @@ h1 {
 
 .action-card-tooltip {
   display: none;
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
   width: 200px;
   background: #0d1510;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1392,8 +1420,21 @@ h1 {
   pointer-events: none;
 }
 
-.action-card:hover .action-card-tooltip {
-  display: block;
+.team-effect-tooltip {
+  display: none;
+  position: fixed;
+  max-width: 240px;
+  background: #0d1510;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #e2ece2;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  pointer-events: none;
 }
 
 .action-card.category-offense {
@@ -2158,10 +2199,6 @@ h1 {
 .reward-card:focus-visible {
   outline: 2px solid #ffd24d;
   outline-offset: 2px;
-}
-
-.exhausted-deck .deck-back {
-  width: 90px;
 }
 
 .exhausted-back {
@@ -4228,8 +4265,8 @@ h1 {
 
 /* --- #4 Hand card hover lift + glow --- */
 .in-play-hand .action-card {
-  width: 100%;
-  max-width: 112px;
+  flex: 0 0 110px;
+  width: 110px;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
@@ -4254,8 +4291,6 @@ h1 {
 }
 
 .in-play-hand.playing-hand .action-card {
-  flex: 0 0 88px;
-  margin: 0 -8px;
   transform-origin: 50% 100%;
   transform: rotate(var(--fan-angle, 0deg));
 }
@@ -4659,7 +4694,7 @@ body.screen-shake #board {
 }
 
 .match-effect-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 3000;
   display: flex;

@@ -43,10 +43,6 @@ function setupGame() {
     }
   };
 
-  game.onConsecutiveSkip = () => {
-    humanNotice('Both sides skipped — hands redrawn!');
-  };
-
   game.onTurnStart = () => {
     for (const teamName of Object.keys(TEAMS)) {
       const team = TEAMS[teamName];
@@ -114,13 +110,6 @@ function setupGame() {
     if (holder && TEAMS[holder.team]) {
       game.currentTeam = TEAMS[holder.team];
     }
-  };
-
-  game.onConsecutiveSkip = () => {
-    logMatch(
-      '',
-      'Both teams skipped consecutively — hands discarded and 4 fresh cards dealt to each team.'
-    );
   };
 }
 

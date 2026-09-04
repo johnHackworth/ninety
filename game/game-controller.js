@@ -48,8 +48,8 @@ class GameController {
     this.revealedHand = {};
     this.revealedHandTurn = {};
 
-    this.lastMoveWasSkip = false;
-    this.onConsecutiveSkip = null;
+    this.pendingHandoff = null;
+    this._turnHandAdds = {};
 
     this.ballStasisTurns = 0;
     this._lastBallCell = null;
@@ -94,6 +94,10 @@ class GameController {
                   const clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card);
                   target.push(clone);
                 }
+              }
+              if (!self._suppressCreativity) {
+                const tracked = (self._turnHandAdds[team.name] = self._turnHandAdds[team.name] || []);
+                for (const card of args) tracked.push(card);
               }
               return result;
             };
@@ -496,6 +500,7 @@ class GameController {
     }
 
     if (this.onTurnStart) this.onTurnStart();
+    this._turnHandAdds = {};
   }
 
   recordEvent(event) {
@@ -579,6 +584,10 @@ class GameController {
       team.discardedActions.push(card);
     }
     team.syncHeadsInTheClouds(this.inPlay[team.name]);
+    if (drawn.length > 0) {
+      const tracked = (this._turnHandAdds[team.name] = this._turnHandAdds[team.name] || []);
+      for (const card of drawn) tracked.push(card);
+    }
     return drawn;
   }
 
@@ -598,7 +607,7 @@ class GameController {
     }
   }
 
-  skip(team) {
+  skip(team, options = {}) {
     if (this.finished) return { success: false, reason: 'game over' };
     if (team !== this.currentTeam) return { success: false, reason: 'not this team turn' };
 
@@ -611,45 +620,33 @@ class GameController {
       this.actionPoints[team.name] -= 1;
     }
 
-    if (this.lastMoveWasSkip) {
-      this._applyConsecutiveSkip();
-    } else {
-      this.lastMoveWasSkip = true;
+    const shouldDraw = this.actionPoints[team.name] > 0 && options.draw !== false;
+    if (shouldDraw) {
+      this.drawCards(team, 1);
     }
-    this.nextTeam();
-    this._advancePlay();
+    const gained = shouldDraw ? (this._turnHandAdds[team.name] || []).slice() : [];
+    this._turnHandAdds[team.name] = [];
 
-    return { success: true };
+    if (options.deferSwitch && team.controller.type === 'human' && gained.length > 0) {
+      this.pendingHandoff = { teamName: team.name, drawn: gained, handoffSwitch: true };
+    } else {
+      this.nextTeam();
+      this._advancePlay();
+    }
+
+    return { success: true, drawn: gained };
   }
 
-  _applyConsecutiveSkip() {
-    this.lastMoveWasSkip = false;
-    for (const team of this.teams) {
-      const held = this.heldCards[team.name] || [];
-      for (const action of this.inPlay[team.name] || []) {
-        if (held.includes(action) || action.hold) continue;
-        if (action instanceof InjuryRiskAction) {
-          const candidates = team.currentPlayers.filter((p) => !p.injured);
-          if (candidates.length > 0) {
-            const victim = candidates[Math.floor(Math.random() * candidates.length)];
-            victim.addEffect('injured', Infinity);
-          }
-        }
-        if (action.ephemeral || action.exhaust) {
-          team.exhaustedActions.push(action);
-        } else {
-          team.discardedActions.push(action);
-        }
-      }
-      this.inPlay[team.name] = [];
-      this._wrapInPlayProxies();
-      this.drawCards(team, 4, { routine: true });
-      const mh = this.matchHeldCards[team.name] || [];
-      for (const card of this.inPlay[team.name]) {
-        if (mh.includes(card.name)) card.hold = true;
-      }
+  resolveHandoff() {
+    const handoff = this.pendingHandoff;
+    if (!handoff) return false;
+    this.pendingHandoff = null;
+    if (this.finished) return false;
+    if (handoff.handoffSwitch !== false) {
+      this.nextTeam();
+      this._advancePlay();
     }
-    if (this.onConsecutiveSkip) this.onConsecutiveSkip();
+    return true;
   }
 
   _attributeActor(team, options) {
@@ -750,8 +747,6 @@ class GameController {
       team.availableActions.push({ ...action });
     }
 
-    this.lastMoveWasSkip = false;
-
     const isComboExtra = (this.comboExtraPlays[team.name] || 0) > 0;
     if (isComboExtra) {
       this.comboExtraPlays[team.name] -= 1;
@@ -762,14 +757,26 @@ class GameController {
       if (options.nextTeam && !this.finished) this.currentTeam = options.nextTeam;
     } else if (options.noSwitch || isComboExtra) {
       // keep the current team on the ball: play another card without handing over the turn
+      const comboGained = (this._turnHandAdds[team.name] || []).slice();
+      this._turnHandAdds[team.name] = [];
+      if (comboGained.length > 0 && isComboExtra && !options.noSwitch && team.controller.type === 'human') {
+        this.pendingHandoff = { teamName: team.name, drawn: comboGained, handoffSwitch: false };
+      }
     } else if (
       team.hasTeamEffect('relentlessMomentum') &&
       !this.firstPlayedThisTurn[team.name]
     ) {
       this.firstPlayedThisTurn[team.name] = true;
+      this._turnHandAdds[team.name] = [];
     } else {
-      this.nextTeam();
-      this._advancePlay();
+      const gained = (this._turnHandAdds[team.name] || []).slice();
+      this._turnHandAdds[team.name] = [];
+      if (gained.length > 0 && team.controller.type === 'human') {
+        this.pendingHandoff = { teamName: team.name, drawn: gained, handoffSwitch: true };
+      } else {
+        this.nextTeam();
+        this._advancePlay();
+      }
     }
 
     if (team.hasTeamEffect('squadDepth')) {
