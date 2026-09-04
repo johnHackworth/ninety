@@ -11,7 +11,33 @@ for (let y = 0; y < HEIGHT; y++) {
     cell.className = 'cell';
     cell.dataset.x = x;
     cell.dataset.y = y;
+    if (x >= WIDTH - 2) cell.classList.add('shooting-zone');
     pitch.appendChild(cell);
+  }
+}
+
+const pitchWrapper = document.getElementById('pitch-wrapper');
+if (pitchWrapper) {
+  const colTicks = document.createElement('div');
+  colTicks.className = 'column-ticks';
+  for (let x = 0; x < WIDTH; x++) {
+    const tick = document.createElement('div');
+    tick.className = 'column-tick';
+    tick.textContent = String(x);
+    colTicks.appendChild(tick);
+  }
+  pitchWrapper.insertBefore(colTicks, pitch);
+
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = WIDTH - 2; x < WIDTH; x++) {
+      const cellEl = pitch.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+      if (!cellEl) continue;
+      if (y !== Math.floor(HEIGHT / 2)) continue;
+      const label = document.createElement('div');
+      label.className = 'shooting-zone-label';
+      label.textContent = 'SHOOT';
+      cellEl.appendChild(label);
+    }
   }
 }
 
@@ -39,9 +65,10 @@ let ball = null;
 let matchState = null;
 let benchSlots = null;
 let panelSlots = null;
-let deckSlots = null;
+let railSlots = null;
 let handSlots = null;
-let pointSlots = null;
+let railPointSlots = null;
+let railDeckSlots = null;
 let game = null;
 let gameOverModalShown = false;
 let noticeOverlayActive = false;
@@ -535,19 +562,35 @@ function ensurePanelStructure(teamName) {
   teamHeader.textContent = team.name;
   panel.appendChild(teamHeader);
 
-  const decks = document.createElement('div');
-  decks.className = 'panel-decks';
-  panel.appendChild(decks);
-
-  const points = document.createElement('div');
-  points.className = 'panel-points';
-  panel.appendChild(points);
-
   const hand = document.createElement('div');
   hand.className = 'panel-hand';
   panel.appendChild(hand);
 
   return panel;
+}
+
+function ensureRailStructure(teamName) {
+  const rail = railSlots[teamName];
+  if (!rail || rail.dataset.ready) return rail;
+  rail.dataset.ready = '1';
+
+  const team = TEAMS[teamName];
+
+  const header = document.createElement('div');
+  header.className = 'rail-team-header';
+  header.style.color = team.primaryColor;
+  header.textContent = team.name;
+  rail.appendChild(header);
+
+  const points = document.createElement('div');
+  points.className = 'rail-points';
+  rail.appendChild(points);
+
+  const decks = document.createElement('div');
+  decks.className = 'rail-decks';
+  rail.appendChild(decks);
+
+  return rail;
 }
 
 
@@ -773,7 +816,7 @@ function renderExhaustedDeck(team) {
 function renderDecks() {
   for (const teamName of Object.keys(TEAMS)) {
     const team = TEAMS[teamName];
-    const decksEl = deckSlots[teamName];
+    const decksEl = railDeckSlots && railDeckSlots[teamName];
     if (!decksEl) continue;
     decksEl.innerHTML = '';
     decksEl.appendChild(renderActionDeck(team));
@@ -786,7 +829,7 @@ function renderDecks() {
 function renderPoints() {
   for (const teamName of Object.keys(TEAMS)) {
     const team = TEAMS[teamName];
-    const pointsEl = pointSlots && pointSlots[teamName];
+    const pointsEl = railPointSlots && railPointSlots[teamName];
     if (!pointsEl) continue;
     pointsEl.innerHTML = '';
 
@@ -813,43 +856,68 @@ function renderPoints() {
       pointsEl.appendChild(teamEffectsEl);
     }
 
+    const apRow = document.createElement('div');
+    apRow.className = 'rail-ap-row';
+
     const label = document.createElement('span');
     label.className = 'panel-team-name';
     label.style.color = team.primaryColor;
     label.textContent = isCurrent ? 'PLAYING' : '';
 
-    const stars = document.createElement('span');
-    stars.className = `panel-stars${isCurrent ? ' current' : ''}`;
-    stars.title = `${game.actionPoints[teamName]}/${game.pointsPerTurn} action points left`;
-    const maxStars = Math.max(game.actionPoints[teamName], game.pointsPerTurn);
-    for (let i = 0; i < maxStars; i++) {
-      const star = document.createElement('span');
-      star.className = `point-star ${i < game.actionPoints[teamName] ? 'filled' : 'empty'}`;
-      star.textContent = i < game.actionPoints[teamName] ? '★' : '☆';
-      stars.appendChild(star);
+    const dots = document.createElement('div');
+    dots.className = 'rail-ap-dots';
+    dots.title = `${game.actionPoints[teamName]}/${game.pointsPerTurn} action points left`;
+    const maxDots = Math.max(game.actionPoints[teamName], game.pointsPerTurn);
+    for (let i = 0; i < maxDots; i++) {
+      const dot = document.createElement('span');
+      dot.className = `rail-ap-dot ${i < game.actionPoints[teamName] ? 'filled' : 'empty'}`;
+      dots.appendChild(dot);
     }
 
-    pointsEl.appendChild(label);
-    pointsEl.appendChild(stars);
+    apRow.appendChild(label);
+    apRow.appendChild(dots);
+    pointsEl.appendChild(apRow);
+  }
+}
 
-    if (isCurrent && !game.finished && !hasActivePending() && !deferredPlayActive) {
-      const hasPoints = game.actionPoints[team.name] >= 1;
-      const skipBtn = document.createElement('button');
-      skipBtn.className = 'skip-btn';
-      skipBtn.textContent = hasPoints ? 'Skip round (1 pt)' : 'Skip round (free)';
-      skipBtn.title = hasPoints
-        ? 'End your round without playing any cards. Costs 1 action point. If both teams skip consecutively, both hands are discarded and replaced.'
-        : 'You have no action points left. End your round for free. If both teams skip consecutively, both hands are discarded and replaced.';
-      skipBtn.addEventListener('click', () => {
-        matchState.lastBallMove = null;
-        matchState.lastDribbledPlayer = null;
-        substitutionWindowOpen = false;
-        const result = game.skip(team);
-        if (!result.success) logAlert(result.reason);
-        renderGame();
-      });
-      pointsEl.appendChild(skipBtn);
-    }
+function renderRailControls() {
+  const rail = document.getElementById('rail-controls');
+  if (!rail) return;
+  rail.innerHTML = '';
+
+  const current = game.currentTeam;
+  const minutes = (game.turn - 1) * 5;
+  const clock = document.createElement('div');
+  clock.className = 'rail-clock';
+  clock.textContent = game.finished
+    ? `Full Time · ${minutes}'`
+    : `${game.half === 1 ? '1st' : '2nd'} Half · ${minutes}' · Turn ${game.turn}/${game.maxTurns}`;
+  rail.appendChild(clock);
+
+  const playing = document.createElement('div');
+  playing.className = 'rail-playing';
+  playing.style.color = current ? current.primaryColor : '#fff';
+  playing.textContent = current ? `${current.name} to move` : '';
+  rail.appendChild(playing);
+
+  const isHumanTurn =
+    current && current.controller.type === 'human' && !game.finished && !hasActivePending();
+
+  if (isHumanTurn) {
+    const endBtn = document.createElement('button');
+    endBtn.className = 'rail-end-turn';
+    endBtn.textContent = 'End Turn';
+    endBtn.title = 'End your round without playing any cards. Costs 1 action point if available.';
+    endBtn.addEventListener('click', () => {
+      const team = game.currentTeam;
+      matchState.lastBallMove = null;
+      matchState.lastDribbledPlayer = null;
+      substitutionWindowOpen = false;
+      const result = game.skip(team);
+      if (!result.success) logAlert(result.reason);
+      renderGame();
+    });
+    rail.appendChild(endBtn);
   }
 }
 
@@ -1066,6 +1134,9 @@ function renderInPlay() {
 
     const hand = document.createElement('div');
     hand.className = 'in-play-hand';
+    if (isCurrent && team.controller.type === 'human') {
+      hand.classList.add('playing-hand');
+    }
 
     const shithouseryTarget = pendingShithousery && pendingShithousery.team !== team;
     const holdTargeting = pendingHold && pendingHold.team === team;
@@ -1381,6 +1452,8 @@ function refreshCellLayout(cellEl) {
     tokens[0].classList.remove('half-left', 'half-right');
     tokens[0].classList.add('alone');
   }
+  const teams = new Set(tokens.map((el) => el._token.player.team));
+  cellEl.classList.toggle('duel', tokens.length >= 2 && teams.size >= 2);
 }
 
 function nearestEmptyCellFor(player, x, y) {
@@ -1959,7 +2032,8 @@ function captureHandFadeOut() {
 
 function flyInHands() {
   for (const teamName of Object.keys(TEAMS)) {
-    const deckEl = deckSlots[teamName].querySelector('.deck-back');
+    const railEl = railDeckSlots && railDeckSlots[teamName];
+    const deckEl = railEl ? railEl.querySelector('.deck-back') : null;
     const inPlayEl = handSlots[teamName];
     const cards = [...inPlayEl.querySelectorAll('.in-play-hand .action-card')];
     if (!deckEl || cards.length === 0) continue;
@@ -2049,6 +2123,7 @@ function renderGame() {
   }
   renderGameStatus();
   renderPoints();
+  renderRailControls();
   renderInPlay();
   syncFreeKickProtectionHighlight();
   renderDecks();

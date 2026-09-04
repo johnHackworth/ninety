@@ -21,29 +21,30 @@ class PlayerToken {
       .toUpperCase();
   }
 
+  roleLetter(position) {
+    return {
+      GK: 'GK',
+      DF: 'D',
+      MF: 'M',
+      FW: 'F',
+    }[position] || position.slice(0, 1);
+  }
+
   createEl() {
     const el = document.createElement('div');
     el.className = 'player-token';
     el.style.backgroundColor = this.teamColor;
-    el.style.setProperty('--shorts', this.shorts);
 
-    const avatar = document.createElement('div');
-    avatar.className = 'player-token-avatar';
+    const role = document.createElement('div');
+    role.className = 'player-token-role';
+    role.textContent = this.roleLetter(this.player.position);
 
-    if (this.player.imageUrl) {
-      const img = document.createElement('img');
-      img.src = this.player.imageUrl;
-      img.alt = this.player.name;
-      avatar.appendChild(img);
-    } else {
-      avatar.textContent = this.player.position;
-    }
+    el.appendChild(role);
 
     const name = document.createElement('div');
     name.className = 'player-token-name';
     name.textContent = this.player.name;
 
-    el.appendChild(avatar);
     el.appendChild(name);
 
     if (this.player.isStar) {

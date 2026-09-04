@@ -246,7 +246,7 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
     ball = null;
   }
   for (const el of pitch.querySelectorAll('.player-token')) el.remove();
-  for (const el of document.querySelectorAll('.side-panel, .side-bench')) {
+  for (const el of document.querySelectorAll('.hand-panel, .rail-team, .side-bench, #scoreboard')) {
     el.innerHTML = '';
     delete el.dataset.ready;
   }
@@ -546,17 +546,20 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
 
   for (const teamName of Object.keys(TEAMS)) ensurePanelStructure(teamName);
 
-  deckSlots = Object.fromEntries(
-    Object.keys(TEAMS).map((name) => [
-      name,
-      panelSlots[name].querySelector('.panel-decks'),
-    ])
+  railSlots = Object.fromEntries(
+    Object.keys(TEAMS).map((name) => [name, document.getElementById(`rail-${slotId('panel', name).replace('panel-', '')}`)])
   );
+
+  for (const teamName of Object.keys(TEAMS)) ensureRailStructure(teamName);
+
   handSlots = Object.fromEntries(
     Object.keys(TEAMS).map((name) => [name, panelSlots[name].querySelector('.panel-hand')])
   );
-  pointSlots = Object.fromEntries(
-    Object.keys(TEAMS).map((name) => [name, panelSlots[name].querySelector('.panel-points')])
+  railPointSlots = Object.fromEntries(
+    Object.keys(TEAMS).map((name) => [name, railSlots[name] && railSlots[name].querySelector('.rail-points')])
+  );
+  railDeckSlots = Object.fromEntries(
+    Object.keys(TEAMS).map((name) => [name, railSlots[name] && railSlots[name].querySelector('.rail-decks')])
   );
 
   setupGame();
@@ -719,7 +722,7 @@ function simulateMatch(homeName, awayName) {
 
     const pitchEl2 = document.getElementById('pitch');
     const handEls2 = document.querySelectorAll('.in-play-hand');
-    const panels2 = document.querySelectorAll('.side-panel, .side-bench');
+    const panels2 = document.querySelectorAll('.hand-panel, .side-bench, #scoreboard');
     if (pitchEl2) pitchEl2.style.display = 'none';
     handEls2.forEach((el) => (el.style.display = 'none'));
     panels2.forEach((el) => (el.style.display = 'none'));
@@ -775,7 +778,7 @@ function simulateMatch(homeName, awayName) {
     simulationMode = false;
     const pitchEl = document.getElementById('pitch');
     const handEls = document.querySelectorAll('.in-play-hand');
-    const panels = document.querySelectorAll('.side-panel, .side-bench');
+    const panels = document.querySelectorAll('.hand-panel, .side-bench, #scoreboard');
     if (pitchEl) pitchEl.style.display = '';
     handEls.forEach((el) => (el.style.display = ''));
     panels.forEach((el) => (el.style.display = ''));
