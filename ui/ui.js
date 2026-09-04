@@ -11,7 +11,33 @@ for (let y = 0; y < HEIGHT; y++) {
     cell.className = 'cell';
     cell.dataset.x = x;
     cell.dataset.y = y;
+    if (x >= WIDTH - 2) cell.classList.add('shooting-zone');
     pitch.appendChild(cell);
+  }
+}
+
+const pitchWrapper = document.getElementById('pitch-wrapper');
+if (pitchWrapper) {
+  const colTicks = document.createElement('div');
+  colTicks.className = 'column-ticks';
+  for (let x = 0; x < WIDTH; x++) {
+    const tick = document.createElement('div');
+    tick.className = 'column-tick';
+    tick.textContent = String(x);
+    colTicks.appendChild(tick);
+  }
+  pitchWrapper.insertBefore(colTicks, pitch);
+
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = WIDTH - 2; x < WIDTH; x++) {
+      const cellEl = pitch.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+      if (!cellEl) continue;
+      if (y !== Math.floor(HEIGHT / 2)) continue;
+      const label = document.createElement('div');
+      label.className = 'shooting-zone-label';
+      label.textContent = 'SHOOT';
+      cellEl.appendChild(label);
+    }
   }
 }
 
@@ -39,9 +65,10 @@ let ball = null;
 let matchState = null;
 let benchSlots = null;
 let panelSlots = null;
-let deckSlots = null;
+let railSlots = null;
 let handSlots = null;
-let pointSlots = null;
+let railPointSlots = null;
+let railDeckSlots = null;
 let game = null;
 let gameOverModalShown = false;
 let noticeOverlayActive = false;
@@ -535,19 +562,45 @@ function ensurePanelStructure(teamName) {
   teamHeader.textContent = team.name;
   panel.appendChild(teamHeader);
 
-  const decks = document.createElement('div');
-  decks.className = 'panel-decks';
-  panel.appendChild(decks);
-
-  const points = document.createElement('div');
-  points.className = 'panel-points';
-  panel.appendChild(points);
-
   const hand = document.createElement('div');
   hand.className = 'panel-hand';
   panel.appendChild(hand);
 
   return panel;
+}
+
+function ensureRailStructure(teamName) {
+  const rail = railSlots[teamName];
+  if (!rail || rail.dataset.ready) return rail;
+  rail.dataset.ready = '1';
+
+  const team = TEAMS[teamName];
+
+  const header = document.createElement('div');
+  header.className = 'rail-team-header';
+  header.style.color = team.primaryColor;
+
+  const nameEl = document.createElement('span');
+  nameEl.className = 'rail-team-name';
+  nameEl.textContent = team.name;
+  header.appendChild(nameEl);
+
+  const apRow = document.createElement('div');
+  apRow.className = 'rail-ap-row';
+  apRow.dataset.team = teamName;
+  header.appendChild(apRow);
+
+  rail.appendChild(header);
+
+  const points = document.createElement('div');
+  points.className = 'rail-points';
+  rail.appendChild(points);
+
+  const decks = document.createElement('div');
+  decks.className = 'rail-decks';
+  rail.appendChild(decks);
+
+  return rail;
 }
 
 
@@ -573,22 +626,17 @@ function bindCardTooltip(card, tooltip) {
     if (!rect.width && !rect.height) return;
     tooltip.style.display = 'block';
     tooltip.style.position = 'fixed';
-    tooltip.style.left = rect.left + rect.width / 2 + 'px';
-    tooltip.style.top = 'auto';
-    tooltip.style.bottom = 'auto';
-    tooltip.style.transform = 'translate(-50%, -100%)';
+    tooltip.style.left = '0';
+    tooltip.style.top = '0';
+    tooltip.style.transform = 'none';
     const tRect = tooltip.getBoundingClientRect();
-    let top = rect.top - 10;
-    let left = rect.left + rect.width / 2;
-    if (tRect.height > 0 && top - tRect.height < 8) {
+    let top = rect.top - tRect.height - 10;
+    let left = rect.left + rect.width / 2 - tRect.width / 2;
+    if (top < 8) {
       top = rect.bottom + 10;
-      tooltip.style.transform = 'translate(-50%, 0)';
     }
     const maxLeft = window.innerWidth - 8;
-    if (window.innerWidth > 0) {
-      const half = tRect.width ? tRect.width / 2 : 100;
-      left = Math.max(8 + half, Math.min(maxLeft - half, left));
-    }
+    left = Math.max(8, Math.min(maxLeft - tRect.width, left));
     tooltip.style.top = top + 'px';
     tooltip.style.left = left + 'px';
   };
@@ -598,6 +646,44 @@ function bindCardTooltip(card, tooltip) {
   card.addEventListener('mouseenter', show);
   card.addEventListener('mouseleave', hide);
   card.addEventListener('click', hide);
+}
+
+function bindTeamEffectTooltip(el, description, extraText, turns) {
+  const tooltip = document.createElement('div');
+  tooltip.className = 'team-effect-tooltip';
+  document.body.appendChild(tooltip);
+
+  let content = description;
+  if (extraText) content += ` ${extraText}`;
+  if (turns !== Infinity && turns != null) content += ` (${turns} turn${turns === 1 ? '' : 's'} remaining)`;
+  tooltip.textContent = content;
+
+  let hideTimer = null;
+
+  const show = () => {
+    clearTimeout(hideTimer);
+    const rect = el.getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+    tooltip.style.display = 'block';
+    tooltip.style.position = 'fixed';
+    tooltip.style.left = '0';
+    tooltip.style.top = '0';
+    tooltip.style.transform = 'none';
+    const tRect = tooltip.getBoundingClientRect();
+    let top = rect.top - tRect.height - 8;
+    let left = rect.left + rect.width / 2 - tRect.width / 2;
+    if (top < 8) top = rect.bottom + 8;
+    left = Math.max(8, Math.min(window.innerWidth - 8 - tRect.width, left));
+    tooltip.style.top = top + 'px';
+    tooltip.style.left = left + 'px';
+  };
+  const hide = () => {
+    hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
+  };
+  el.addEventListener('mouseenter', show);
+  el.addEventListener('mouseleave', hide);
+  tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  tooltip.addEventListener('mouseleave', hide);
 }
 
 function createActionCard(action) {
@@ -620,6 +706,7 @@ function createActionCard(action) {
   tooltip.className = 'action-card-tooltip';
   tooltip.textContent = action.description;
   bindCardTooltip(card, tooltip);
+  document.body.appendChild(tooltip);
 
   if (!isGoalkeeping) {
     const cost = document.createElement('span');
@@ -631,7 +718,6 @@ function createActionCard(action) {
 
   card.appendChild(name);
   card.appendChild(desc);
-  card.appendChild(tooltip);
 
   if (action.exhaust) {
     const exhaust = document.createElement('div');
@@ -673,15 +759,15 @@ function renderActionDeck(team) {
   back.className = 'deck-back';
   back.style.backgroundColor = team.primaryColor;
 
-  const teamLabel = document.createElement('span');
-  teamLabel.className = 'deck-team';
-  teamLabel.textContent = team.name;
+  const typeLabel = document.createElement('span');
+  typeLabel.className = 'deck-type';
+  typeLabel.textContent = 'playable';
 
   const countLabel = document.createElement('span');
   countLabel.className = 'deck-count';
-  countLabel.textContent = `${team.availableActions.length} cards`;
+  countLabel.textContent = String(team.availableActions.length);
 
-  back.appendChild(teamLabel);
+  back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
   const cards = document.createElement('div');
@@ -708,15 +794,15 @@ function renderGoalkeepingDeck(team) {
   back.className = 'deck-back gk-back';
   back.style.backgroundColor = team.reserveColor;
 
-  const teamLabel = document.createElement('span');
-  teamLabel.className = 'deck-team';
-  teamLabel.textContent = 'Goalkeeping';
+  const typeLabel = document.createElement('span');
+  typeLabel.className = 'deck-type';
+  typeLabel.textContent = 'gk';
 
   const countLabel = document.createElement('span');
   countLabel.className = 'deck-count';
-  countLabel.textContent = `${team.availableGoalkeeping.length} cards`;
+  countLabel.textContent = String(team.availableGoalkeeping.length);
 
-  back.appendChild(teamLabel);
+  back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
   const cards = document.createElement('div');
@@ -743,15 +829,15 @@ function renderExhaustedDeck(team) {
   back.className = 'deck-back exhausted-back';
   back.style.backgroundColor = '#4a4a52';
 
-  const teamLabel = document.createElement('span');
-  teamLabel.className = 'deck-team';
-  teamLabel.textContent = 'Exhausted';
+  const typeLabel = document.createElement('span');
+  typeLabel.className = 'deck-type';
+  typeLabel.textContent = 'exhaust';
 
   const countLabel = document.createElement('span');
   countLabel.className = 'deck-count';
-  countLabel.textContent = `${team.exhaustedActions.length} cards`;
+  countLabel.textContent = String(team.exhaustedActions.length);
 
-  back.appendChild(teamLabel);
+  back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
   const cards = document.createElement('div');
@@ -773,7 +859,7 @@ function renderExhaustedDeck(team) {
 function renderDecks() {
   for (const teamName of Object.keys(TEAMS)) {
     const team = TEAMS[teamName];
-    const decksEl = deckSlots[teamName];
+    const decksEl = railDeckSlots && railDeckSlots[teamName];
     if (!decksEl) continue;
     decksEl.innerHTML = '';
     decksEl.appendChild(renderActionDeck(team));
@@ -786,9 +872,9 @@ function renderDecks() {
 function renderPoints() {
   for (const teamName of Object.keys(TEAMS)) {
     const team = TEAMS[teamName];
-    const pointsEl = pointSlots && pointSlots[teamName];
-    if (!pointsEl) continue;
-    pointsEl.innerHTML = '';
+    const pointsEl = railPointSlots && railPointSlots[teamName];
+    const apRow = railSlots[teamName] && railSlots[teamName].querySelector('.rail-ap-row');
+    if (!apRow) continue;
 
     const isCurrent = team === game.currentTeam;
 
@@ -798,58 +884,84 @@ function renderPoints() {
       const b = document.createElement('span');
       b.className = 'team-effect-badge team-artifact';
       b.textContent = `${artifact.char} ${artifact.label}`;
-      b.title = `${artifact.description}${artifact.description.endsWith('.') ? '' : '.'} Always active.`;
+      bindTeamEffectTooltip(b, artifact.description, 'Always active', Infinity);
       teamEffectsEl.appendChild(b);
     }
     for (const objectEffect of team.teamEffectObjects || []) {
       const badge = document.createElement('span');
       badge.className = 'team-effect-badge';
       badge.textContent = `${objectEffect.char} ${objectEffect.label}`;
-      badge.title = objectEffect.explanation;
+      bindTeamEffectTooltip(badge, objectEffect.explanation, null, objectEffect.turns);
       if (objectEffect.turns !== Infinity) badge.textContent += ` (${objectEffect.turns}t)`;
       teamEffectsEl.appendChild(badge);
     }
-    if (teamEffectsEl.childElementCount > 0) {
-      pointsEl.appendChild(teamEffectsEl);
+
+    if (pointsEl) {
+      pointsEl.innerHTML = '';
+      if (teamEffectsEl.childElementCount > 0) {
+        pointsEl.appendChild(teamEffectsEl);
+      }
     }
+
+    apRow.innerHTML = '';
 
     const label = document.createElement('span');
     label.className = 'panel-team-name';
     label.style.color = team.primaryColor;
     label.textContent = isCurrent ? 'PLAYING' : '';
+    apRow.appendChild(label);
 
-    const stars = document.createElement('span');
-    stars.className = `panel-stars${isCurrent ? ' current' : ''}`;
-    stars.title = `${game.actionPoints[teamName]}/${game.pointsPerTurn} action points left`;
-    const maxStars = Math.max(game.actionPoints[teamName], game.pointsPerTurn);
-    for (let i = 0; i < maxStars; i++) {
-      const star = document.createElement('span');
-      star.className = `point-star ${i < game.actionPoints[teamName] ? 'filled' : 'empty'}`;
-      star.textContent = i < game.actionPoints[teamName] ? '★' : '☆';
-      stars.appendChild(star);
+    const dots = document.createElement('div');
+    dots.className = 'rail-ap-dots';
+    dots.title = `${game.actionPoints[teamName]}/${game.pointsPerTurn} action points left`;
+    const maxDots = Math.max(game.actionPoints[teamName], game.pointsPerTurn);
+    for (let i = 0; i < maxDots; i++) {
+      const dot = document.createElement('span');
+      dot.className = `rail-ap-dot ${i < game.actionPoints[teamName] ? 'filled' : 'empty'}`;
+      dots.appendChild(dot);
     }
+    apRow.appendChild(dots);
+  }
+}
 
-    pointsEl.appendChild(label);
-    pointsEl.appendChild(stars);
+function renderRailControls() {
+  const rail = document.getElementById('rail-controls');
+  if (!rail) return;
+  rail.innerHTML = '';
 
-    if (isCurrent && !game.finished && !hasActivePending() && !deferredPlayActive) {
-      const hasPoints = game.actionPoints[team.name] >= 1;
-      const skipBtn = document.createElement('button');
-      skipBtn.className = 'skip-btn';
-      skipBtn.textContent = hasPoints ? 'Skip round (1 pt)' : 'Skip round (free)';
-      skipBtn.title = hasPoints
-        ? 'End your round without playing any cards. Costs 1 action point. If both teams skip consecutively, both hands are discarded and replaced.'
-        : 'You have no action points left. End your round for free. If both teams skip consecutively, both hands are discarded and replaced.';
-      skipBtn.addEventListener('click', () => {
-        matchState.lastBallMove = null;
-        matchState.lastDribbledPlayer = null;
-        substitutionWindowOpen = false;
-        const result = game.skip(team);
-        if (!result.success) logAlert(result.reason);
-        renderGame();
-      });
-      pointsEl.appendChild(skipBtn);
-    }
+  const current = game.currentTeam;
+
+  const playing = document.createElement('div');
+  playing.className = 'rail-playing';
+  playing.style.color = current ? current.primaryColor : '#fff';
+  playing.textContent = current ? `${current.name} to move` : '';
+  rail.appendChild(playing);
+
+  const isHumanTurn =
+    current && current.controller.type === 'human' && !game.finished && !hasActivePending() && !handoffScheduled;
+
+  if (isHumanTurn) {
+    const ap = game.actionPoints[current.name] ?? 0;
+    const isLastAp = ap <= 1;
+    const btnText = isLastAp ? 'End Turn' : 'Skip and Draw';
+
+    const endBtn = document.createElement('button');
+    endBtn.className = 'rail-end-turn';
+    endBtn.textContent = btnText;
+    endBtn.title = isLastAp
+      ? 'End your turn. No action points remain.'
+      : 'Skip your remaining action points and draw a card.';
+    endBtn.addEventListener('click', () => {
+      if (handoffScheduled) return;
+      const team = game.currentTeam;
+      matchState.lastBallMove = null;
+      matchState.lastDribbledPlayer = null;
+      substitutionWindowOpen = false;
+      const result = game.skip(team, { deferSwitch: true });
+      if (!result.success) logAlert(result.reason);
+      renderGame();
+    });
+    rail.appendChild(endBtn);
   }
 }
 
@@ -1040,6 +1152,21 @@ function openSubstitutionModal(team) {
 }
 
 
+function scaleHandToPitch(handEl) {
+  const pitch = document.getElementById('pitch');
+  if (!pitch || !handEl) return;
+  const pitchRect = pitch.getBoundingClientRect();
+  const handRect = handEl.getBoundingClientRect();
+  if (handRect.width > pitchRect.width) {
+    const scale = pitchRect.width / handRect.width;
+    handEl.style.transform = `scale(${scale})`;
+    handEl.style.transformOrigin = 'center top';
+  } else {
+    handEl.style.transform = '';
+    handEl.style.transformOrigin = '';
+  }
+}
+
 function renderInPlay() {
   if (simulationMode) return;
   for (const teamName of Object.keys(TEAMS)) {
@@ -1066,10 +1193,28 @@ function renderInPlay() {
 
     const hand = document.createElement('div');
     hand.className = 'in-play-hand';
+    if (isCurrent && team.controller.type === 'human') {
+      hand.classList.add('playing-hand');
+    }
 
     const shithouseryTarget = pendingShithousery && pendingShithousery.team !== team;
     const holdTargeting = pendingHold && pendingHold.team === team;
+    const handRevealed =
+      (game.revealedHand && game.revealedHand[team.name]) ||
+      (game.revealedHandTurn && game.revealedHandTurn[team.name]);
+    const showHand =
+      isCurrent ||
+      shithouseryTarget ||
+      holdTargeting ||
+      handRevealed ||
+      (substitutionWindowOpen && team.controller.type === 'human');
 
+    if (!showHand) {
+      if (panelSlots && panelSlots[teamName]) panelSlots[teamName].style.display = 'none';
+      continue;
+    }
+
+    if (panelSlots && panelSlots[teamName]) panelSlots[teamName].style.display = '';
     for (const action of game.inPlay[team.name]) {
       const card = createActionCard(action);
       card.__action = action;
@@ -1103,7 +1248,7 @@ function renderInPlay() {
         card.addEventListener('click', () => {
           executeAction(pendingHold.team, pendingHold.action, () => resolveHold(action));
         });
-      } else if ((team.controller.type === 'ai' || !isCurrent) && !isPenaltyCard && !(game.revealedHand && game.revealedHand[team.name]) && !(game.revealedHandTurn && game.revealedHandTurn[team.name])) {
+      } else if (team.controller.type === 'ai' && !isPenaltyCard && !(game.revealedHand && game.revealedHand[team.name]) && !(game.revealedHandTurn && game.revealedHandTurn[team.name])) {
         card.classList.add('face-down');
       } else if (isPending) {
         card.classList.add('active');
@@ -1381,6 +1526,8 @@ function refreshCellLayout(cellEl) {
     tokens[0].classList.remove('half-left', 'half-right');
     tokens[0].classList.add('alone');
   }
+  const teams = new Set(tokens.map((el) => el._token.player.team));
+  cellEl.classList.toggle('duel', tokens.length >= 2 && teams.size >= 2);
 }
 
 function nearestEmptyCellFor(player, x, y) {
@@ -1825,8 +1972,8 @@ function renderPlayerEffects() {
       chip.title = `${effect.label}${effect.turns === Infinity ? ' · whole match' : ` · ${effect.turns} turn(s) left`}\n${effect.explanation}`;
       container.appendChild(chip);
     }
-    if (el._token.renderEffects) el._token.renderEffects();
-    if (el._token.renderStats) el._token.renderStats();
+    if (el._token && el._token.tooltipEl && typeof el._token.renderEffects === 'function') el._token.renderEffects();
+    if (el._token && typeof el._token.renderStats === 'function') el._token.renderStats();
   }
 }
 
@@ -1837,7 +1984,11 @@ const PLAYED_CARD_MOVE_MS = 150;
 const PLAYED_CARD_HOLD_MS = 1000;
 const PLAYED_CARD_FADE_MS = 500;
 
+const HANDOFF_WAIT_MS = 1000;
+
 let deferredPlayActive = false;
+let handoffScheduled = false;
+let handoffCaptured = null;
 let simulationMode = false;
 let substitutionWindowOpen = false;
 let lastSimAction = null;
@@ -1862,6 +2013,7 @@ function executeAction(team, action, work) {
   if (deferredPlayActive) return;
   substitutionWindowOpen = false;
   deferredPlayActive = true;
+  if (game && game._turnHandAdds) game._turnHandAdds[team.name] = [];
 
   if (dogInterruptRoll(team, action)) {
     const playResult = game.playAction(team, action, { noSwitch: true });
@@ -1903,12 +2055,15 @@ function animatePlayedCard(played, sourceRect) {
   const card = createActionCard(played.action);
   card.classList.add('played-card-clone');
 
+  const pitch = document.getElementById('pitch');
+  const pitchRect = pitch ? pitch.getBoundingClientRect() : null;
+
   const width = sourceRect ? sourceRect.width : 112;
   const height = sourceRect ? sourceRect.height : Math.round(width * (7 / 5));
   const startX = sourceRect ? sourceRect.left : window.innerWidth / 2 - width / 2;
   const startY = sourceRect ? sourceRect.top : window.innerHeight * 0.75;
-  const endX = (window.innerWidth - width) / 2;
-  const endY = 48;
+  const endX = pitchRect ? pitchRect.left + pitchRect.width / 2 - width / 2 : (window.innerWidth - width) / 2;
+  const endY = pitchRect ? pitchRect.top + pitchRect.height / 2 - height / 2 : 48;
 
   card.style.left = `${startX}px`;
   card.style.top = `${startY}px`;
@@ -1959,7 +2114,8 @@ function captureHandFadeOut() {
 
 function flyInHands() {
   for (const teamName of Object.keys(TEAMS)) {
-    const deckEl = deckSlots[teamName].querySelector('.deck-back');
+    const railEl = railDeckSlots && railDeckSlots[teamName];
+    const deckEl = railEl ? railEl.querySelector('.deck-back') : null;
     const inPlayEl = handSlots[teamName];
     const cards = [...inPlayEl.querySelectorAll('.in-play-hand .action-card')];
     if (!deckEl || cards.length === 0) continue;
@@ -1998,11 +2154,108 @@ function flyInHands() {
   }
 }
 
+function captureHandPositions(teamName) {
+  const inPlayEl = handSlots && handSlots[teamName];
+  if (!inPlayEl) return [];
+  return [...inPlayEl.querySelectorAll('.in-play-hand .action-card')].map((c) => {
+    const r = c.getBoundingClientRect();
+    return { action: c.__action, left: r.left, top: r.top };
+  });
+}
+
+function flyInDrawnCards(teamName, drawn) {
+  const railEl = railDeckSlots && railDeckSlots[teamName];
+  const deckEl = railEl ? railEl.querySelector('.deck-back') : null;
+  const inPlayEl = handSlots && handSlots[teamName];
+  const allCards = inPlayEl
+    ? [...inPlayEl.querySelectorAll('.in-play-hand .action-card')]
+    : [];
+  const drawnSet = new Set(drawn);
+  const news = allCards.filter((c) => drawnSet.has(c.__action));
+  const olds = allCards.filter((c) => !drawnSet.has(c.__action));
+
+  const captured = handoffCaptured && handoffCaptured.teamName === teamName ? handoffCaptured.cards : null;
+  handoffCaptured = null;
+
+  const animated = [];
+
+  if (captured && olds.length > 0) {
+    for (const card of olds) {
+      const prev = captured.find((p) => p.action === card.__action);
+      if (!prev) continue;
+      const now = card.getBoundingClientRect();
+      const dx = prev.left - now.left;
+      const dy = prev.top - now.top;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+      card.classList.add('hand-slide');
+      card.style.transform = `translate(${dx}px, ${dy}px)`;
+      animated.push(card);
+    }
+  }
+
+  if (!deckEl || news.length === 0) {
+    if (animated.length > 0) {
+      setTimeout(() => {
+        for (const card of animated) {
+          card.style.transform = '';
+        }
+        setTimeout(() => {
+          for (const card of animated) {
+            card.classList.remove('hand-slide');
+            card.style.transform = '';
+          }
+        }, 500);
+      }, 30);
+    }
+    return;
+  }
+
+  const deckRect = deckEl.getBoundingClientRect();
+  const deckX = deckRect.left + deckRect.width / 2;
+  const deckY = deckRect.top + deckRect.height / 2;
+
+  for (const card of news) {
+    const rect = card.getBoundingClientRect();
+    const dx = deckX - (rect.left + rect.width / 2);
+    const dy = deckY - (rect.top + rect.height / 2);
+    card.classList.add('hand-fly-in');
+    card.style.transform = `translate(${dx}px, ${dy}px) scale(0.35)`;
+    card.style.opacity = '0';
+  }
+
+  setTimeout(() => {
+    for (const card of news) {
+      card.offsetHeight;
+    }
+    news.forEach((card, i) => {
+      card.style.transitionDelay = `${Math.min(i, 5) * 45}ms`;
+      card.style.transform = 'translate(0, 0) scale(1)';
+      card.style.opacity = '1';
+    });
+    if (animated.length > 0) {
+      for (const card of animated) {
+        card.style.transform = '';
+      }
+    }
+    setTimeout(() => {
+      for (const card of [...news, ...animated]) {
+        card.classList.remove('hand-fly-in', 'hand-slide');
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.transitionDelay = '';
+      }
+    }, news.length * 45 + 600);
+  }, HAND_FADE_MS);
+}
+
 function showMatchEffectAnimation(effect) {
   if (typeof simulationMode !== 'undefined' && simulationMode) return;
   if (!isHumanGame()) return;
   if (!effect) return;
   if (document.getElementById('match-effect-animation')) return;
+
+  const pitch = document.getElementById('pitch');
+  if (!pitch) return;
 
   const overlay = document.createElement('div');
   overlay.id = 'match-effect-animation';
@@ -2021,7 +2274,7 @@ function showMatchEffectAnimation(effect) {
   overlay.appendChild(tag);
   overlay.appendChild(card);
 
-  document.body.appendChild(overlay);
+  pitch.appendChild(overlay);
   void overlay.offsetWidth;
   overlay.classList.add('show');
 
@@ -2034,6 +2287,13 @@ function showMatchEffectAnimation(effect) {
 function renderGame() {
   if (simulationMode) return;
   if (!panelSlots || !document.getElementById('pitch')) return;
+
+  if (game.pendingHandoff && !handoffCaptured) {
+    handoffCaptured = {
+      teamName: game.pendingHandoff.teamName,
+      cards: captureHandPositions(game.pendingHandoff.teamName),
+    };
+  }
 
   const animateHands =
     Boolean(game.pendingHandAnimation) && !game.halftimePending && !game.finished;
@@ -2049,6 +2309,7 @@ function renderGame() {
   }
   renderGameStatus();
   renderPoints();
+  renderRailControls();
   renderInPlay();
   syncFreeKickProtectionHighlight();
   renderDecks();
@@ -2063,6 +2324,18 @@ function renderGame() {
     else showGameOverModal();
   }
   if (animateHands) flyInHands();
+  if (game.pendingHandoff && !handoffScheduled) {
+    handoffScheduled = true;
+    deferredPlayActive = true;
+    const handoff = game.pendingHandoff;
+    flyInDrawnCards(handoff.teamName, handoff.drawn || []);
+    setTimeout(() => {
+      handoffScheduled = false;
+      deferredPlayActive = false;
+      if (game.pendingHandoff) game.resolveHandoff();
+      renderGame();
+    }, HANDOFF_WAIT_MS);
+  }
   tickAi();
   saveGameState();
 }

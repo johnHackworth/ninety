@@ -125,7 +125,6 @@ const _saveLoad = {
           pointsPerTurn: game.pointsPerTurn,
           finished: game.finished,
           halftimePending: game.halftimePending,
-          lastMoveWasSkip: game.lastMoveWasSkip,
           score: { ...game.score },
           actionPoints: { ...game.actionPoints },
           scorers: game.scorers.map((s) => ({
@@ -297,7 +296,8 @@ const _saveLoad = {
     game.pointsPerTurn = g.pointsPerTurn;
     game.finished = g.finished;
     game.halftimePending = g.halftimePending;
-    game.lastMoveWasSkip = g.lastMoveWasSkip;
+    game.pendingHandoff = null;
+    game._turnHandAdds = {};
     game.score = g.score;
     game.actionPoints = g.actionPoints;
     game.scorers = g.scorers || [];

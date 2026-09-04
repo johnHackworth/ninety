@@ -21,29 +21,30 @@ class PlayerToken {
       .toUpperCase();
   }
 
+  roleLetter(position) {
+    return {
+      GK: 'GK',
+      DF: 'D',
+      MF: 'M',
+      FW: 'F',
+    }[position] || position.slice(0, 1);
+  }
+
   createEl() {
     const el = document.createElement('div');
     el.className = 'player-token';
-    el.style.backgroundColor = this.teamColor;
-    el.style.setProperty('--shorts', this.shorts);
+    el.style.background = `linear-gradient(180deg, ${this.teamColor} 80%, ${this.shorts} 80%)`;
 
-    const avatar = document.createElement('div');
-    avatar.className = 'player-token-avatar';
+    const role = document.createElement('div');
+    role.className = 'player-token-role';
+    role.textContent = this.roleLetter(this.player.position);
 
-    if (this.player.imageUrl) {
-      const img = document.createElement('img');
-      img.src = this.player.imageUrl;
-      img.alt = this.player.name;
-      avatar.appendChild(img);
-    } else {
-      avatar.textContent = this.player.position;
-    }
+    el.appendChild(role);
 
     const name = document.createElement('div');
     name.className = 'player-token-name';
     name.textContent = this.player.name;
 
-    el.appendChild(avatar);
     el.appendChild(name);
 
     if (this.player.isStar) {
@@ -54,7 +55,7 @@ class PlayerToken {
       el.appendChild(star);
     }
 
-    el.appendChild(this.createTooltip());
+    this.createTooltip();
 
     return el;
   }
@@ -63,6 +64,7 @@ class PlayerToken {
     const tooltip = document.createElement('div');
     tooltip.className = 'player-tooltip';
     this.tooltipEl = tooltip;
+    document.body.appendChild(tooltip);
 
     const header = document.createElement('div');
     header.className = 'player-tooltip-header';
@@ -102,14 +104,14 @@ class PlayerToken {
     header.appendChild(heading);
     tooltip.appendChild(header);
 
-    this.renderEffects();
-
     const stats = document.createElement('div');
     stats.className = 'player-tooltip-stats';
     this.statsEl = stats;
     this.renderStats();
-
     tooltip.appendChild(stats);
+
+    this.renderEffects();
+
     return tooltip;
   }
 
@@ -214,6 +216,7 @@ class PlayerToken {
   placeIn(cell, half = 'left') {
     this.el.classList.add(`half-${half}`);
     cell.appendChild(this.el);
+    this.bindHover();
     return this;
   }
 
@@ -223,5 +226,29 @@ class PlayerToken {
 
   deselect() {
     this.el.classList.remove('selected');
+  }
+
+  bindHover() {
+    this.el.addEventListener('mouseenter', () => this.showTooltipInMatchLog());
+    this.el.addEventListener('mouseleave', () => this.hideTooltipInMatchLog());
+  }
+
+  showTooltipInMatchLog() {
+    const matchLog = document.getElementById('match-log');
+    if (!matchLog) return;
+    this.tooltipEl.classList.add('in-match-log');
+    this.tooltipEl.style.display = 'block';
+    matchLog.dataset.originalContent = matchLog.innerHTML;
+    matchLog.innerHTML = '';
+    matchLog.appendChild(this.tooltipEl);
+  }
+
+  hideTooltipInMatchLog() {
+    const matchLog = document.getElementById('match-log');
+    if (!matchLog) return;
+    this.tooltipEl.classList.remove('in-match-log');
+    this.tooltipEl.style.display = 'none';
+    matchLog.innerHTML = matchLog.dataset.originalContent || '';
+    delete matchLog.dataset.originalContent;
   }
 }
