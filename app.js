@@ -1397,26 +1397,15 @@ document.getElementById('tour-cancel').addEventListener('click', cancelTournamen
 document.getElementById('tour-play-next').addEventListener('click', tournamentPlayNextMatch);
 document.getElementById('wc-continue').addEventListener('click', wcContinue);
 document.getElementById('wc-setup-start').addEventListener('click', startWcFromSetup);
-document.getElementById('wc-view-schedule').addEventListener('click', () => {
-  wcStatsView = 'schedule';
-  renderWorldCupView();
+
+// Sidebar navigation
+document.querySelectorAll('.wc-nav-item[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    wcStatsView = btn.dataset.view;
+    renderWorldCupView();
+  });
 });
-document.getElementById('wc-view-fixtures').addEventListener('click', () => {
-  wcStatsView = 'fixtures';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-standings').addEventListener('click', () => {
-  wcStatsView = 'standings';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-top').addEventListener('click', () => {
-  wcStatsView = 'top';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-my-team').addEventListener('click', () => {
-  wcStatsView = 'myTeam';
-  renderWorldCupView();
-});
+
 document.getElementById('wc-save-load').addEventListener('click', openWcSaveLoadModal);
 document.getElementById('wc-back').addEventListener('click', () => {
   wcSimRunning = false;
