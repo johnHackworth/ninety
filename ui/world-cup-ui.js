@@ -11,6 +11,7 @@ let wcExtraHalves = 0;
 let wcEndingShown = false;
 let wcShootout = null;
 let wcStatsView = 'fixtures';
+let wcScheduleMatchday = 1;
 let wcTrainingQueue = [];
 let wcTrainingActive = false;
 let wcTrainingTargetTeam = null;
@@ -1041,52 +1042,62 @@ function wcPhaseTitle() {
 }
 
 function renderWcViewButtons() {
-  for (const [id, view] of [
-    ['wc-view-schedule', 'schedule'],
-    ['wc-view-fixtures', 'fixtures'],
-    ['wc-view-standings', 'standings'],
-    ['wc-view-top', 'top'],
-    ['wc-view-my-team', 'myTeam'],
-  ]) {
-    const btn = document.getElementById(id);
-    if (!btn) continue;
+  const navItems = document.querySelectorAll('.wc-nav-item[data-view]');
+  navItems.forEach(btn => {
+    const view = btn.dataset.view;
     btn.classList.toggle('active', wcStatsView === view);
-  }
+    if (wcStatsView === view) {
+      btn.setAttribute('aria-current', 'true');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
+  });
 }
 
 function renderWorldCupView() {
   if (!worldCup) return;
 
-  worldCupPhaseEl.textContent = wcPhaseTitle();
+  const phaseEl = document.getElementById('wc-phase');
+  if (phaseEl) phaseEl.textContent = wcPhaseTitle();
   renderWcViewButtons();
 
-  worldCupContentEl.innerHTML = '';
+  const contentEl = document.getElementById('world-cup-content');
+  contentEl.innerHTML = '';
+
   if (worldCup.completed) {
     const banner = document.createElement('div');
-    banner.className = 'world-cup-champion';
-    banner.textContent = `🏆 ${worldCup.champion} are World Cup 2026 champions!`;
-    worldCupContentEl.appendChild(banner);
+    banner.className = 'wc-champion-banner';
+    banner.innerHTML = `<span class="wc-champion-icon">🏆</span><span>${worldCup.champion} are World Cup 2026 champions!</span>`;
+    contentEl.appendChild(banner);
   }
 
-  if (wcStatsView === 'schedule') {
-    worldCupContentEl.appendChild(renderWcSchedule());
-  } else if (wcStatsView === 'fixtures') {
-    worldCupContentEl.appendChild(worldCup.phase === 'groups' ? renderWorldCupGroups() : renderWorldCupBracket());
+  let viewEl = null;
+  if (wcStatsView === 'fixtures') {
+    viewEl = renderWcFixturesDashboard();
+  } else if (wcStatsView === 'schedule') {
+    viewEl = renderWcSchedule();
   } else if (wcStatsView === 'standings') {
-    worldCupContentEl.appendChild(renderWcStandings());
+    viewEl = renderWcStandings();
   } else if (wcStatsView === 'top') {
-    worldCupContentEl.appendChild(renderWcTopPlayers());
+    viewEl = renderWcTopPlayers();
   } else if (wcStatsView === 'myTeam') {
-    worldCupContentEl.appendChild(renderWcMyTeam());
+    viewEl = renderWcMyTeam();
+  } else if (wcStatsView === 'knockouts') {
+    viewEl = renderWcKnockoutBracket();
   } else if (worldCup.phase === 'groups') {
-    worldCupContentEl.appendChild(renderWorldCupGroups());
+    viewEl = renderWcFixturesDashboard();
   } else if (worldCup.rounds.length > 0) {
-    worldCupContentEl.appendChild(renderWorldCupBracket());
+    viewEl = renderWcKnockoutBracket();
   }
 
-  const nxt = wcNextMatch(worldCup);
-  wcNextMatchEl.innerHTML = '';
-  if (nxt) wcNextMatchEl.appendChild(renderWcNextMatchCard(nxt));
+  if (viewEl) contentEl.appendChild(viewEl);
+
+  const nextMatchEl = document.getElementById('wc-next-match');
+  if (nextMatchEl) {
+    nextMatchEl.innerHTML = '';
+    const nxt = wcNextMatch(worldCup);
+    if (nxt) nextMatchEl.appendChild(renderWcUpNextCard(nxt));
+  }
 
   // Pre-decide whether the next human match is preceded by a training session,
   // so the Continue label reflects it before the user clicks. The decision is
@@ -1148,6 +1159,232 @@ function renderWorldCupView() {
       worldCup.completed ? 'Tournament Complete' : 'Preparing next stage…'
     );
   }
+}
+
+function renderWcUpNextCard(nxt) {
+  const card = document.createElement('div');
+  card.className = 'wc-upnext-card';
+  const label = nxt.group ? `Group ${nxt.group} · Matchday ${nxt.matchday}` : nxt.round;
+  const homeIsHuman = wcControllerForTeam(nxt.match.home).type === 'human';
+  const awayIsHuman = wcControllerForTeam(nxt.match.away).type === 'human';
+  const isHumanMatch = homeIsHuman || awayIsHuman;
+  
+  card.innerHTML = `
+    <div class="wc-upnext-kicker">${label}</div>
+    <div class="wc-upnext-match">
+      <span class="wc-upnext-team ${homeIsHuman ? 'you' : ''}">${wcTeamName(nxt.match.home)}${homeIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}</span>
+      <span class="wc-upnext-vs">vs</span>
+      <span class="wc-upnext-team ${awayIsHuman ? 'you' : ''}">${wcTeamName(nxt.match.away)}${awayIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}</span>
+    </div>
+    ${isHumanMatch ? '<span class="wc-upnext-tag">Your match</span>' : ''}
+  `;
+  return card;
+}
+
+function renderWcFixturesDashboard() {
+  const wrap = document.createElement('div');
+  wrap.className = 'wc-fixtures-dashboard';
+
+  const humanTeams = TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human');
+  const myTeam = humanTeams[0];
+
+  // Hero row - My Group
+  if (myTeam && worldCup.groups) {
+    const myGroup = worldCup.groups.find(g => g.teams.includes(myTeam));
+    if (myGroup) {
+      const heroCard = document.createElement('section');
+      heroCard.className = 'wc-hero-group';
+      heroCard.innerHTML = `
+        <h2 class="wc-hero-title">Group ${myGroup.name}</h2>
+        <div class="wc-hero-main"></div>
+        <div class="wc-hero-side"></div>
+      `;
+      wrap.appendChild(heroCard);
+
+      // Fill hero main with group table
+      const heroMain = heroCard.querySelector('.wc-hero-main');
+      heroMain.appendChild(renderWcGroupTable(myGroup, myTeam));
+
+      // Fill hero side with qualification panel + squad problems
+      const heroSide = heroCard.querySelector('.wc-hero-side');
+      heroSide.appendChild(renderWcQualificationPanel(myGroup, myTeam));
+      heroSide.appendChild(renderWcSquadProblems(myTeam));
+    }
+  }
+
+  // Other 11 groups in 4-wide grid
+  const otherGroups = worldCup.groups ? worldCup.groups.filter(g => !g.teams.includes(myTeam)) : [];
+  if (otherGroups.length > 0) {
+    const grid = document.createElement('div');
+    grid.className = 'wc-groups-grid';
+    
+    for (const group of otherGroups) {
+      grid.appendChild(renderWcCompactGroup(group));
+    }
+
+    // 12th slot: How you qualify card
+    const qualifyCard = document.createElement('div');
+    qualifyCard.className = 'wc-qualify-card';
+    qualifyCard.innerHTML = `
+      <h3 class="wc-qualify-title">How you qualify</h3>
+      <div class="wc-qualify-body">
+        <p>Top 2 from each group advance to the Round of 32.</p>
+        <p>The 4 best 3rd-placed teams also qualify.</p>
+        <p class="wc-qualify-note">12 groups × 4 teams = 48 teams. 32 reach knockouts.</p>
+      </div>
+    `;
+    grid.appendChild(qualifyCard);
+    wrap.appendChild(grid);
+  }
+
+  // Projected Round of 32
+  if (worldCup.rounds && worldCup.rounds.length > 0) {
+    const r32 = worldCup.rounds.find(r => r.name === 'Round of 32');
+    if (r32) {
+      const projSection = document.createElement('section');
+      projSection.className = 'wc-projected-ko';
+      projSection.innerHTML = `
+        <h2 class="wc-section-title">Projected Round of 32</h2>
+        <p class="wc-proj-note">Seeding TBC — groups still in progress</p>
+        <div class="wc-proj-grid"></div>
+      `;
+      const projGrid = projSection.querySelector('.wc-proj-grid');
+      for (const m of r32.matches) {
+        projGrid.appendChild(renderWcProjectedTie(m));
+      }
+      wrap.appendChild(projSection);
+    }
+  }
+
+  return wrap;
+}
+
+function renderWcGroupTable(group, myTeam) {
+  const standings = computeGroupStandings(group);
+  const table = document.createElement('table');
+  table.className = 'wc-group-table';
+  table.innerHTML = `
+    <thead>
+      <tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
+    </thead>
+    <tbody></tbody>
+  `;
+  const tbody = table.querySelector('tbody');
+  
+  for (let i = 0; i < standings.length; i++) {
+    const row = standings[i];
+    const isMe = row.team === myTeam;
+    const tr = document.createElement('tr');
+    if (isMe) tr.classList.add('you');
+    else if (i < 2) tr.classList.add('qualifies');
+    else if (i === 2) tr.classList.add('third');
+    
+    const statusBadge = isMe ? '<span class="wc-status you">You</span>' : 
+                       i < 2 ? '<span class="wc-status qualify">Qualifying</span>' :
+                       i === 2 ? '<span class="wc-status third">3rd place</span>' :
+                       '<span class="wc-status out">Out</span>';
+    
+    tr.innerHTML = `
+      <td class="wc-pos">${i + 1}</td>
+      <td class="wc-team">${wcTeamName(row.team)} ${statusBadge}</td>
+      <td>${row.P}</td><td>${row.W}</td><td>${row.D}</td><td>${row.L}</td>
+      <td>${row.GF}</td><td>${row.GA}</td>
+      <td class="wc-gd">${row.GD > 0 ? '+' + row.GD : row.GD}</td>
+      <td class="wc-pts">${row.Pts}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  return table;
+}
+
+function renderWcCompactGroup(group) {
+  const standings = computeGroupStandings(group);
+  const card = document.createElement('div');
+  card.className = 'wc-compact-group';
+  
+  const nextMatch = group.matches.find(m => !m.played);
+  const nextLine = nextMatch ? `${wcTeamName(nextMatch.home)} vs ${wcTeamName(nextMatch.away)}` : 'All played';
+  
+  card.innerHTML = `
+    <div class="wc-compact-header">
+      <span class="wc-compact-group-label">Group ${group.name}</span>
+    </div>
+    <div class="wc-compact-table">
+      ${standings.map((row, i) => {
+        const dotClass = i < 2 ? 'qualified' : i === 2 ? 'third' : '';
+        const dot = `<span class="wc-dot ${dotClass}" title="${i < 2 ? 'Qualified' : i === 2 ? '3rd place' : ''}"></span>`;
+        return `<div class="wc-compact-row">${dot}${wcTeamName(row.team)} <span class="wc-compact-pts">${row.Pts} pts</span></div>`;
+      }).join('')}
+    </div>
+    <div class="wc-compact-next">Next: ${nextLine}</div>
+  `;
+  return card;
+}
+
+function renderWcQualificationPanel(group, myTeam) {
+  const standings = computeGroupStandings(group);
+  const myRow = standings.find(r => r.team === myTeam);
+  if (!myRow) return document.createElement('div');
+  
+  const card = document.createElement('div');
+  card.className = 'wc-qual-panel';
+  
+  const lastThree = myRow.form || [];
+  const formDots = lastThree.map(r => `<span class="wc-form-dot ${r === 'W' ? 'win' : r === 'D' ? 'draw' : 'loss'}"></span>`).join('');
+  
+  card.innerHTML = `
+    <h3 class="wc-qual-title">Qualification</h3>
+    <div class="wc-qual-stats">
+      <div class="wc-qual-row"><span>Position</span><strong>${standings.findIndex(r => r.team === myTeam) + 1}</strong></div>
+      <div class="wc-qual-row"><span>Points</span><strong>${myRow.Pts}</strong></div>
+      <div class="wc-qual-row"><span>Last 3</span><div class="wc-form">${formDots}</div></div>
+    </div>
+  `;
+  return card;
+}
+
+function renderWcSquadProblems(teamName) {
+  const team = TEAMS[teamName];
+  if (!team) return document.createElement('div');
+  
+  const problems = [];
+  for (const p of team.squad) {
+    if (p.injured) problems.push({ player: p, issue: p.injury || 'Injured', type: 'injury' });
+    else if (p.fatigue && p.fatigue > 70) problems.push({ player: p, issue: `Fatigue ${p.fatigue}%`, type: 'fatigue' });
+    else if (p.doubt) problems.push({ player: p, issue: 'Doubt', type: 'doubt' });
+  }
+  
+  if (problems.length === 0) return document.createElement('div');
+  
+  const card = document.createElement('div');
+  card.className = 'wc-squad-problems';
+  card.innerHTML = `
+    <h3 class="wc-squad-title">Squad problems</h3>
+    <ul class="wc-squad-list">
+      ${problems.map(p => `<li><span class="wc-squad-player">${p.player.name}</span><span class="wc-squad-issue ${p.type}">${p.issue}</span></li>`).join('')}
+    </ul>
+  `;
+  return card;
+}
+
+function renderWcProjectedTie(match) {
+  const homeLabel = match.home === 'TBD' ? 'Winner A' : wcTeamName(match.home);
+  const awayLabel = match.away === 'TBD' ? 'Runner-up B' : wcTeamName(match.away);
+  const homeIsMe = TEAM_NAMES.filter(n => wcControllerForTeam(n).type === 'human').includes(match.home);
+  const awayIsMe = TEAM_NAMES.filter(n => wcControllerForTeam(n).type === 'human').includes(match.away);
+  const isMyPath = homeIsMe || awayIsMe;
+  
+  const card = document.createElement('div');
+  card.className = 'wc-proj-tie' + (isMyPath ? ' my-path' : '');
+  card.innerHTML = `
+    <div class="wc-proj-teams">
+      <span class="wc-proj-team ${homeIsMe ? 'you' : ''}">${homeLabel}${homeIsMe ? ' <span class="wc-you-badge">You</span>' : ''}</span>
+      <span class="wc-proj-vs">vs</span>
+      <span class="wc-proj-team ${awayIsMe ? 'you' : ''}">${awayLabel}${awayIsMe ? ' <span class="wc-you-badge">You</span>' : ''}</span>
+    </div>
+    <span class="wc-proj-tag">${isMyPath ? 'Your path' : 'Seeding TBC'}</span>
+  `;
+  return card;
 }
 
 function wcTeamName(name) {
@@ -1270,154 +1507,100 @@ function renderWcNextMatchCard(nxt) {
 
 function renderWcSchedule() {
   const wrap = document.createElement('div');
-  wrap.className = 'wc-schedule';
+  wrap.className = 'wc-schedule-view';
 
   const humanTeams = TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human');
   if (humanTeams.length === 0) {
-    const empty = document.createElement('p');
-    empty.className = 'wc-schedule-empty';
-    empty.textContent = 'No human teams in this World Cup.';
-    wrap.appendChild(empty);
+    wrap.innerHTML = '<p class="wc-empty">No human teams in this World Cup.</p>';
     return wrap;
   }
 
-  const isHumanMatch = (m) => humanTeams.includes(m.home) || humanTeams.includes(m.away);
+  const myTeam = humanTeams[0];
 
-  const KO_ROUND_NAMES = ['Round of 32', 'Round of 16', 'Quarter-finals', 'Semi-finals', 'Third-place match', 'Final'];
-  const KO_LABEL_START = 73;
-
-  function addRow(type, label, detail, highlight) {
-    const row = document.createElement('div');
-    row.className = 'wc-schedule-row' + (type ? ' ' + type : '') + (highlight ? ' human' : '');
-    row.innerHTML =
-      `<span class="wc-sched-label">${label}</span>` +
-      `<span class="wc-sched-home">${detail}</span>`;
-    wrap.appendChild(row);
-  }
-
-  function addMatchRow(m, label, highlight) {
-    const row = document.createElement('div');
-    row.className = 'wc-schedule-row' + (highlight ? ' human' : '');
-    if (m.played) {
-      const score = m.pen ? `${m.homeScore}-${m.awayScore} (pen ${m.penHome}-${m.penAway})` : `${m.homeScore} - ${m.awayScore}`;
-      row.innerHTML =
-        `<span class="wc-sched-label">${label}</span>` +
-        `<span class="wc-sched-home">${wcTeamName(m.home)}</span>` +
-        `<span class="wc-sched-score">${score}</span>` +
-        `<span class="wc-sched-away">${wcTeamName(m.away)}</span>`;
-    } else {
-      row.innerHTML =
-        `<span class="wc-sched-label">${label}</span>` +
-        `<span class="wc-sched-home">${wcTeamName(m.home)}</span>` +
-        `<span class="wc-sched-score">vs</span>` +
-        `<span class="wc-sched-away">${wcTeamName(m.away)}</span>`;
-    }
-    wrap.appendChild(row);
-  }
-
-  // Collect all group matches
-  const allGroupMatches = [];
+  // Collect all group matches by matchday
+  const matchesByMd = { 1: [], 2: [], 3: [] };
   for (const g of worldCup.groups) {
     for (const m of g.matches) {
-      allGroupMatches.push({ match: m, group: g.name, matchday: m.matchday });
-    }
-  }
-
-  // Collect all knockout matches (existing + placeholder)
-  const allKoMatches = [];
-  const existingRoundNames = new Set();
-  for (const r of worldCup.rounds) {
-    existingRoundNames.add(r.name);
-    for (const m of r.matches) {
-      allKoMatches.push({ match: m, round: r.name });
-    }
-  }
-  // Add placeholder rounds not yet created
-  for (const roundName of KO_ROUND_NAMES) {
-    if (!existingRoundNames.has(roundName)) {
-      const matchCount = roundName === 'Third-place match' || roundName === 'Final' ? 1
-        : roundName === 'Semi-finals' ? 2
-        : roundName === 'Quarter-finals' ? 4
-        : roundName === 'Round of 16' ? 8 : 16;
-      const labelOffset = KO_LABEL_START + allKoMatches.length;
-      for (let i = 0; i < matchCount; i++) {
-        allKoMatches.push({
-          match: { home: 'TBD', away: 'TBD', played: false, label: labelOffset + i },
-          round: roundName,
-        });
+      if (m.matchday >= 1 && m.matchday <= 3) {
+        matchesByMd[m.matchday].push({ ...m, group: g.name });
       }
     }
   }
 
-  // Build unified timeline
-  let cpIdx = 0;
-  let tIdx = 0;
-  let eIdx = 0;
-  let gi = 0;
-  let ki = 0;
+  const md = (wcScheduleMatchday || 1);
+  const mdMatches = matchesByMd[md] || [];
 
-  const totalMatches = allGroupMatches.length + allKoMatches.length;
-  let rendered = 0;
+  // State line
+  const playedCount = mdMatches.filter(m => m.played).length;
+  const totalCount = mdMatches.length;
+  const stateLine = playedCount === totalCount ? 'Complete' : `In progress · ${playedCount} of ${totalCount} played`;
 
-  function peekNextMatchType() {
-    if (gi < allGroupMatches.length) return 'group';
-    if (ki < allKoMatches.length) return 'ko';
-    return null;
+  wrap.innerHTML = `
+    <header class="wc-schedule-header">
+      <h2 class="wc-schedule-title">Schedule · Matchday ${md}</h2>
+      <div class="wc-schedule-state">${stateLine}</div>
+    </header>
+    <div class="wc-schedule-summary">
+      <div class="wc-summary-item"><span>${totalCount}</span> matches</div>
+      <div class="wc-summary-item"><span>${playedCount}</span> played</div>
+      <div class="wc-summary-item"><span>${totalCount - playedCount}</span> to come</div>
+      <div class="wc-summary-item wc-legend"><span class="wc-legend-swatch your"></span>Your match</div>
+    </div>
+    <div class="wc-schedule-md-pills" role="tablist">
+      <button class="wc-md-pill${md === 1 ? ' active' : ''}" data-md="1" role="tab" aria-selected="${md === 1}">Matchday 1</button>
+      <button class="wc-md-pill${md === 2 ? ' active' : ''}" data-md="2" role="tab" aria-selected="${md === 2}">Matchday 2</button>
+      <button class="wc-md-pill${md === 3 ? ' active' : ''}" data-md="3" role="tab" aria-selected="${md === 3}">Matchday 3</button>
+    </div>
+    <div class="wc-schedule-grid" role="tabpanel"></div>
+  `;
+
+  const grid = wrap.querySelector('.wc-schedule-grid');
+  for (const m of mdMatches) {
+    grid.appendChild(renderWcScheduleMatchRow(m, myTeam));
   }
 
-  while (rendered < totalMatches) {
-    // Phase items before each match
-    if (cpIdx < wcCoachPicksQueue.length) {
-      addRow('training', 'Staff Pick', wcCoachPicksQueue[cpIdx].teamName, false);
-      cpIdx++;
-    }
-    if (tIdx < wcTrainingQueue.length) {
-      addRow('training', 'Training', wcTrainingQueue[tIdx].teamName, false);
-      tIdx++;
-    }
-    if (eIdx < wcEventQueue.length) {
-      addRow('event', 'Event', wcEventQueue[eIdx].teamName, false);
-      eIdx++;
-    }
-
-    // Next match
-    const nextType = peekNextMatchType();
-    if (nextType === 'group') {
-      const entry = allGroupMatches[gi++];
-      const label = `Group ${entry.group} · MD${entry.matchday}`;
-      addMatchRow(entry.match, label, isHumanMatch(entry.match));
-      rendered++;
-    } else if (nextType === 'ko') {
-      const entry = allKoMatches[ki++];
-      addMatchRow(entry.match, entry.round, isHumanMatch(entry.match));
-      rendered++;
-    } else {
-      break;
-    }
-  }
-
-  // Drain any remaining phase items after the last match
-  while (cpIdx < wcCoachPicksQueue.length) {
-    addRow('training', 'Staff Pick', wcCoachPicksQueue[cpIdx].teamName, false);
-    cpIdx++;
-  }
-  while (tIdx < wcTrainingQueue.length) {
-    addRow('training', 'Training', wcTrainingQueue[tIdx].teamName, false);
-    tIdx++;
-  }
-  while (eIdx < wcEventQueue.length) {
-    addRow('event', 'Event', wcEventQueue[eIdx].teamName, false);
-    eIdx++;
-  }
-
-  if (rendered === 0 && wcTrainingQueue.length === 0 && wcCoachPicksQueue.length === 0 && wcEventQueue.length === 0) {
-    const empty = document.createElement('p');
-    empty.className = 'wc-schedule-empty';
-    empty.textContent = 'Tournament completed!';
-    wrap.appendChild(empty);
-  }
+  wrap.querySelectorAll('.wc-md-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wcScheduleMatchday = parseInt(btn.dataset.md, 10);
+      renderWorldCupView();
+    });
+  });
 
   return wrap;
+}
+
+function renderWcScheduleMatchRow(m, myTeam) {
+  const row = document.createElement('div');
+  row.className = 'wc-schedule-match';
+  const isMyMatch = m.home === myTeam || m.away === myTeam;
+  if (isMyMatch) row.classList.add('my-match');
+  
+  const homeIsHuman = wcControllerForTeam(m.home).type === 'human';
+  const awayIsHuman = wcControllerForTeam(m.away).type === 'human';
+  
+  const status = m.played ? 'Full time' : 'Kick-off';
+  const timeStr = m.played ? '' : ` · ${m.kickoff || 'TBD'}`;
+  
+  const homeScore = m.played ? m.homeScore : '';
+  const awayScore = m.played ? m.awayScore : '';
+  const homeWon = m.played && m.winner === m.home;
+  const awayWon = m.played && m.winner === m.away;
+  
+  row.innerHTML = `
+    <span class="wc-sched-group-badge">${m.group}</span>
+    <div class="wc-sched-teams">
+      <div class="wc-sched-team ${homeWon ? 'won' : ''} ${awayWon ? 'lost' : ''} ${homeIsHuman ? 'you' : ''}">
+        ${wcTeamName(m.home)}${homeIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}
+        ${m.played ? `<span class="wc-sched-score">${homeScore}</span>` : ''}
+      </div>
+      <div class="wc-sched-team ${awayWon ? 'won' : ''} ${homeWon ? 'lost' : ''} ${awayIsHuman ? 'you' : ''}">
+        ${wcTeamName(m.away)}${awayIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}
+        ${m.played ? `<span class="wc-sched-score">${awayScore}</span>` : ''}
+      </div>
+    </div>
+    <div class="wc-sched-status">${status}${timeStr}</div>
+  `;
+  return row;
 }
 
 function paintWcPitchLines(cell, x, y) {
@@ -3224,34 +3407,199 @@ function renderWcTopTable(container) {
 
 function renderWcTopPlayers() {
   const wrap = document.createElement('div');
-  wrap.className = 'wc-stats-view';
+  wrap.className = 'wc-top-players-view';
 
-  const note = document.createElement('div');
-  note.className = 'wc-stats-note';
-  note.textContent = 'Top 20 players across all World Cup matches, by the selected stat.';
-  wrap.appendChild(note);
+  const categories = [
+    { key: 'goals', label: 'Scorers', unit: 'Goals', icon: '⚽' },
+    { key: 'rating', label: 'Ratings', unit: 'Rating', icon: '⭐' },
+    { key: 'assists', label: 'Assists', unit: 'Assists', icon: '🎯' },
+    { key: 'cleanSheets', label: 'Clean Sheets', unit: 'Shutouts', icon: '🧤' },
+    { key: 'cards', label: 'Cards', unit: 'Cards', icon: '🟨' },
+    { key: 'mySquad', label: 'My Squad', unit: 'Rating', icon: '👥' }
+  ];
 
-  const selector = document.createElement('div');
-  selector.className = 'wc-top-selector';
-  for (const [key, label] of WC_TOP_CATEGORIES) {
+  const humanTeams = TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human');
+  const myTeam = humanTeams[0];
+
+  wrap.innerHTML = `
+    <div class="wc-top-header">
+      <div class="wc-top-tabs" role="tablist"></div>
+    </div>
+    <div class="wc-top-body">
+      <div class="wc-top-main" role="tabpanel"></div>
+      <aside class="wc-top-side"></aside>
+    </div>
+  `;
+
+  const tabsEl = wrap.querySelector('.wc-top-tabs');
+  const mainEl = wrap.querySelector('.wc-top-main');
+  const sideEl = wrap.querySelector('.wc-top-side');
+
+  categories.forEach((cat, idx) => {
     const btn = document.createElement('button');
-    btn.className = 'menu-btn';
-    btn.textContent = label;
-    if (key === wcTopCategory) btn.classList.add('active');
+    btn.className = 'wc-top-tab' + (idx === 0 ? ' active' : '');
+    btn.dataset.key = cat.key;
+    btn.role = 'tab';
+    btn.ariaSelected = idx === 0;
+    btn.textContent = cat.label;
     btn.addEventListener('click', () => {
-      wcTopCategory = key;
-      for (const b of selector.querySelectorAll('button')) b.classList.toggle('active', b === btn);
-      renderWcTopTable(wrap.querySelector('.wc-table-scroll'));
+      wcTopCategory = cat.key;
+      tabsEl.querySelectorAll('.wc-top-tab').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-selected', b === btn);
+      });
+      renderWcTopTable(mainEl, cat, myTeam);
+      renderWcTopSide(sideEl, cat, myTeam);
     });
-    selector.appendChild(btn);
-  }
-  wrap.appendChild(selector);
+    tabsEl.appendChild(btn);
+  });
 
-  const scroll = document.createElement('div');
-  scroll.className = 'wc-table-scroll';
-  wrap.appendChild(scroll);
-  renderWcTopTable(scroll);
+  // Initial render
+  renderWcTopTable(mainEl, categories[0], myTeam);
+  renderWcTopSide(sideEl, categories[0], myTeam);
+
   return wrap;
+}
+
+function renderWcTopTable(container, category, myTeam) {
+  const players = wcTopPlayersAggregate();
+  
+  // Filter for my squad category
+  let sorted = [...players];
+  if (category.key === 'mySquad' && myTeam) {
+    sorted = players.filter(p => p.team === myTeam);
+  } else {
+    sorted.sort((a, b) => (b[category.key] || 0) - (a[category.key] || 0));
+  }
+  
+  const top = sorted.slice(0, 10);
+  const leaderValue = top[0] ? (top[0][category.key] || 0) : 0;
+
+  container.innerHTML = `
+    <table class="wc-top-table">
+      <thead>
+        <tr>
+          <th class="wc-col-rank">#</th>
+          <th class="wc-col-player">Player</th>
+          <th class="wc-col-team">Team</th>
+          <th class="wc-col-bar">Share</th>
+          <th class="wc-col-value">${category.label}</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  `;
+
+  const tbody = container.querySelector('tbody');
+  
+  for (let i = 0; i < top.length; i++) {
+    const p = top[i];
+    const isMe = myTeam && p.team === myTeam;
+    const value = p[category.key] || 0;
+    const sharePct = leaderValue > 0 ? Math.round((value / leaderValue) * 100) : 0;
+    const rankClass = i === 0 ? 'gold' : i < 3 ? 'medal' : '';
+    
+    const posDisc = p.position ? `<span class="wc-pos-disc ${p.position.toLowerCase()}">${p.position}</span>` : '';
+    
+    const tr = document.createElement('tr');
+    if (isMe) tr.classList.add('you');
+    tr.innerHTML = `
+      <td class="wc-col-rank"><span class="wc-rank ${rankClass}">${i + 1}</span></td>
+      <td class="wc-col-player">${posDisc}<span class="wc-player-name">${p.name}</span>${isMe ? ' <span class="wc-you-badge">You</span>' : ''}</td>
+      <td class="wc-col-team"><span class="wc-team-name">${wcTeamName(p.team) || '—'}</span></td>
+      <td class="wc-col-bar"><div class="wc-share-bar"><div class="wc-share-fill" style="width:${sharePct}%"></div></div></td>
+      <td class="wc-col-value">${value} ${category.unit}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderWcTopSide(container, category, myTeam) {
+  const players = wcTopPlayersAggregate();
+  const sorted = [...players].sort((a, b) => (b[category.key] || 0) - (a[category.key] || 0));
+  const leader = sorted[0];
+  
+  let sideContent = '';
+  
+  if (leader) {
+    const note = getLeaderNote(leader, category);
+    sideContent += `
+      <div class="wc-leader-card">
+        <h3 class="wc-leader-title">${category.label} Leader</h3>
+        <div class="wc-leader-info">
+          <span class="wc-leader-name">${leader.name}</span>
+          <span class="wc-leader-team">${wcTeamName(leader.team)}</span>
+          <span class="wc-leader-value">${leader[category.key] || 0} ${category.unit}</span>
+        </div>
+        <p class="wc-leader-note">${note}</p>
+      </div>
+    `;
+  }
+  
+  // Secondary panel per tab
+  if (category.key === 'cards') {
+    sideContent += renderWcSuspensionWatch();
+  } else if (category.key === 'goals') {
+    sideContent += renderWcLeadingScorers();
+  }
+  
+  // My squad best in this category
+  if (myTeam) {
+    const myPlayers = players.filter(p => p.team === myTeam)
+      .sort((a, b) => (b[category.key] || 0) - (a[category.key] || 0))
+      .slice(0, 3);
+    
+    if (myPlayers.length > 0) {
+      sideContent += `
+        <div class="wc-my-best">
+          <h4 class="wc-my-best-title">${myTeam}'s best</h4>
+          <ul class="wc-my-best-list">
+            ${myPlayers.map((p, i) => `<li><span class="wc-my-best-rank">${i + 1}</span><span class="wc-my-best-name">${p.name}</span><span class="wc-my-best-val">${p[category.key] || 0}</span></li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+  }
+  
+  container.innerHTML = sideContent;
+}
+
+function getLeaderNote(player, category) {
+  const notes = {
+    goals: `${player.name} leads the tournament with ${player.goals} goal${player.goals !== 1 ? 's' : ''}.`,
+    rating: `${player.name} averages ${player.rating} per match.`,
+    assists: `${player.name} has created ${player.assists} goal${player.assists !== 1 ? 's' : ''}.`,
+    cleanSheets: `${player.name} kept ${player.cleanSheets} clean sheet${player.cleanSheets !== 1 ? 's' : ''}.`,
+    cards: `${player.name} has picked up ${player.cards} card${player.cards !== 1 ? 's' : ''}.`
+  };
+  return notes[category.key] || '';
+}
+
+function renderWcSuspensionWatch() {
+  // Players with 2+ yellow cards
+  const players = wcTopPlayersAggregate().filter(p => (p.cards || 0) >= 2);
+  if (players.length === 0) return '<div class="wc-side-empty">No suspension risks</div>';
+  
+  return `
+    <div class="wc-side-panel">
+      <h4 class="wc-side-title">Suspension watch</h4>
+      <ul class="wc-side-list">
+        ${players.slice(0, 5).map(p => `<li><span>${p.name}</span><span class="wc-cards-count">${p.cards} cards</span></li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function renderWcLeadingScorers() {
+  const players = wcTopPlayersAggregate().sort((a, b) => (b.goals || 0) - (a.goals || 0)).slice(0, 5);
+  return `
+    <div class="wc-side-panel">
+      <h4 class="wc-side-title">Leading scorers</h4>
+      <ul class="wc-side-list">
+        ${players.map(p => `<li><span>${p.name}</span><span>${p.goals || 0}</span></li>`).join('')}
+      </ul>
+    </div>
+  `;
 }
 
 function wcAwardScore(p) {

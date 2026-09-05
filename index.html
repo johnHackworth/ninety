@@ -289,22 +289,45 @@
     </div>
   </div>
   <div id="world-cup-screen" class="hidden">
-    <div class="world-cup-container">
-      <h1 class="menu-title">World Cup 2026</h1>
-      <p class="menu-subtitle">48 teams · 12 groups · USA, Mexico & Canada</p>
-      <button id="wc-continue" class="wc-continue-btn">Continue</button>
-      <div id="world-cup-phase" class="world-cup-phase"></div>
-      <div id="wc-next-match"></div>
-      <div id="world-cup-actions" class="world-cup-actions">
-        <button id="wc-view-fixtures" class="menu-btn">Fixtures</button>
-        <button id="wc-view-schedule" class="menu-btn">Schedule</button>
-        <button id="wc-view-top" class="menu-btn">Top Players</button>
-        <button id="wc-view-my-team" class="menu-btn">My Team</button>
-        <button id="wc-view-standings" class="menu-btn">Team Stats</button>
-        <button id="wc-save-load" class="menu-btn">Save / Load</button>
-        <button id="wc-back" class="menu-btn">Quit</button>
-      </div>
-      <div id="world-cup-content"></div>
+    <div class="wc-layout">
+      <aside id="wc-sidebar" class="wc-sidebar">
+        <nav class="wc-nav">
+          <button id="wc-nav-fixtures" class="wc-nav-item" data-view="fixtures">
+            <span class="wc-nav-dot"></span>Fixtures
+          </button>
+          <button id="wc-nav-schedule" class="wc-nav-item" data-view="schedule">
+            <span class="wc-nav-dot"></span>Schedule
+          </button>
+          <button id="wc-nav-knockouts" class="wc-nav-item" data-view="knockouts">
+            <span class="wc-nav-dot"></span>Knockouts
+          </button>
+          <button id="wc-nav-top" class="wc-nav-item" data-view="top">
+            <span class="wc-nav-dot"></span>Top Players
+          </button>
+          <button id="wc-nav-my-team" class="wc-nav-item" data-view="myTeam">
+            <span class="wc-nav-dot"></span>My Team
+          </button>
+          <button id="wc-nav-standings" class="wc-nav-item" data-view="standings">
+            <span class="wc-nav-dot"></span>Team Stats
+          </button>
+        </nav>
+        <div class="wc-sidebar-footer">
+          <button id="wc-save-load" class="wc-nav-item wc-nav-quiet">Save / Load</button>
+          <button id="wc-back" class="wc-nav-item wc-nav-quiet">Quit</button>
+        </div>
+      </aside>
+      <main id="wc-main" class="wc-main">
+        <header class="wc-header">
+          <div class="wc-header-left">
+            <h1 class="wc-title">World Cup 2026</h1>
+            <p class="wc-subtitle">48 teams · 12 groups · USA, Mexico & Canada</p>
+          </div>
+          <div id="wc-next-match" class="wc-upnext"></div>
+        </header>
+        <div id="wc-phase" class="wc-phase"></div>
+        <div id="world-cup-content" class="wc-content"></div>
+        <button id="wc-continue" class="wc-continue-btn">Continue</button>
+      </main>
     </div>
   </div>
   <div id="wc-setup-overlay" class="modal-overlay hidden">

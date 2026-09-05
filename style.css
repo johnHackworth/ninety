@@ -2,14 +2,48 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg-deep: #1a1612;
+  --bg-card: #f5efe6;
+  --bg-card-hover: #ebe5da;
+  --bg-pitch: #1d4a2e;
+  --text-primary: #1a1612;
+  --text-secondary: #4a4238;
+  --text-muted: #8a8278;
+  --text-on-dark: #f5efe6;
+  --accent-terracotta: #c85c3a;
+  --accent-terracotta-hover: #b85030;
+  --accent-terracotta-light: #f5e0d8;
+  --accent-sage: #5a8a6a;
+  --accent-sage-hover: #4a7a5a;
+  --accent-sage-light: #d8ebe0;
+  --accent-sage-dark: #2d5a3d;
+  --border-subtle: #d8d0c4;
+  --border-card: #e5ddd3;
+  --shadow-soft: rgba(26, 22, 18, 0.1);
+  --shadow-medium: rgba(26, 22, 18, 0.15);
+  --shadow-strong: rgba(26, 22, 18, 0.25);
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --sidebar-width: 218px;
+  --rail-width: 384px;
+  --font-display: 'Caprasimo', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, sans-serif;
+  --screen-w: 1440px;
+  --screen-h: 900px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&display=swap');
+
 body {
-  font-family: system-ui, sans-serif;
-  background: #1c2b21;
-  color: #e8f0e8;
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-on-dark);
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0;
+  min-height: 100vh;
   padding: 24px 1em;
 }
 
