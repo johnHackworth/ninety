@@ -618,8 +618,10 @@ function nameNeedsCompactFont(name) {
 function bindCardTooltip(card, tooltip) {
   tooltip.style.display = 'none';
   let hideTimer = null;
+  let dismissedByClick = false;
 
   const show = () => {
+    if (dismissedByClick) return;
     clearTimeout(hideTimer);
     if (card.classList.contains('disabled')) {
       tooltip.style.display = 'none';
@@ -646,9 +648,14 @@ function bindCardTooltip(card, tooltip) {
   const hide = () => {
     hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
+  const resetDismissed = () => { dismissedByClick = false; };
   card.addEventListener('mouseenter', show);
   card.addEventListener('mouseleave', hide);
-  card.addEventListener('click', () => { tooltip.style.display = 'none'; });
+  card.addEventListener('click', () => { 
+    dismissedByClick = true;
+    tooltip.style.display = 'none';
+    setTimeout(resetDismissed, 200);
+  });
   tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
   tooltip.addEventListener('mouseleave', hide);
 }
