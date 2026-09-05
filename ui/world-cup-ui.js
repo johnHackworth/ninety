@@ -1092,10 +1092,10 @@ function renderWorldCupView() {
 
   if (viewEl) contentEl.appendChild(viewEl);
 
+  const nxt = wcNextMatch(worldCup);
   const nextMatchEl = document.getElementById('wc-next-match');
   if (nextMatchEl) {
     nextMatchEl.innerHTML = '';
-    const nxt = wcNextMatch(worldCup);
     if (nxt) nextMatchEl.appendChild(renderWcUpNextCard(nxt));
   }
 
