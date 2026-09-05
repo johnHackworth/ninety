@@ -1208,7 +1208,10 @@ function renderWcFixturesDashboard() {
       // Fill hero side with qualification panel + squad problems
       const heroSide = heroCard.querySelector('.wc-hero-side');
       heroSide.appendChild(renderWcQualificationPanel(myGroup, myTeam));
-      heroSide.appendChild(renderWcSquadProblems(myTeam));
+      // Only render squad problems if TEAMS is initialized
+      if (TEAMS && TEAMS[myTeam]) {
+        heroSide.appendChild(renderWcSquadProblems(myTeam));
+      }
     }
   }
 
@@ -1344,6 +1347,7 @@ function renderWcQualificationPanel(group, myTeam) {
 }
 
 function renderWcSquadProblems(teamName) {
+  if (!TEAMS) return document.createElement('div');
   const team = TEAMS[teamName];
   if (!team) return document.createElement('div');
   
