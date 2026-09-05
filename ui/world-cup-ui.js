@@ -10,7 +10,7 @@ let wcHumanPlaying = false;
 let wcExtraHalves = 0;
 let wcEndingShown = false;
 let wcShootout = null;
-let wcStatsView = 'fixtures';
+let wcStatsView = 'overview';
 let wcTrainingQueue = [];
 let wcTrainingActive = false;
 let wcTrainingTargetTeam = null;
@@ -32,6 +32,17 @@ const worldCupPhaseEl = document.getElementById('world-cup-phase');
 const worldCupContentEl = document.getElementById('world-cup-content');
 const wcNextMatchEl = document.getElementById('wc-next-match');
 const worldCupPlayNextBtn = document.getElementById('wc-continue');
+
+const wcBannerEl = document.getElementById('wc-banner');
+const wcTickerEl = document.getElementById('wc-ticker');
+const wcOverviewBodyEl = document.getElementById('wc-overview-body');
+const eventPhaseScreen = document.getElementById('event-phase-screen');
+const eventKickerEl = document.getElementById('event-kicker');
+const eventHeadingEl = document.getElementById('event-heading');
+const eventParagraphEl = document.getElementById('event-paragraph');
+const eventComingUpEl = document.getElementById('event-coming-up');
+const eventOptionsEl = document.getElementById('event-options');
+const eventFooterEl = document.getElementById('event-footer');
 
 // ---- World Cup card pool constants ----
 const WC_CARD_CATEGORIES = {
@@ -239,73 +250,314 @@ function showWorldCupView() {
   openWcSetup();
 }
 
+// ===== WC SETUP SCREEN DATA =====
+const WC_TEAMS_DATA = [
+  // UEFA (13 teams for 2026)
+  { confed: 'UEFA', code: 'ESP', name: 'Spain', flag: '🇪🇸' },
+  { confed: 'UEFA', code: 'FRA', name: 'France', flag: '🇫🇷' },
+  { confed: 'UEFA', code: 'GER', name: 'Germany', flag: '🇩🇪' },
+  { confed: 'UEFA', code: 'ENG', name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { confed: 'UEFA', code: 'POR', name: 'Portugal', flag: '🇵🇹' },
+  { confed: 'UEFA', code: 'NED', name: 'Netherlands', flag: '🇳🇱' },
+  { confed: 'UEFA', code: 'BEL', name: 'Belgium', flag: '🇧🇪' },
+  { confed: 'UEFA', code: 'CRO', name: 'Croatia', flag: '🇭🇷' },
+  { confed: 'UEFA', code: 'SUI', name: 'Switzerland', flag: '🇨🇭' },
+  { confed: 'UEFA', code: 'AUT', name: 'Austria', flag: '🇦🇹' },
+  { confed: 'UEFA', code: 'SCO', name: 'Scotland', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { confed: 'UEFA', code: 'TUR', name: 'Türkiye', flag: '🇹🇷' },
+  { confed: 'UEFA', code: 'CZE', name: 'Czechia', flag: '🇨🇿' },
+  { confed: 'UEFA', code: 'BIH', name: 'Bosnia and Herzegovina', flag: '🇧🇦' },
+  // CONMEBOL (6 teams)
+  { confed: 'CONMEBOL', code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
+  { confed: 'CONMEBOL', code: 'BRA', name: 'Brazil', flag: '🇧🇷' },
+  { confed: 'CONMEBOL', code: 'URU', name: 'Uruguay', flag: '🇺🇾' },
+  { confed: 'CONMEBOL', code: 'COL', name: 'Colombia', flag: '🇨🇴' },
+  { confed: 'CONMEBOL', code: 'ECU', name: 'Ecuador', flag: '🇪🇨' },
+  { confed: 'CONMEBOL', code: 'PAR', name: 'Paraguay', flag: '🇵🇾' },
+  // CAF (9 teams)
+  { confed: 'CAF', code: 'MAR', name: 'Morocco', flag: '🇲🇦' },
+  { confed: 'CAF', code: 'SEN', name: 'Senegal', flag: '🇸🇳' },
+  { confed: 'CAF', code: 'TUN', name: 'Tunisia', flag: '🇹🇳' },
+  { confed: 'CAF', code: 'CMR', name: 'Cameroon', flag: '🇨🇲' },
+  { confed: 'CAF', code: 'GHA', name: 'Ghana', flag: '🇬🇭' },
+  { confed: 'CAF', code: 'CIV', name: 'Ivory Coast', flag: '🇨🇮' },
+  { confed: 'CAF', code: 'ALG', name: 'Algeria', flag: '🇩🇿' },
+  { confed: 'CAF', code: 'EGY', name: 'Egypt', flag: '🇪🇬' },
+  { confed: 'CAF', code: 'RSA', name: 'South Africa', flag: '🇿🇦' },
+  // AFC (8 teams)
+  { confed: 'AFC', code: 'JPN', name: 'Japan', flag: '🇯🇵' },
+  { confed: 'AFC', code: 'KOR', name: 'South Korea', flag: '🇰🇷' },
+  { confed: 'AFC', code: 'IRN', name: 'Iran', flag: '🇮🇷' },
+  { confed: 'AFC', code: 'AUS', name: 'Australia', flag: '🇦🇺' },
+  { confed: 'AFC', code: 'SAU', name: 'Saudi Arabia', flag: '🇸🇦' },
+  { confed: 'AFC', code: 'QAT', name: 'Qatar', flag: '🇶🇦' },
+  { confed: 'AFC', code: 'UZB', name: 'Uzbekistan', flag: '🇺🇿' },
+  { confed: 'AFC', code: 'IRQ', name: 'Iraq', flag: '🇮🇶' },
+  // CONCACAF (6 teams)
+  { confed: 'CONCACAF', code: 'USA', name: 'United States', flag: '🇺🇸' },
+  { confed: 'CONCACAF', code: 'MEX', name: 'Mexico', flag: '🇲🇽' },
+  { confed: 'CONCACAF', code: 'CAN', name: 'Canada', flag: '🇨🇦' },
+  { confed: 'CONCACAF', code: 'CRC', name: 'Costa Rica', flag: '🇨🇷' },
+  { confed: 'CONCACAF', code: 'PAN', name: 'Panama', flag: '🇵🇦' },
+  { confed: 'CONCACAF', code: 'JAM', name: 'Jamaica', flag: '🇯🇲' },
+  // OFC (1 team)
+  { confed: 'OFC', code: 'NZL', name: 'New Zealand', flag: '🇳🇿' },
+];
+
+const CONFED_ORDER = ['UEFA', 'CONMEBOL', 'CAF', 'AFC', 'CONCACAF', 'OFC'];
+const CONFED_LABELS = {
+  UEFA: 'UEFA',
+  CONMEBOL: 'CONMEBOL',
+  CAF: 'CAF',
+  AFC: 'AFC',
+  CONCACAF: 'CONCACAF',
+  OFC: 'OFC',
+};
+
+let wcSetupClaimed = [];
+let wcSetupRandomize = false;
+
 function openWcSetup() {
-  const list = document.getElementById('wc-setup-list');
-  if (list && list.children.length === 0) buildWcSetupList();
-  const overlay = document.getElementById('wc-setup-overlay');
-  if (overlay) overlay.classList.remove('hidden');
+  const screen = document.getElementById('wc-setup-screen');
+  if (!screen) return;
+  wcSetupClaimed = [];
+  wcSetupRandomize = false;
+  renderWcSetupScreen();
+  screen.classList.remove('hidden');
 }
 
-function buildWcSetupList() {
-  const list = document.getElementById('wc-setup-list');
-  if (!list) return;
-  list.innerHTML = '';
-  for (const name of TEAM_NAMES) {
-    const row = document.createElement('div');
-    row.className = 'wc-setup-row';
+function closeWcSetup() {
+  const screen = document.getElementById('wc-setup-screen');
+  if (screen) screen.classList.add('hidden');
+}
 
-    const teamWrap = document.createElement('span');
-    teamWrap.className = 'wc-setup-team-wrap';
-    const teamName = document.createElement('span');
-    teamName.className = 'wc-setup-team';
-    const cls = TEAM_CLASSES[name];
-    try {
-      teamName.style.color = new (cls)().primaryColor;
-    } catch (e) {}
-    const flag = document.createElement('span');
-    flag.className = 'wc-setup-flag';
-    flag.textContent = TEAM_FLAGS[name] || '';
-    teamWrap.appendChild(flag);
-    teamName.textContent = name;
-    teamWrap.appendChild(teamName);
-    row.appendChild(teamWrap);
+function renderWcSetupScreen() {
+  renderWcSetupGroups();
+  renderWcSetupRail();
+  bindWcSetupEvents();
+}
 
-    const select = document.createElement('select');
-    select.className = 'wc-setup-ctrl';
-    select.dataset.team = name;
-    const aiOpt = document.createElement('option');
-    aiOpt.value = 'ai';
-    aiOpt.textContent = 'AI';
-    const humanOpt = document.createElement('option');
-    humanOpt.value = 'human';
-    humanOpt.textContent = 'Human';
-    select.appendChild(aiOpt);
-    select.appendChild(humanOpt);
-    row.appendChild(select);
-    list.appendChild(row);
+function renderWcSetupGroups() {
+  const container = document.getElementById('wc-setup-groups');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Update counter
+  const counter = document.getElementById('wc-setup-counter');
+  if (counter) counter.textContent = wcSetupClaimed.length;
+
+  // Group teams by confederation
+  const teamsByConfed = {};
+  for (const team of WC_TEAMS_DATA) {
+    if (!teamsByConfed[team.confed]) teamsByConfed[team.confed] = [];
+    teamsByConfed[team.confed].push(team);
   }
-  const allAi = document.getElementById('wc-setup-all-ai');
-  if (allAi) {
-    allAi.addEventListener('click', () => {
-      for (const sel of document.querySelectorAll('.wc-setup-ctrl')) sel.value = 'ai';
+
+  for (const confed of CONFED_ORDER) {
+    const teams = teamsByConfed[confed];
+    if (!teams || teams.length === 0) continue;
+
+    const section = document.createElement('section');
+    section.className = 'wc-setup-confed';
+
+    const header = document.createElement('div');
+    header.className = 'wc-setup-confed-header';
+    header.innerHTML = `
+      <span class="wc-setup-confed-label">${CONFED_LABELS[confed]}</span>
+      <span class="wc-setup-confed-rule"></span>
+      <span class="wc-setup-confed-count">${teams.length} teams</span>
+    `;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'wc-setup-team-grid';
+
+    for (const team of teams) {
+      const isClaimed = wcSetupClaimed.includes(team.code);
+      const playerNum = isClaimed ? wcSetupClaimed.indexOf(team.code) + 1 : null;
+
+      const chip = document.createElement('button');
+      chip.className = 'wc-setup-team-chip' + (isClaimed ? ' claimed' : '');
+      chip.dataset.code = team.code;
+      chip.dataset.name = team.name;
+      chip.dataset.confed = team.confed;
+      chip.type = 'button';
+
+      // Flag disc - use emoji with fallback for subdivision flags
+      const flagDisc = document.createElement('div');
+      flagDisc.className = 'wc-setup-flag-disc';
+      // England and Scotland use subdivision flags that may not render
+      const isSubdivision = team.code === 'ENG' || team.code === 'SCO';
+      if (isSubdivision) {
+        flagDisc.innerHTML = `<span class="wc-setup-flag-emoji">${team.flag}</span>`;
+      } else {
+        flagDisc.innerHTML = `<span class="wc-setup-flag-emoji">${team.flag}</span>`;
+      }
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'wc-setup-team-name';
+      nameEl.textContent = team.name;
+
+      const marker = document.createElement('span');
+      marker.className = 'wc-setup-chip-marker';
+      if (isClaimed) {
+        marker.textContent = `P${playerNum}`;
+      } else {
+        marker.textContent = 'AI';
+      }
+
+      chip.appendChild(flagDisc);
+      chip.appendChild(nameEl);
+      chip.appendChild(marker);
+      grid.appendChild(chip);
+    }
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+}
+
+function renderWcSetupRail() {
+  // Update claimed list
+  const claimedEl = document.getElementById('wc-setup-claimed');
+  if (claimedEl) {
+    claimedEl.innerHTML = '';
+    for (let i = 0; i < wcSetupClaimed.length; i++) {
+      const code = wcSetupClaimed[i];
+      const team = WC_TEAMS_DATA.find(t => t.code === code);
+      if (!team) continue;
+
+      const row = document.createElement('div');
+      row.className = 'wc-setup-claimed-row';
+      row.dataset.code = code;
+
+      row.innerHTML = `
+        <img class="wc-setup-claimed-flag" src="https://flagcdn.com/w40/${code.toLowerCase()}.png" alt="${team.name} flag" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="wc-setup-flag-emoji" style="display:none; width:28px; height:28px; border-radius:50%; align-items:center; justify-content:center; font-size:16px;">${TEAM_FLAGS[team.name] || ''}</span>
+        <div class="wc-setup-claimed-info">
+          <div class="wc-setup-claimed-name">${team.name}</div>
+          <div class="wc-setup-claimed-meta">Player ${i + 1} · ${team.confed}</div>
+        </div>
+        <button class="wc-setup-claimed-remove" data-code="${code}" aria-label="Remove ${team.name}">×</button>
+      `;
+      claimedEl.appendChild(row);
+    }
+  }
+
+  // Update empty state visibility
+  const emptyEl = document.getElementById('wc-setup-empty');
+  if (emptyEl) {
+    emptyEl.hidden = wcSetupClaimed.length > 0;
+  }
+
+  // Update randomize toggle
+  const randomizeInput = document.getElementById('wc-setup-randomize');
+  if (randomizeInput) {
+    randomizeInput.checked = wcSetupRandomize;
+  }
+  const captionEl = document.getElementById('wc-setup-toggle-caption');
+  if (captionEl) {
+    captionEl.textContent = wcSetupRandomize ? 'Draw is rerolled — seeding ignored.' : 'The real 2026 draw is used.';
+  }
+
+  // Update footer status
+  const footerStatus = document.getElementById('wc-setup-footer-status');
+  if (footerStatus) {
+    if (wcSetupClaimed.length === 0) {
+      footerStatus.textContent = 'Spectator run — 48 AI teams';
+    } else if (wcSetupClaimed.length === 1) {
+      footerStatus.textContent = 'Single-manager run';
+    } else {
+      footerStatus.textContent = `${wcSetupClaimed.length} managers, hot-seat`;
+    }
+  }
+
+  // Update counter
+  const counter = document.getElementById('wc-setup-counter');
+  if (counter) counter.textContent = wcSetupClaimed.length;
+}
+
+function bindWcSetupEvents() {
+  // Team chip clicks
+  document.querySelectorAll('.wc-setup-team-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const code = chip.dataset.code;
+      const idx = wcSetupClaimed.indexOf(code);
+      if (idx >= 0) {
+        // Unclaim
+        wcSetupClaimed.splice(idx, 1);
+      } else {
+        // Claim (max reasonable limit, but don't enforce hard limit)
+        wcSetupClaimed.push(code);
+      }
+      renderWcSetupScreen();
     });
+  });
+
+  // Remove buttons in claimed list
+  document.querySelectorAll('.wc-setup-claimed-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const code = btn.dataset.code;
+      const idx = wcSetupClaimed.indexOf(code);
+      if (idx >= 0) wcSetupClaimed.splice(idx, 1);
+      renderWcSetupScreen();
+    });
+  });
+
+  // Reset button
+  const resetBtn = document.getElementById('wc-setup-reset');
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      wcSetupClaimed = [];
+      renderWcSetupScreen();
+    };
+  }
+
+  // Randomize toggle
+  const randomizeInput = document.getElementById('wc-setup-randomize');
+  if (randomizeInput) {
+    randomizeInput.onchange = () => {
+      wcSetupRandomize = randomizeInput.checked;
+      renderWcSetupRail();
+    };
+  }
+
+  // Start button
+  const startBtn = document.getElementById('wc-setup-start');
+  if (startBtn) {
+    startBtn.onclick = () => startWcFromSetup();
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', handleWcSetupKeydown);
+}
+
+function handleWcSetupKeydown(e) {
+  if (e.key === 'Escape') {
+    closeWcSetup();
+    showWorldCupView();
   }
 }
 
 function startWcFromSetup() {
   wcControllers = {};
-  for (const sel of document.querySelectorAll('.wc-setup-ctrl')) {
-    const teamName = sel.dataset.team;
-    if (sel.value === 'human') {
-      wcControllers[teamName] = { type: 'human' };
+  // Build controllers from claimed teams
+  for (const teamData of WC_TEAMS_DATA) {
+    const idx = wcSetupClaimed.indexOf(teamData.code);
+    if (idx >= 0) {
+      wcControllers[teamData.name] = { type: 'human', playerNum: idx + 1 };
     } else {
-      wcControllers[teamName] = { type: 'ai', player: 'basic-coach' };
+      wcControllers[teamData.name] = { type: 'ai', player: 'basic-coach' };
     }
   }
-  const overlay = document.getElementById('wc-setup-overlay');
-  if (overlay) overlay.classList.add('hidden');
-  const randomize = document.getElementById('wc-setup-randomize');
-  worldCup = createWorldCup(randomize && randomize.checked);
+
+  const screen = document.getElementById('wc-setup-screen');
+  if (screen) screen.classList.add('hidden');
+
+  document.removeEventListener('keydown', handleWcSetupKeydown);
+
+  worldCup = createWorldCup(wcSetupRandomize);
   if (game) {
     game.finished = true;
     game = null;
@@ -334,12 +586,14 @@ function startWcFromSetup() {
   wcKnockoutPowerups = {};
   wcPendingDeckReshuffle = null;
   wcGroupToKnockoutPending = false;
+
   for (const [teamName, ctrl] of Object.entries(wcControllers)) {
     if (ctrl.type === 'human') {
       wcCoachPicksQueue.push({ teamName });
       wcQueueTraining(teamName, 3);
     }
   }
+  showWorldCupScreen();
   renderWorldCupView();
 }
 
@@ -608,7 +862,7 @@ function wcSetContinueLabel(text, teamName) {
     flagSpan.title = teamName;
     worldCupPlayNextBtn.appendChild(flagSpan);
   }
-  const label = document.createTextNode(` Continue: ${text}`);
+  const label = document.createTextNode(text);
   worldCupPlayNextBtn.appendChild(label);
 }
 
@@ -1040,53 +1294,70 @@ function wcPhaseTitle() {
   return `Knockout stage · ${nxt.round}`;
 }
 
-function renderWcViewButtons() {
-  for (const [id, view] of [
-    ['wc-view-schedule', 'schedule'],
-    ['wc-view-fixtures', 'fixtures'],
-    ['wc-view-standings', 'standings'],
-    ['wc-view-top', 'top'],
-    ['wc-view-my-team', 'myTeam'],
-  ]) {
+function renderWcTabs() {
+  const map = [
+    ['wc-tab-overview', 'overview'],
+    ['wc-tab-groups', 'groups'],
+    ['wc-tab-schedule', 'schedule'],
+    ['wc-tab-top', 'top'],
+    ['wc-tab-squad', 'myTeam'],
+    ['wc-tab-deck', 'deck'],
+    ['wc-tab-stats', 'stats'],
+  ];
+  for (const [id, view] of map) {
     const btn = document.getElementById(id);
     if (!btn) continue;
     btn.classList.toggle('active', wcStatsView === view);
   }
 }
 
+function wcSetTab(view) {
+  wcStatsView = view;
+  renderWorldCupView();
+}
+
 function renderWorldCupView() {
   if (!worldCup) return;
 
-  worldCupPhaseEl.textContent = wcPhaseTitle();
-  renderWcViewButtons();
+  renderWcTabs();
+  const isOverview = wcStatsView === 'overview';
 
-  worldCupContentEl.innerHTML = '';
-  if (worldCup.completed) {
-    const banner = document.createElement('div');
-    banner.className = 'world-cup-champion';
-    banner.textContent = `🏆 ${worldCup.champion} are World Cup 2026 champions!`;
-    worldCupContentEl.appendChild(banner);
-  }
+  wcBannerEl.classList.remove('hidden');
+  wcTickerEl.classList.toggle('hidden', !isOverview);
+  wcOverviewBodyEl.classList.toggle('hidden', !isOverview);
+  worldCupContentEl.classList.toggle('hidden', isOverview);
 
-  if (wcStatsView === 'schedule') {
-    worldCupContentEl.appendChild(renderWcSchedule());
-  } else if (wcStatsView === 'fixtures') {
-    worldCupContentEl.appendChild(worldCup.phase === 'groups' ? renderWorldCupGroups() : renderWorldCupBracket());
-  } else if (wcStatsView === 'standings') {
-    worldCupContentEl.appendChild(renderWcStandings());
-  } else if (wcStatsView === 'top') {
-    worldCupContentEl.appendChild(renderWcTopPlayers());
-  } else if (wcStatsView === 'myTeam') {
-    worldCupContentEl.appendChild(renderWcMyTeam());
-  } else if (worldCup.phase === 'groups') {
-    worldCupContentEl.appendChild(renderWorldCupGroups());
-  } else if (worldCup.rounds.length > 0) {
-    worldCupContentEl.appendChild(renderWorldCupBracket());
+  renderWcBanner();
+  if (isOverview) {
+    renderWcOverview();
+  } else {
+    worldCupContentEl.innerHTML = '';
+    if (worldCup.completed) {
+      const banner = document.createElement('div');
+      banner.className = 'world-cup-champion';
+      banner.textContent = `🏆 ${worldCup.champion} are World Cup 2026 champions!`;
+      worldCupContentEl.appendChild(banner);
+    }
+    if (wcStatsView === 'schedule') {
+      worldCupContentEl.appendChild(renderWcSchedule());
+    } else if (wcStatsView === 'groups') {
+      worldCupContentEl.appendChild(renderWorldCupGroups());
+    } else if (wcStatsView === 'stats') {
+      worldCupContentEl.appendChild(renderWcStandings());
+    } else if (wcStatsView === 'top') {
+      worldCupContentEl.appendChild(renderWcTopPlayers());
+    } else if (wcStatsView === 'myTeam') {
+      worldCupContentEl.appendChild(renderWcMyTeam());
+    } else if (wcStatsView === 'deck') {
+      worldCupContentEl.appendChild(renderWcDeckTab());
+    } else if (worldCup.phase === 'groups') {
+      worldCupContentEl.appendChild(renderWorldCupGroups());
+    } else if (worldCup.rounds.length > 0) {
+      worldCupContentEl.appendChild(renderWorldCupBracket());
+    }
   }
 
   const nxt = wcNextMatch(worldCup);
-  wcNextMatchEl.innerHTML = '';
-  if (nxt) wcNextMatchEl.appendChild(renderWcNextMatchCard(nxt));
 
   // Pre-decide whether the next human match is preceded by a training session,
   // so the Continue label reflects it before the user clicks. The decision is
@@ -1118,15 +1389,14 @@ function renderWorldCupView() {
     wcSetContinueLabel('Staff Picks', wcCoachPicksQueue[0].teamName);
   } else if (wcTrainingQueue.length > 0 || (wcPendingTrainingPhases && wcPendingTrainingPhases.variants.length > 0)) {
     worldCupPlayNextBtn.disabled = false;
-    // Attack/defense phases are full match-based special training sessions;
-    // the generic queue shows a focus-pick card-training modal.
     const isSpecial = wcPendingTrainingPhases && wcPendingTrainingPhases.variants.length > 0;
     const tTeam = (wcTrainingQueue.length > 0 && wcTrainingQueue[0].teamName) ||
       (wcPendingTrainingPhases && wcPendingTrainingPhases.teamName);
     wcSetContinueLabel(isSpecial ? 'Special Training' : 'Training Session', tTeam || undefined);
   } else if (wcEventQueue.length > 0) {
     worldCupPlayNextBtn.disabled = false;
-    wcSetContinueLabel('Event Phase', wcEventQueue[0].teamName);
+    const queued = wcEventQueue[0];
+    wcSetContinueLabel(queued && queued.event ? `Event: ${queued.event.title}` : 'Event Phase', queued && queued.teamName);
   } else if (nxt) {
     const nextIsHuman =
       wcControllerForTeam(nxt.match.home).type === 'human' ||
@@ -1134,7 +1404,7 @@ function renderWorldCupView() {
     worldCupPlayNextBtn.disabled = false;
     if (nextIsHuman) {
       wcSetContinueLabel(
-        nxt.round ? `Play Next: ${nxt.round}` : 'Play Next Match',
+        nxt.round ? `Kick off · ${nxt.round}` : 'Kick off',
         wcHumanTeamOf(nxt.match.home, nxt.match.away)
       );
     } else {
@@ -1148,6 +1418,867 @@ function renderWorldCupView() {
       worldCup.completed ? 'Tournament Complete' : 'Preparing next stage…'
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Overview screen
+// ---------------------------------------------------------------------------
+
+const WC_VENUES = [
+  'Azteca, Mexico City', 'Estadio Akron, Guadalajara', 'Estadio BBVA, Monterrey',
+  'SoFi Stadium, Los Angeles', 'MetLife Stadium, New York', 'AT&T Stadium, Dallas',
+  'Mercedes-Benz Stadium, Atlanta', 'NRG Stadium, Houston', 'Hard Rock Stadium, Miami',
+  'Gillette Stadium, Boston', 'Lincoln Financial Field, Philadelphia', 'Levi\'s Stadium, San Francisco',
+  'Arrowhead Stadium, Kansas City', 'Lumen Field, Seattle', 'BMO Field, Toronto', 'Estadio Azteca Norte',
+];
+
+function wcHumanTeams() {
+  if (!wcControllers) return [];
+  return Object.keys(wcControllers).filter((name) => wcControllerForTeam(name).type === 'human');
+}
+
+function wcPrimaryHumanTeam() {
+  const humans = wcHumanTeams();
+  return humans.length > 0 ? humans[0] : null;
+}
+
+function wcShortName(name) {
+  const flag = (TEAM_FLAGS && TEAM_FLAGS[name]) || '';
+  const cleaned = name.replace(/[‘’'"]/g, '');
+  let short = cleaned.split(' ')[0];
+  if (short === 'Bosnia') short = 'Bosnia';
+  return flag ? `${flag} ${short}` : short;
+}
+
+function wcVenueFor(stageKey) {
+  let hash = 0;
+  for (let i = 0; i < stageKey.length; i++) hash = (hash * 31 + stageKey.charCodeAt(i)) >>> 0;
+  return WC_VENUES[hash % WC_VENUES.length];
+}
+
+function wcOpponentTraits(opponentName) {
+  const traits = [];
+  const eff = (WC_KNOCKOUT_POWERUPS && WC_KNOCKOUT_POWERUPS[opponentName]) || null;
+  if (eff && TEAM_EFFECTS && TEAM_EFFECTS[eff]) {
+    traits.push({ name: TEAM_EFFECTS[eff].label, effect: TEAM_EFFECTS[eff].explanation });
+  }
+  const level = (TEAMS && TEAMS[opponentName] && TEAMS[opponentName].level);
+  const lvl = typeof level === 'number' ? level : null;
+  if (lvl === 3) traits.push({ name: 'World beaters', effect: 'Top-10 ranked side. Clinical everywhere on the pitch.' });
+  else if (lvl === 2) traits.push({ name: 'Tournament dark horse', effect: 'Slippery mid-ranks. They press high and break fast.' });
+  else traits.push({ name: 'Underdogs', effect: 'Deep block and a dangerous dead-ball threat.' });
+  return traits.slice(0, 2);
+}
+
+function wcMatchdayLine() {
+  const nxt = wcNextMatch(worldCup);
+  if (worldCup.completed) return 'Tournament complete';
+  if (!nxt) return worldCup.phase === 'groups' ? 'Group stage complete' : 'Knockout complete';
+  if (nxt.round) return `${nxt.round} · ${wcVenueFor(nxt.round)}`;
+  return `Matchday ${nxt.matchday} of 3 · ${wcVenueFor('Group ' + (nxt.group || 'A'))}`;
+}
+
+function wcIsUpset(m) {
+  if (m.homeScore === m.awayScore) return false;
+  const winner = m.homeScore > m.awayScore ? m.home : m.away;
+  const loser = winner === m.home ? m.away : m.home;
+  return wcTeamStrength(winner) < wcTeamStrength(loser);
+}
+
+function renderWcBanner() {
+  if (!wcBannerEl) return;
+  wcBannerEl.innerHTML = '';
+  const nxt = wcNextMatch(worldCup);
+  const human = wcPrimaryHumanTeam();
+
+  const left = document.createElement('div');
+  left.className = 'wc-banner-left';
+
+  const kicker = document.createElement('div');
+  kicker.className = 'wc-banner-kicker';
+  kicker.textContent = wcMatchdayLine();
+  left.appendChild(kicker);
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'wc-banner-title';
+  if (worldCup.completed) {
+    titleEl.innerHTML = `${wcTeamName(worldCup.champion)} lift the trophy`;
+  } else if (nxt && human) {
+    const opp = nxt.match.home === human ? nxt.match.away : nxt.match.home;
+    titleEl.innerHTML = `${wcShortName(human)} <span class="wc-banner-vs">vs</span> ${wcShortName(opp)}`;
+  } else if (nxt && !human) {
+    titleEl.textContent = `${wcShortName(nxt.match.home)} vs ${wcShortName(nxt.match.away)}`;
+  } else {
+    titleEl.textContent = 'Next: no fixture scheduled';
+  }
+  left.appendChild(titleEl);
+  wcBannerEl.appendChild(left);
+
+  const mid = document.createElement('div');
+  mid.className = 'wc-banner-mid';
+  if (nxt && human) {
+    const opp = nxt.match.home === human ? nxt.match.away : nxt.match.home;
+    const label = document.createElement('div');
+    label.className = 'wc-banner-label';
+    label.textContent = 'Their traits';
+    mid.appendChild(label);
+    const pills = document.createElement('div');
+    pills.className = 'wc-banner-traits';
+    for (const t of wcOpponentTraits(opp)) {
+      const pill = document.createElement('span');
+      pill.className = 'wc-trait-pill';
+      pill.innerHTML = `<strong>${t.name}</strong> — ${t.effect}`;
+      pills.appendChild(pill);
+    }
+    mid.appendChild(pills);
+  }
+  wcBannerEl.appendChild(mid);
+
+  const right = document.createElement('div');
+  right.className = 'wc-banner-right';
+  if (worldCupPlayNextBtn) {
+    worldCupPlayNextBtn.classList.add('wc-kickoff-btn');
+    right.appendChild(worldCupPlayNextBtn);
+  }
+  wcBannerEl.appendChild(right);
+}
+
+function renderWcTicker() {
+  if (!wcTickerEl) return;
+  wcTickerEl.innerHTML = '';
+  const human = wcPrimaryHumanTeam();
+  const humanGroup = human ? (worldCup.groups.find((g) => g.teams.includes(human)) || {}).name : null;
+  const nxt = wcNextMatch(worldCup);
+  const currentMatchday = nxt && nxt.matchday ? nxt.matchday : 99;
+
+  const played = [];
+  for (const g of worldCup.groups) {
+    for (const m of g.matches) {
+      if (!m.played) continue;
+      played.push({
+        m,
+        label: `Group ${g.name}`,
+        relevant:
+          (human ? g.name !== humanGroup : true) &&
+          (nxt && nxt.group ? m.matchday < currentMatchday || g.name !== nxt.group : true) &&
+          (human ? (m.home !== human && m.away !== human) : true),
+      });
+    }
+  }
+  for (const r of worldCup.rounds) {
+    for (const m of r.matches) {
+      if (!m.played) continue;
+      played.push({ m, label: r.name, relevant: human ? (m.home !== human && m.away !== human) : true });
+    }
+  }
+
+  const ordered = played.sort((a, b) => {
+    // Group matches: later matchdays first
+    const da = a.m.matchday || 0;
+    const db = b.m.matchday || 0;
+    return db - da;
+  });
+
+  const pills = ordered.filter((p) => p.relevant).slice(0, 5);
+  const total = ordered.filter((p) => p.relevant).length;
+
+  for (const entry of pills) {
+    const pill = document.createElement('span');
+    pill.className = 'wc-ticker-pill';
+    if (wcIsUpset(entry.m)) pill.classList.add('upset');
+    const pen = entry.m.pen ? ` (${entry.m.penHome}-${entry.m.penAway})` : '';
+    pill.innerHTML =
+      `<span class="wc-tick-team">${wcShortName(entry.m.home)}</span>` +
+      `<span class="wc-tick-score">${entry.m.homeScore}-${entry.m.awayScore}${pen}</span>` +
+      `<span class="wc-tick-team">${wcShortName(entry.m.away)}</span>`;
+    wcTickerEl.appendChild(pill);
+  }
+
+  const more = total - pills.length;
+  if (more > 0) {
+    const moreEl = document.createElement('span');
+    moreEl.className = 'wc-ticker-more';
+    moreEl.textContent = `+${more} more →`;
+    moreEl.addEventListener('click', () => wcSetTab('groups'));
+    wcTickerEl.appendChild(moreEl);
+  }
+  if (pills.length === 0) {
+    const pill = document.createElement('span');
+    pill.className = 'wc-ticker-pill';
+    pill.textContent = 'No results yet — the first round kicks off soon.';
+    wcTickerEl.appendChild(pill);
+  }
+}
+
+function wcGroupTableFor(teamName) {
+  return worldCup.groups.find((g) => g.teams.includes(teamName)) || null;
+}
+
+function renderWcBody() {
+  if (!wcOverviewBodyEl) return;
+  wcOverviewBodyEl.innerHTML = '';
+  const human = wcPrimaryHumanTeam();
+  if (!human) {
+    const p = document.createElement('p');
+    p.className = 'wc-empty-note';
+    p.textContent = 'No human-controlled team in this World Cup.';
+    wcOverviewBodyEl.appendChild(p);
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-overview-grid';
+
+  const main = document.createElement('div');
+  main.className = 'wc-overview-main';
+
+  const group = wcGroupTableFor(human);
+  const standings = group ? computeGroupStandings(group) : [];
+  main.appendChild(renderWcGroupTable(human, group, standings));
+  main.appendChild(renderWcQualificationCard(human, group, standings));
+  grid.appendChild(main);
+
+  const rail = document.createElement('div');
+  rail.className = 'wc-overview-rail';
+  rail.appendChild(renderWcUnavailableCard(human));
+  rail.appendChild(renderWcInEffectCard(human));
+  rail.appendChild(renderWcGoldenBootCard(human));
+  grid.appendChild(rail);
+
+  wcOverviewBodyEl.appendChild(grid);
+
+  const other = renderWcOtherGroups(human);
+  if (other) wcOverviewBodyEl.appendChild(other);
+}
+
+function renderWcGroupTable(human, group, standings) {
+  const panel = document.createElement('section');
+  panel.className = 'wc-panel wc-group-panel';
+
+  const header = document.createElement('div');
+  header.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = `Group ${group ? group.name : '?'} — your table`;
+  header.appendChild(title);
+  panel.appendChild(header);
+
+  const table = document.createElement('table');
+  table.className = 'wc-table';
+  const thead = document.createElement('thead');
+  thead.innerHTML =
+    '<tr><th class="num">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr>';
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+
+  const opp = wcNextOpponentFor(human);
+  for (let i = 0; i < standings.length; i++) {
+    const row = standings[i];
+    const tr = document.createElement('tr');
+    if (row.team === human) tr.classList.add('you');
+    if (i >= 2) tr.classList.add('below');
+    const nameTd = document.createElement('td');
+    nameTd.className = 'wc-team';
+    nameTd.innerHTML = wcTeamName(row.team);
+    if (row.team === human) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-you';
+      badge.textContent = 'You';
+      nameTd.appendChild(badge);
+    }
+    if (opp && row.team === opp) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-opp';
+      badge.textContent = 'Next';
+      nameTd.appendChild(badge);
+    }
+    tr.appendChild(nameTd);
+    for (const key of ['P', 'W', 'D', 'L', 'GF', 'GA', 'Pts']) {
+      const td = document.createElement('td');
+      td.textContent = row[key];
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+
+  if (standings.length === 4) {
+    // Insert the cut line between 2nd and 3rd as a visual row.
+    const cut = document.createElement('tr');
+    cut.className = 'wc-cut-row';
+    const cutTd = document.createElement('td');
+    cutTd.colSpan = 9;
+    cutTd.innerHTML = '<span class="wc-cut-line"></span><span class="wc-cut-label">Cut</span>';
+    cut.appendChild(cutTd);
+    tbody.insertBefore(cut, tbody.children[2]);
+  }
+
+  table.appendChild(tbody);
+  panel.appendChild(table);
+  return panel;
+}
+
+function wcNextOpponentFor(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return null;
+  const nxt = wcNextMatch(worldCup);
+  if (nxt && nxt.group === group.name) {
+    if (nxt.match.home === teamName) return nxt.match.away;
+    if (nxt.match.away === teamName) return nxt.match.home;
+  }
+  for (const m of group.matches) {
+    if (m.played) continue;
+    if (m.home === teamName) return m.away;
+    if (m.away === teamName) return m.home;
+  }
+  return null;
+}
+
+function wcTeamIsEliminated(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return false;
+  const done = group.matches.every((m) => m.played);
+  if (!done) return false;
+  const st = computeGroupStandings(group);
+  return st[0].team !== teamName && st[1].team !== teamName && st[2].team !== teamName;
+}
+
+function wcSimResult(home, away) {
+  const hs = wcTeamStrength(home);
+  const as = wcTeamStrength(away);
+  const diff = hs - as;
+  const pHome = 0.42 + diff * 0.008;
+  const pDraw = 0.26;
+  const r = Math.random();
+  if (r < pHome) return { h: 1, a: 0 };
+  if (r < pHome + pDraw) return { h: 0, a: 0 };
+  return { h: 0, a: 1 };
+}
+
+function wcQualificationProjection(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return null;
+  const done = group.matches.every((m) => m.played);
+  if (done) {
+    const st = computeGroupStandings(group);
+    const pos = st.findIndex((r) => r.team === teamName);
+    const qualified = pos <= 1;
+    return {
+      pct: qualified ? 100 : 0,
+      sentence: qualified
+        ? 'The group is decided — you are through.'
+        : 'The group is decided — you cannot finish in the top two.',
+      decided: true,
+    };
+  }
+
+  const trials = 240;
+  let count = 0;
+  for (let t = 0; t < trials; t++) {
+    // Simulate every group's remaining matches, then compute final standings.
+    const simGroups = worldCup.groups.map((g) => {
+      const rows = {};
+      for (const tm of g.teams) {
+        rows[tm] = { team: tm, P: 0, W: 0, D: 0, L: 0, GF: 0, GA: 0, GD: 0, Pts: 0 };
+      }
+      for (const m of g.matches) {
+        if (m.played) {
+          const h = rows[m.home], a = rows[m.away];
+          h.P++; a.P++;
+          h.GF += m.homeScore; h.GA += m.awayScore;
+          a.GF += m.awayScore; a.GA += m.homeScore;
+          if (m.homeScore > m.awayScore) { h.W++; h.Pts += 3; a.L++; }
+          else if (m.homeScore < m.awayScore) { a.W++; a.Pts += 3; h.L++; }
+          else { h.D++; a.D++; h.Pts++; a.Pts++; }
+        } else {
+          const sim = wcSimResult(m.home, m.away);
+          const h = rows[m.home], a = rows[m.away];
+          h.P++; a.P++;
+          if (sim.h) { h.GF++; a.GA++; h.W++; h.Pts += 3; a.L++; }
+          else if (sim.a) { a.GF++; h.GA++; a.W++; a.Pts += 3; h.L++; }
+          else { h.D++; a.D++; h.Pts++; a.Pts++; }
+        }
+      }
+      for (const tm of g.teams) rows[tm].GD = rows[tm].GF - rows[tm].GA;
+      return g.teams
+        .map((tm) => rows[tm])
+        .sort((x, y) => {
+          if (y.Pts !== x.Pts) return y.Pts - x.Pts;
+          if (y.GD !== x.GD) return y.GD - x.GD;
+          return y.GF - x.GF;
+        });
+    });
+
+    let qualifies = false;
+    for (const st of simGroups) {
+      if (!st.some((r) => r.team === teamName)) continue;
+      const pos = st.findIndex((r) => r.team === teamName);
+      if (pos <= 1) qualifies = true;
+      else if (pos === 2) {
+        const thirds = simGroups.map((s, gi) => ({ group: WORLD_CUP_GROUPS[gi] ? worldCup.groups[gi].name : '', row: s[2] }));
+        thirds.sort((a, b) => {
+          if (b.row.Pts !== a.row.Pts) return b.row.Pts - a.row.Pts;
+          if (b.row.GD !== a.row.GD) return b.row.GD - a.row.GD;
+          return b.row.GF - a.row.GF;
+        });
+        if (thirds.slice(0, 8).some((x) => x.row.team === teamName)) qualifies = true;
+      }
+    }
+    if (qualifies) count++;
+  }
+
+  const pct = Math.round((count / trials) * 100);
+  let sentence;
+  const st = computeGroupStandings(group);
+  const pos = st.findIndex((r) => r.team === teamName);
+  if (pct >= 95) {
+    sentence = 'A win makes it certain. Even a point keeps it firmly in your own hands.';
+  } else if (pct >= 80) {
+    sentence = 'A win makes it certain. A loss puts it on the last game.';
+  } else if (pct >= 55) {
+    sentence = 'A win all but seals it. A draw still keeps your fate in your hands.';
+  } else if (pct >= 30) {
+    sentence = pos === 2
+      ? 'Still wide open — a win and a helping result should do it.'
+      : 'Still wide open. Win, and you seize control of the group.';
+  } else if (pct > 0) {
+    sentence = 'You need results your way. A win reopens the door.';
+  } else {
+    sentence = 'Mathematically on the brink. Only a near-perfect finish rescues this.';
+  }
+  return { pct, sentence, decided: false };
+}
+
+function renderWcQualificationCard(human, group, standings) {
+  const card = document.createElement('section');
+  card.className = 'wc-panel wc-qual-card';
+  const proj = wcQualificationProjection(human);
+  if (!proj) {
+    card.textContent = 'Qualification projection computes after the first round.';
+    return card;
+  }
+  const pct = document.createElement('div');
+  pct.className = 'wc-qual-pct';
+  pct.textContent = `${proj.pct}%`;
+  card.appendChild(pct);
+  const note = document.createElement('div');
+  note.className = 'wc-qual-note';
+  note.textContent = proj.sentence;
+  card.appendChild(note);
+  const sub = document.createElement('div');
+  sub.className = 'wc-qual-sub';
+  sub.textContent = 'chance to qualify for the knockout rounds';
+  card.appendChild(sub);
+  return card;
+}
+
+function wcUnavailableItems(teamName) {
+  const team = wcGetTeam(teamName);
+  const items = [];
+  const out = (worldCup && worldCup.outPlayers && worldCup.outPlayers[teamName]) || {};
+  const suspended = wcSuspendedPlayers[teamName] || [];
+  const debuffs = wcPlayerDebuffs[teamName] || {};
+  const seen = new Set();
+
+  if (team) {
+    for (const p of team.squad) {
+      if (p.hasEffect('injured') || out[p.name] === 'injured') {
+        if (seen.has(p.name)) continue;
+        seen.add(p.name);
+        items.push({
+          name: p.name,
+          tagClass: 'Inj',
+          tagLabel: 'Inj',
+          note: out[p.name] === 'injured' ? 'injured' : 'injured',
+          star: team.starPlayers.includes(p.name),
+        });
+      }
+    }
+  }
+  for (const [name, reason] of Object.entries(out)) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({
+      name,
+      tagClass: reason === 'red' ? 'Susp' : 'Back',
+      tagLabel: reason === 'red' ? 'Susp' : 'Back',
+      note: reason === 'red' ? 'sent off' : 'worn out — back next match',
+      star: team ? team.starPlayers.includes(name) : false,
+    });
+  }
+  for (const name of suspended) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({ name, tagClass: 'Susp', tagLabel: 'Susp', note: 'suspended', star: team ? team.starPlayers.includes(name) : false });
+  }
+  for (const name of Object.keys(debuffs)) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({ name, tagClass: 'Back', tagLabel: 'Back', note: 'returns this match', star: team ? team.starPlayers.includes(name) : false });
+  }
+  return items;
+}
+
+function renderWcUnavailableCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'Unavailable';
+  card.appendChild(head);
+
+  const items = wcUnavailableItems(teamName);
+  if (items.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'Full squad available.';
+    card.appendChild(li);
+    return card;
+  }
+  for (const item of items) {
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row';
+    const top = document.createElement('div');
+    top.className = 'wc-rail-row-top';
+    const name = document.createElement('span');
+    name.className = 'wc-rail-name';
+    name.textContent = item.name;
+    const tag = document.createElement('span');
+    tag.className = `wc-tag wc-tag-${item.tagClass}`;
+    tag.textContent = item.tagLabel;
+    top.appendChild(name);
+    top.appendChild(tag);
+    row.appendChild(top);
+    if (item.star) {
+      const cons = document.createElement('div');
+      cons.className = 'wc-rail-cons';
+      cons.innerHTML = '<strong>Anchor</strong> <span class="wc-arrow">→</span> <strong>Stopgap Pivot</strong> <em>−1 power</em>';
+      row.appendChild(cons);
+    } else {
+      const cons = document.createElement('div');
+      cons.className = 'wc-rail-cons';
+      cons.textContent = 'Slot in from the bench.';
+      row.appendChild(cons);
+    }
+    card.appendChild(row);
+  }
+  return card;
+}
+
+function wcEffectSourceMap(teamName) {
+  const map = {};
+  const coaches = [];
+  if (TEAMS && TEAMS[teamName] && TEAMS[teamName].coaches) coaches.push(...TEAMS[teamName].coaches);
+  if (wcOwnedCoaches && wcOwnedCoaches[teamName]) coaches.push(...wcOwnedCoaches[teamName]);
+  for (const c of coaches) {
+    for (const e of (c.effects || [])) {
+      if (!map[e]) map[e] = c.name;
+    }
+    if (c.cards && c.cards.length) {
+      for (const C of c.cards) {
+        let name = null;
+        try { name = new C().name; } catch (_) {}
+        if (name) map[name] = c.name;
+      }
+    }
+  }
+  return map;
+}
+
+function wcInEffectItems(teamName) {
+  const team = wcGetTeam(teamName);
+  const source = wcEffectSourceMap(teamName);
+  const items = [];
+
+  if (team) {
+    for (const obj of team.teamEffectObjects) {
+      const name = source[obj.type];
+      items.push({
+        label: `${obj.char} ${obj.label} — ${obj.explanation}`,
+        source: name ? `Coach ${name}` : 'Coach',
+        duration: obj.turns === Infinity ? 'Permanent' : `${obj.turns} left`,
+        permanent: obj.turns === Infinity,
+        positive: true,
+      });
+    }
+  }
+  const teamBuff = wcTeamBuffs[teamName];
+  if (teamBuff) {
+    const turns = teamBuff.turns != null ? teamBuff.turns : 1;
+    items.push({
+      label: 'Team boost — +1 all stats',
+      source: 'Event',
+      duration: turns === Infinity ? 'Permanent' : `${turns} left`,
+      permanent: turns === Infinity,
+      positive: true,
+    });
+  }
+  const recurring = (wcRecurringPenalties && wcRecurringPenalties[teamName]) || 0;
+  if (recurring > 0) {
+    items.push({
+      label: "🎩 Benefactor's curse — a penalty card every match",
+      source: 'Event',
+      duration: `${recurring} left`,
+      permanent: false,
+      positive: false,
+    });
+  }
+  const teamDebuff = wcTeamDebuffs[teamName];
+  if (teamDebuff && teamDebuff.drawPenalty) {
+    items.push({
+      label: `📉 Draw penalty — ${teamDebuff.drawPenalty} fewer card(s) per turn`,
+      source: 'Event',
+      duration: '2 left',
+      permanent: false,
+      positive: false,
+    });
+  }
+  const bonuses = (wcTeamDrawBonuses && wcTeamDrawBonuses[teamName]) || 0;
+  if (bonuses > 0) {
+    items.push({
+      label: `🎟️ Federation prize — +${bonuses} card(s) per turn`,
+      source: 'Event',
+      duration: 'Permanent',
+      permanent: true,
+      positive: true,
+    });
+  }
+  return items;
+}
+
+function renderWcInEffectCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'In effect';
+  card.appendChild(head);
+
+  const items = wcInEffectItems(teamName);
+  if (items.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'No active effects.';
+    card.appendChild(li);
+  }
+  for (const item of items) {
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row';
+    const line = document.createElement('div');
+    line.className = 'wc-rail-effect ' + (item.positive ? 'good' : 'bad');
+    line.textContent = item.label;
+    row.appendChild(line);
+    const meta = document.createElement('div');
+    meta.className = 'wc-rail-meta';
+    const src = document.createElement('span');
+    src.className = 'wc-rail-src';
+    src.textContent = item.source;
+    const dur = document.createElement('span');
+    dur.className = item.permanent ? 'wc-dur wc-dur-perm' : 'wc-dur';
+    dur.textContent = item.duration;
+    meta.appendChild(src);
+    meta.appendChild(dur);
+    row.appendChild(meta);
+    card.appendChild(row);
+  }
+
+  const coaching = (wcCoachPicksQueue && wcCoachPicksQueue.length > 0) || (wcPendingCoaches && wcPendingCoaches[teamName]);
+  const foot = document.createElement('div');
+  foot.className = 'wc-rail-foot';
+  foot.textContent = coaching
+    ? 'A staff pick is coming in this round.'
+    : 'No staff pick expected this round.';
+  card.appendChild(foot);
+  return card;
+}
+
+function wcGoldenBootTop() {
+  return wcTopPlayersAggregate()
+    .filter((p) => (p.weightedGoals || 0) > 0)
+    .sort(
+      (a, b) =>
+        (b.weightedGoals || 0) - (a.weightedGoals || 0) ||
+        (b.assists || 0) - (a.assists || 0)
+    )
+    .slice(0, 3);
+}
+
+function renderWcGoldenBootCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'Golden Boot';
+  card.appendChild(head);
+
+  const top = wcGoldenBootTop();
+  if (top.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'No goals scored yet.';
+    card.appendChild(li);
+    return card;
+  }
+  for (let i = 0; i < top.length; i++) {
+    const p = top[i];
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row ' + (top.length > i ? 'wc-gb' : '');
+    const med = document.createElement('span');
+    med.className = 'wc-gb-medal';
+    med.textContent = ['🥇', '🥈', '🥉'][i] || '';
+    const info = document.createElement('span');
+    info.className = 'wc-gb-info';
+    info.textContent = `${p.name} — ${p.team || '?'} (${p.weightedGoals})`;
+    row.appendChild(med);
+    row.appendChild(info);
+    if (p.team === teamName) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-you';
+      badge.textContent = 'You';
+      row.appendChild(badge);
+    }
+    card.appendChild(row);
+  }
+  return card;
+}
+
+function renderWcOtherGroups(human) {
+  const others = worldCup.groups.filter((g) => !g.teams.includes(human));
+  if (others.length === 0) return null;
+
+  const wrap = document.createElement('section');
+  wrap.className = 'wc-other-groups-wrap';
+  const head = document.createElement('div');
+  head.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = 'The other eleven groups';
+  head.appendChild(title);
+  wrap.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-other-groups';
+  for (const g of others) {
+    const card = document.createElement('button');
+    card.className = 'wc-other-group';
+    card.type = 'button';
+    const name = document.createElement('div');
+    name.className = 'wc-other-group-name';
+    name.textContent = `Group ${g.name}`;
+    card.appendChild(name);
+    const st = computeGroupStandings(g);
+    for (let i = 0; i < st.length; i++) {
+      const row = st[i];
+      const line = document.createElement('div');
+      line.className = 'wc-other-team' + (i < 2 ? ' up' : ' down');
+      const dot = document.createElement('span');
+      dot.className = 'wc-dot';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'wc-other-team-name';
+      nameEl.textContent = wcShortName(row.team);
+      const pts = document.createElement('span');
+      pts.className = 'wc-other-team-pts';
+      pts.textContent = `${row.Pts}`;
+      line.appendChild(dot);
+      line.appendChild(nameEl);
+      line.appendChild(pts);
+      card.appendChild(line);
+    }
+    card.addEventListener('click', () => {
+      wcStatsView = 'groups';
+      renderWorldCupView();
+    });
+    grid.appendChild(card);
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderWcDeckTab() {
+  const wrap = document.createElement('div');
+  wrap.className = 'wc-tab-page';
+  const human = wcPrimaryHumanTeam();
+  if (!human) {
+    const p = document.createElement('p');
+    p.className = 'wc-schedule-empty';
+    p.textContent = 'No human teams in this World Cup.';
+    wrap.appendChild(p);
+    return wrap;
+  }
+  const team = wcGetTeam(human);
+  const head = document.createElement('div');
+  head.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = `${team.name} — deck (${team.actions.length} cards)`;
+  head.appendChild(title);
+  wrap.appendChild(head);
+
+  const cats = {};
+  for (const card of team.actions) {
+    const c = card.category || 'other';
+    cats[c] = (cats[c] || 0) + 1;
+  }
+  const summary = document.createElement('div');
+  summary.className = 'wc-deck-summary';
+  for (const [cat, count] of Object.entries(cats)) {
+    const tag = document.createElement('span');
+    tag.className = `wc-mt-deck-tag category-${cat}`;
+    tag.textContent = `${cat}: ${count}`;
+    summary.appendChild(tag);
+  }
+  wrap.appendChild(summary);
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-deck-grid';
+  const sorted = [...team.actions].sort((a, b) => {
+    const catOrder = { offense: 0, defense: 1, tactical: 2, effect: 3, penalty: 4 };
+    const ca = catOrder[a.category] ?? 5;
+    const cb = catOrder[b.category] ?? 5;
+    if (ca !== cb) return ca - cb;
+    return (b.rarity || 0) - (a.rarity || 0);
+  });
+  for (const card of sorted) {
+    const el = createActionCard(card);
+    el.classList.add('wc-deck-card');
+    grid.appendChild(el);
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function wcGetTeam(teamName) {
+  let team = TEAMS && TEAMS[teamName];
+  if (team) return team;
+  const built = buildTeams([teamName]);
+  team = built[teamName];
+  if (!matchState) {
+    if (!TEAMS) TEAMS = {};
+    TEAMS[teamName] = team;
+  }
+  const trainingCards = wcTrainingCards[teamName] || [];
+  if (trainingCards.length > 0) {
+    team.actions.push(...trainingCards);
+    team.availableActions.push(...trainingCards);
+  }
+  const owned = wcOwnedCoaches[teamName] || [];
+  for (const c of owned) c.applyToTeam(team);
+  const pending = wcPendingCoaches && wcPendingCoaches[teamName];
+  if (pending) pending.applyToTeam(team);
+  if (team.hasTeamEffect('randomBoost') && !wcRandomBoostApplied[team.name]) {
+    wcRandomBoostApplied[team.name] = true;
+    const allEffects = Object.keys(TEAM_EFFECTS).filter((k) => k !== 'randomBoost');
+    const shuffled = allEffects.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 2 && i < shuffled.length; i++) {
+      team.addTeamEffect(shuffled[i], Infinity);
+    }
+  }
+  return team;
+}
+
+function renderWcOverview() {
+  renderWcBanner();
+  renderWcTicker();
+  renderWcBody();
 }
 
 function wcTeamName(name) {
@@ -2307,10 +3438,11 @@ function wcQueueTraining(teamName, cards = 1) {
 }
 
 function wcQueueEvent(teamName) {
-  wcEventQueue.push({ teamName });
+  const event = pickRandomEvent();
+  wcEventQueue.push({ teamName, event });
 }
 
-function wcRunEventForTeam(teamName, eventIndex, eventTotal) {
+function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
   return new Promise(async (resolve) => {
     wcEventActive = true;
     wcEventTargetTeam = teamName;
@@ -2320,7 +3452,7 @@ function wcRunEventForTeam(teamName, eventIndex, eventTotal) {
     if (!TEAMS || !TEAMS[teamName]) {
       TEAMS = buildTeams([teamName]);
     }
-    const event = pickRandomEvent();
+    const event = queuedEvent || pickRandomEvent();
     if (event) {
       const instance = wcShowEventPhaseModal(teamName, event, () => {
         instance.close();
@@ -2348,7 +3480,7 @@ async function wcProcessEventQueue(callback) {
   while (wcEventQueue.length > 0) {
     const next = wcEventQueue.shift();
     index += 1;
-    await wcRunEventForTeam(next.teamName, index, total);
+    await wcRunEventForTeam(next.teamName, index, total, next.event);
   }
   callback();
 }
@@ -2866,49 +3998,195 @@ function wcShowCoachJoinedModal(teamName, coach, callback) {
   document.addEventListener('keydown', onKey);
 }
 
-function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+function wcNextStageLabel(teamName) {
+  const nxt = teamName ? wcNextMatchForTeam(teamName) : wcNextMatch(worldCup);
+  if (!nxt) return worldCup.phase === 'groups' ? 'knockout round' : 'the final';
+  if (nxt.round) return nxt.round;
+  return `matchday ${nxt.matchday}`;
+}
 
-  const modal = document.createElement('div');
-  modal.className = 'wc-modal shot-modal halftime-modal event-phase-modal';
-
-  const content = document.createElement('div');
-  content.className = 'shot-modal-content halftime-content';
-
-  const title = document.createElement('div');
-  title.className = 'halftime-title';
-  title.textContent = 'Event Phase';
-  content.appendChild(title);
-
-  if (eventIndex && eventTotal) {
-    const progress = document.createElement('div');
-    progress.className = 'event-phase-progress';
-    progress.textContent = `Event ${eventIndex} of ${eventTotal}`;
-    content.appendChild(progress);
+function wcEventGainLose(opt) {
+  if (opt.gain || opt.lose) return { gain: opt.gain, lose: opt.lose };
+  const label = opt.label || '';
+  const gain = [];
+  const lose = [];
+  const clauses = label.split(/[—,;]+/).map((c) => c.trim()).filter(Boolean);
+  for (const clause of clauses) {
+    const lower = clause.toLowerCase();
+    const neg = /(^|\s)(lose|losing|minus|risk|decline|forgo|drop|penalty|penalties|sit out|rest|suspended|removed|curse|haunts|worn|doubtful)\b|-\d|\+.*penalty/i.test(lower);
+    const pos = /(gain|gains|\+(\d|\w)|new|draw|dossier|elite|adds?|boost|upgrade|transform|coach|rare|earn|attract|improves?|pays? off|resolve|fired up|flow)/i.test(lower);
+    if (neg && !pos) lose.push(clause);
+    else if (pos && !neg) gain.push(clause);
+    else if (pos && neg) {
+      // Mixed clause — split on plus/minus markers if possible
+      const parts = clause.split(/(?=\+)|(?=-)/).map((p) => p.trim()).filter(Boolean);
+      for (const part of parts) {
+        if (/^\+\d|gain|new coach|rare card|boost|draw/.test(part)) gain.push(part);
+        else if (/^-\d|lose|penalty|curse|risk|sit out|doubtful/.test(part)) lose.push(part);
+        else lose.push(part);
+      }
+    } else if (/gain|boost|\+|draw|new|attract/.test(lower)) {
+      gain.push(clause);
+    } else {
+      lose.push(clause);
+    }
   }
+  if (gain.length === 0 && lose.length === 0) {
+    gain.push(label);
+  }
+  return {
+    gain: gain.join(' · ') || opt.label,
+    lose: lose.join(' · ') || '',
+  };
+}
 
-  const eventTitle = document.createElement('div');
-  eventTitle.className = 'event-phase-title';
-  eventTitle.textContent = event.title;
-  content.appendChild(eventTitle);
+function wcNextMatchForTeam(teamName) {
+  if (!worldCup) return null;
+  if (worldCup.phase === 'groups') {
+    for (const matchday of [1, 2, 3]) {
+      for (const g of worldCup.groups) {
+        const m = g.matches.find((m) => !m.played && m.matchday === matchday && (m.home === teamName || m.away === teamName));
+        if (m) return { group: g.name, matchday, match: m };
+      }
+    }
+    return null;
+  }
+  for (const r of worldCup.rounds) {
+    const m = r.matches.find((m) => !m.played && (m.home === teamName || m.away === teamName));
+    if (m) return { round: r.name, match: m };
+  }
+  return null;
+}
 
-  const desc = document.createElement('div');
-  desc.className = 'halftime-kickoff';
-  desc.textContent = event.description;
-  content.appendChild(desc);
+function renderWcEventComingUp(teamName) {
+  eventComingUpEl.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'event-coming-card';
+  const label = document.createElement('div');
+  label.className = 'event-coming-label';
+  label.textContent = 'Coming up';
+  card.appendChild(label);
+  const nxt = wcNextMatchForTeam(teamName);
+  if (nxt) {
+    const opp = nxt.match.home === teamName ? nxt.match.away : nxt.match.home;
+    const vs = document.createElement('div');
+    vs.className = 'event-coming-vs';
+    vs.innerHTML = `${wcShortName(teamName)} <span>vs</span> ${wcShortName(opp)}`;
+    card.appendChild(vs);
+    const where = document.createElement('div');
+    where.className = 'event-coming-where';
+    where.textContent = nxt.round || `Group ${nxt.group} · Matchday ${nxt.matchday}`;
+    card.appendChild(where);
+  } else {
+    const vs = document.createElement('div');
+    vs.className = 'event-coming-vs';
+    vs.textContent = 'No fixture yet';
+    card.appendChild(vs);
+  }
+  eventComingUpEl.appendChild(card);
+}
 
-  const optionsWrap = document.createElement('div');
-  optionsWrap.className = 'event-phase-options';
+function renderWcEventFooter(teamName) {
+  eventFooterEl.innerHTML = '';
+  const team = wcGetTeam(teamName);
+  const decksize = team && team.actions ? team.actions.length : 0;
+  let coachesCount = 0;
+  if (team && team.coaches) coachesCount += team.coaches.length;
+  if (wcOwnedCoaches && wcOwnedCoaches[teamName]) coachesCount = Math.max(coachesCount, wcOwnedCoaches[teamName].length);
+  if (wcPendingCoaches && wcPendingCoaches[teamName]) coachesCount += 1;
 
+  const temporary = wcInEffectItems(teamName).filter((i) => !i.permanent).length;
+
+  const parts = [
+    `${decksize} cards in deck`,
+    `${coachesCount} coach${coachesCount === 1 ? '' : 'es'}`,
+    `${temporary} active temporary effect${temporary === 1 ? '' : 's'}`,
+  ];
+  for (const p of parts) {
+    const chip = document.createElement('span');
+    chip.className = 'event-footer-chip';
+    chip.textContent = p;
+    eventFooterEl.appendChild(chip);
+  }
+}
+
+function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal) {
+  if (!eventPhaseScreen) return { close: () => {} };
+  eventPhaseScreen.classList.remove('hidden');
+
+  const team = wcGetTeam(teamName);
+
+  eventKickerEl.innerHTML = '';
+  const kicker1 = document.createElement('span');
+  kicker1.className = 'event-kicker-main';
+  kicker1.textContent = 'Event';
+  const kicker2 = document.createElement('span');
+  kicker2.className = 'event-kicker-sub';
+  kicker2.textContent = `before ${wcNextStageLabel(teamName)}${eventIndex && eventTotal ? ` · ${eventIndex} of ${eventTotal}` : ''}`;
+  eventKickerEl.appendChild(kicker1);
+  eventKickerEl.appendChild(kicker2);
+
+  eventHeadingEl.textContent = event.title;
+  eventParagraphEl.textContent = event.description;
+
+  renderWcEventComingUp(teamName);
+
+  eventOptionsEl.innerHTML = '';
   const options = event.options(teamName);
   for (const opt of options) {
-    const btn = document.createElement('button');
-    btn.className = 'event-phase-option';
-    btn.innerHTML =
-      `<div class="event-option-label">${opt.label}</div>` +
-      (opt.description ? `<div class="event-option-desc">${opt.description}</div>` : '');
-    btn.addEventListener('click', () => {
+    const { gain, lose } = wcEventGainLose(opt);
+
+    const row = document.createElement('button');
+    row.className = 'event-option';
+    row.type = 'button';
+
+    const title = document.createElement('div');
+    title.className = 'event-option-title';
+    title.textContent = opt.label;
+    row.appendChild(title);
+
+    if (opt.description) {
+      const flavour = document.createElement('div');
+      flavour.className = 'event-option-flavour';
+      flavour.textContent = opt.description;
+      row.appendChild(flavour);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'event-option-grid';
+
+    const gainCell = document.createElement('div');
+    gainCell.className = 'event-cell event-cell-gain';
+    const gainTitle = document.createElement('div');
+    gainTitle.className = 'event-cell-title';
+    gainTitle.textContent = 'You gain';
+    gainCell.appendChild(gainTitle);
+    const gainBody = document.createElement('div');
+    gainBody.className = 'event-cell-body';
+    gainBody.textContent = gain || 'Nothing';
+    gainCell.appendChild(gainBody);
+
+    const loseCell = document.createElement('div');
+    loseCell.className = 'event-cell event-cell-lose';
+    const loseTitle = document.createElement('div');
+    loseTitle.className = 'event-cell-title';
+    loseTitle.textContent = 'You lose';
+    loseCell.appendChild(loseTitle);
+    const loseBody = document.createElement('div');
+    loseBody.className = 'event-cell-body';
+    loseBody.textContent = lose || 'Nothing';
+    loseCell.appendChild(loseBody);
+
+    grid.appendChild(gainCell);
+    grid.appendChild(loseCell);
+    row.appendChild(grid);
+
+    const take = document.createElement('span');
+    take.className = 'event-take';
+    take.textContent = 'Take';
+    row.appendChild(take);
+
+    row.addEventListener('click', () => {
       const hadCoach = !!(wcPendingCoaches && wcPendingCoaches[teamName]);
       const beforeCards = wcTrainingCards && wcTrainingCards[teamName]
         ? wcTrainingCards[teamName].slice() : [];
@@ -2934,9 +4212,7 @@ function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal
         removedCards = removedCards.filter((c) => c !== t.fromCard);
       }
 
-      optionsWrap.remove();
-      desc.remove();
-      eventTitle.remove();
+      eventPhaseScreen.classList.add('hidden');
 
       function afterRewards() {
         if (wcPendingDeckReshuffle) {
@@ -2979,31 +4255,30 @@ function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal
 
       showChangesThen();
     });
-    optionsWrap.appendChild(btn);
+
+    eventOptionsEl.appendChild(row);
   }
 
   if (options.length === 0) {
-    const skipBtn = document.createElement('button');
-    skipBtn.className = 'shot-modal-close';
-    skipBtn.textContent = 'Continue';
-    skipBtn.addEventListener('click', () => {
-      optionsWrap.remove();
-      desc.remove();
-      eventTitle.remove();
+    const skip = document.createElement('button');
+    skip.className = 'event-option';
+    skip.type = 'button';
+    const title = document.createElement('div');
+    title.className = 'event-option-title';
+    title.textContent = 'No options available';
+    skip.appendChild(title);
+    skip.addEventListener('click', () => {
+      eventPhaseScreen.classList.add('hidden');
       callback();
     });
-    optionsWrap.appendChild(skipBtn);
+    eventOptionsEl.appendChild(skip);
   }
 
-  content.appendChild(optionsWrap);
-  modal.appendChild(content);
-  wcAddTeamFlagBadge(modal, teamName);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  renderWcEventFooter(teamName);
 
   function close() {
     document.removeEventListener('keydown', onKey);
-    overlay.remove();
+    eventPhaseScreen.classList.add('hidden');
   }
   function onKey(e) {
     if (e.key === 'Escape') close();
@@ -3512,8 +4787,8 @@ function openWcSaveLoadModal() {
         const res = WcSave.load(s.name);
         if (res.ok) {
           close();
-          const setupOverlay = document.getElementById('wc-setup-overlay');
-          if (setupOverlay) setupOverlay.classList.add('hidden');
+          const setupScreen = document.getElementById('wc-setup-screen');
+          if (setupScreen) setupScreen.classList.add('hidden');
           showWorldCupScreen();
           renderWorldCupView();
           showToast(`Restored World Cup "${s.name}".`, 'info');

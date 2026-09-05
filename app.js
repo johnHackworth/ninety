@@ -1397,28 +1397,21 @@ document.getElementById('tour-back').addEventListener('click', showMainMenu);
 document.getElementById('tour-cancel').addEventListener('click', cancelTournament);
 document.getElementById('tour-play-next').addEventListener('click', tournamentPlayNextMatch);
 document.getElementById('wc-continue').addEventListener('click', wcContinue);
-document.getElementById('wc-setup-start').addEventListener('click', startWcFromSetup);
-document.getElementById('wc-view-schedule').addEventListener('click', () => {
-  wcStatsView = 'schedule';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-fixtures').addEventListener('click', () => {
-  wcStatsView = 'fixtures';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-standings').addEventListener('click', () => {
-  wcStatsView = 'standings';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-top').addEventListener('click', () => {
-  wcStatsView = 'top';
-  renderWorldCupView();
-});
-document.getElementById('wc-view-my-team').addEventListener('click', () => {
-  wcStatsView = 'myTeam';
-  renderWorldCupView();
-});
+// wc-setup-start is now handled in world-cup-ui.js bindWcSetupEvents()
+for (const [id, view] of [
+  ['wc-tab-overview', 'overview'],
+  ['wc-tab-groups', 'groups'],
+  ['wc-tab-schedule', 'schedule'],
+  ['wc-tab-top', 'top'],
+  ['wc-tab-squad', 'myTeam'],
+  ['wc-tab-deck', 'deck'],
+  ['wc-tab-stats', 'stats'],
+]) {
+  const btn = document.getElementById(id);
+  if (btn) btn.addEventListener('click', () => wcSetTab(view));
+}
 document.getElementById('wc-save-load').addEventListener('click', openWcSaveLoadModal);
+document.getElementById('wc-tabs-esc').addEventListener('click', openWcSaveLoadModal);
 document.getElementById('wc-back').addEventListener('click', () => {
   wcSimRunning = false;
   worldCup = null;
