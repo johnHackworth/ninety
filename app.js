@@ -1215,6 +1215,7 @@ document.addEventListener('click', (event) => {
 
 const CARD_TYPES = [
   PassAction,
+  BackwardsPassAction,
   LongPassAction,
   TackleAction,
   MarkingAction,

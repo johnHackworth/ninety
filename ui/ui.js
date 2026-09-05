@@ -617,7 +617,10 @@ function nameNeedsCompactFont(name) {
 
 function bindCardTooltip(card, tooltip) {
   tooltip.style.display = 'none';
+  let hideTimer = null;
+
   const show = () => {
+    clearTimeout(hideTimer);
     if (card.classList.contains('disabled')) {
       tooltip.style.display = 'none';
       return;
@@ -641,11 +644,13 @@ function bindCardTooltip(card, tooltip) {
     tooltip.style.left = left + 'px';
   };
   const hide = () => {
-    tooltip.style.display = 'none';
+    hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
   card.addEventListener('mouseenter', show);
   card.addEventListener('mouseleave', hide);
-  card.addEventListener('click', hide);
+  card.addEventListener('click', () => { tooltip.style.display = 'none'; });
+  tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  tooltip.addEventListener('mouseleave', hide);
 }
 
 function bindTeamEffectTooltip(el, description, extraText, turns) {
