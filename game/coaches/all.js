@@ -274,6 +274,11 @@ const COACHES = [
     effects: ['highMobility'],
   }),
   new Coach({
+    name: 'Mateo Rojas',
+    nationality: 'Spain',
+    effects: ['drawOnSkip'],
+  }),
+  new Coach({
     name: 'Lucia Ferreira',
     nationality: 'Portugal',
     effects: ['cardHold'],

@@ -1349,6 +1349,7 @@ function resolveHold(targetCard) {
   if (!game.heldCards[team.name].includes(targetCard)) {
     game.heldCards[team.name].push(targetCard);
   }
+  targetCard.hold = true;
   game.recordEvent({ type: 'hold', team: team.name, card: targetCard.name });
   logMatch(team.name, `${targetCard.name} is held — it stays in hand until played.`);
   const playResult = game.playAction(team, action);
