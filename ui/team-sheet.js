@@ -801,7 +801,7 @@
   // ============================================================
   // Public API
   // ============================================================
-  window.showTeamSheet = function (homeTeam, awayTeam, matchday = 1, venue = 'Neutral Ground', homeController, awayController) {
+  window.showTeamSheet = function (homeTeam, awayTeam, matchday = 1, venue = 'Neutral Ground', homeController, awayController, onBack) {
     const data = prepareTeamSheetData(homeTeam, awayTeam, matchday, venue, homeController, awayController);
 
     // Populate state
@@ -852,7 +852,8 @@
     const escHandler = (e) => {
       if (e.key === 'Escape') {
         hideTeamSheet();
-        showSetupScreen();
+        if (typeof onBack === 'function') onBack();
+        else showSetupScreen();
         document.removeEventListener('keydown', escHandler);
       }
     };

@@ -1086,7 +1086,16 @@ async function wcContinueStep() {
   wcShootout = null;
   const matchday = start.matchday || 1;
   const venue = start.match.venue || (start.group ? `World Cup · Group ${start.group}` : 'World Cup');
-  showTeamSheet(start.match.home, start.match.away, matchday, venue, startHomeCtrl, startAwayCtrl);
+  showTeamSheet(start.match.home, start.match.away, matchday, venue, startHomeCtrl, startAwayCtrl, () => {
+    wcMatchMode = false;
+    wcMatchInProgress = null;
+    wcHumanPlaying = false;
+    wcExtraHalves = 0;
+    wcEndingShown = false;
+    wcShootout = null;
+    showWorldCupScreen();
+    renderWorldCupView();
+  });
 }
 
 function wcShootoutOrder(team) {
