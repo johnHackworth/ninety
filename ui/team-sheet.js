@@ -677,16 +677,27 @@
   function formationToText(formation) {
     // Count players per row (simplified)
     const rows = { GK: 0, DF: 0, MF: 0, FW: 0 };
+    const oppositionSquad = state.editableIsHome ? state.awaySquad : state.homeSquad;
     for (const name of Object.keys(formation)) {
-      const player = state.awaySquad.find(p => p.name === name);
+      const player = oppositionSquad.find(p => p.name === name);
       if (player) rows[player.position]++;
     }
     return `${rows.DF}-${rows.MF}-${rows.FW}`;
   }
 
   function shapeNoteForFormation(formation) {
-    // Simplified - would be more detailed in real implementation
-    return 'Two holders, De Bruyne free behind Lukaku';
+    // Generate a basic shape note based on formation
+    const text = formationToText(formation);
+    const notes = {
+      '4-4-2': 'Two banks of four, two strikers',
+      '4-3-3': 'Three midfielders, wingers high',
+      '3-5-2': 'Wing-backs, packed midfield, two up top',
+      '4-5-1': 'Lone striker, five-man midfield',
+      '3-4-3': 'Three at back, front three',
+      '5-3-2': 'Five defenders, two strikers',
+      '4-2-3-1': 'Double pivot, three behind striker',
+    };
+    return notes[text] || `${text} shape`;
   }
 
   // ============================================================
