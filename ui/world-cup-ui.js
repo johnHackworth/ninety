@@ -1357,7 +1357,7 @@ function renderWcTabs() {
     } else {
       btn.removeAttribute('aria-current');
     }
-  });
+  }
 }
 
 function wcSetTab(view) {
