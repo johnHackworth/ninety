@@ -125,6 +125,8 @@
   // ============================================================
   let state = {
     system: '4-4-2',
+    useNatural: true,
+    orient: 'vertical', // 'vertical' | 'horizontal'
     tab: 'xi', // 'xi' | 'bench'
     sel: null, // null | { from: 'xi'|'bench', idx: number }
     order: [], // array of 11 roster indices → pitch slots
@@ -225,30 +227,32 @@
     // Build conditions strip
     const conditions = [];
 
-    // Coach effects — alternate blue/gold for visual variety
-    let coachEffectIndex = 0;
+    // Coach effects — semantic chip with the real mechanical effect
     for (const effect of editableTeam.teamEffects) {
       const spec = TEAM_EFFECTS[effect];
       if (spec) {
-        const isGold = coachEffectIndex % 2 === 1;
         conditions.push({
-          kind: 'Coach effect',
-          effect: spec.label,
-          source: editableTeam.coach,
-          class: 'coach' + (isGold ? ' gold' : ''),
+          kind: 'Coach',
+          body: spec.label,
+          sub: editableTeam.coach,
+          sev: 'neutral',
+          tipName: spec.label,
+          tip: spec.explanation,
         });
-        coachEffectIndex++;
       }
     }
 
     // Event effects with countdown (simplified - would come from world cup state)
     if (worldCup && window.wcEventEffects && window.wcEventEffects[editableTeamName]) {
       for (const ev of window.wcEventEffects[editableTeamName]) {
+        const body = `${ev.name} · ${ev.matchesLeft} match${ev.matchesLeft !== 1 ? 'es' : ''} left`;
         conditions.push({
-          kind: 'Event effect',
-          effect: `${ev.name} · ${ev.matchesLeft} match${ev.matchesLeft !== 1 ? 'es' : ''} left`,
-          source: ev.source,
-          class: 'event',
+          kind: 'Event',
+          body,
+          sub: ev.source,
+          sev: 'event',
+          tipName: body,
+          tip: '',
         });
       }
     }
@@ -261,9 +265,11 @@
         if (player && replacement) {
           conditions.push({
             kind: 'Unavailable',
-            effect: `${player.name} suspended → '${replacement.name}'`,
-            source: 'Suspension',
-            class: 'unavail',
+            body: `${player.name} suspended → '${replacement.name}'`,
+            sub: 'Suspension',
+            sev: 'warn',
+            tipName: `${player.name} — ${replacement.name} steps in`,
+            tip: '',
           });
         }
       }
@@ -420,6 +426,111 @@
   }
 
   // ============================================================
+  // Formation selector — system metadata + mini shapes
+  // ============================================================
+  const SYSTEMS_ORDER = ['4-4-2', '4-3-3', '3-5-2', '4-5-1', '3-4-3', '5-3-2', '4-2-3-1'];
+  const SYSTEM_META = {
+    '4-4-2':   { sub: 'Two banks of four, two strikers', lines: [1, 4, 4, 2] },
+    '4-3-3':   { sub: 'Three midfielders, wingers high', lines: [1, 4, 3, 3] },
+    '3-5-2':   { sub: 'Wing-backs, packed midfield, two up top', lines: [1, 3, 5, 2] },
+    '4-5-1':   { sub: 'Lone striker, five-man midfield', lines: [1, 4, 5, 1] },
+    '3-4-3':   { sub: 'Three at back, front three', lines: [1, 3, 4, 3] },
+    '5-3-2':   { sub: 'Five defenders, two strikers', lines: [1, 5, 3, 2] },
+    '4-2-3-1': { sub: 'Double pivot, three behind striker', lines: [1, 4, 2, 3, 1] },
+  };
+  const MINI_COL_TINT = { 0: '#f2d06b', 1: '#a5e06f', 2: '#2f5bb7', 3: '#f0a35e', 4: '#f0a35e' };
+
+  // Top-down mini: columns spread left→right (GK on own goal → attackers on
+  // opponent goal), players within each column spread top→bottom. Uses width
+  // (available) instead of height (scarce in the fixed 800px team sheet).
+  function renderMiniDots(el, lines) {
+    el.innerHTML = '';
+    const n = lines.length;
+    lines.forEach((count, c) => {
+      if (!count) return;
+      const x = 100 * (c + 0.5) / n;
+      for (let i = 0; i < count; i++) {
+        const y = count > 1 ? 100 * (i + 0.5) / count : 50;
+        const d = document.createElement('span');
+        d.className = 'ts-mini-dot';
+        d.style.left = x + '%';
+        d.style.top = y + '%';
+        d.style.background = MINI_COL_TINT[c];
+        el.appendChild(d);
+      }
+    });
+  }
+
+  function naturalLines() {
+    const rows = { GK: 0, DF: 0, MF: 0, FW: 0 };
+    for (const p of state.xi) {
+      if (p && rows[p.position] !== undefined) rows[p.position]++;
+    }
+    return [rows.GK, rows.DF, rows.MF, rows.FW];
+  }
+
+  function updateFormationControl() {
+    const meta = SYSTEM_META[state.system];
+    const natural = state.useNatural;
+    EL.activeName.textContent = natural ? 'Natural' : state.system;
+    EL.activeSub.textContent = natural ? 'Follows the current XI' : (meta ? meta.sub : '');
+    renderMiniDots(EL.activeMini, natural ? naturalLines() : (meta ? meta.lines : [0, 0, 0, 0]));
+
+    document.querySelectorAll('.ts-default-opt').forEach(o => {
+      const on = (o.dataset.natural === '1') === natural;
+      o.classList.toggle('active', on);
+      o.setAttribute('aria-pressed', String(on));
+    });
+    EL.formationSystems.querySelectorAll('.ts-system-opt').forEach(o => {
+      const isActive = !natural && o.dataset.system === state.system;
+      o.classList.toggle('active', isActive);
+      o.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  function closeFormationSystems() {
+    if (!EL.formationSystems.classList.contains('is-open')) return;
+    EL.formationSystems.classList.remove('is-open');
+    EL.formationSelector.classList.remove('open');
+    EL.formationSelector.setAttribute('aria-expanded', 'false');
+  }
+
+  function setOrient(orient) {
+    if (orient !== 'vertical' && orient !== 'horizontal') return;
+    state.orient = orient;
+    renderPitch();
+    updateHints();
+  }
+
+  function renderFormationSystems() {
+    EL.formationSystems.innerHTML = '';
+    for (const key of SYSTEMS_ORDER) {
+      const opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'ts-system-opt';
+      opt.dataset.system = key;
+      opt.setAttribute('aria-pressed', 'false');
+      const mini = document.createElement('span');
+      mini.className = 'ts-mini-shape';
+      mini.setAttribute('aria-hidden', 'true');
+      renderMiniDots(mini, SYSTEM_META[key].lines);
+      const label = document.createElement('span');
+      label.textContent = key;
+      opt.appendChild(mini);
+      opt.appendChild(label);
+      opt.onclick = () => {
+        state.system = key;
+        state.useNatural = false;
+        state.order = state.xi.map((_, i) => i);
+        closeFormationSystems();
+        renderPitch();
+        updateHints();
+      };
+      EL.formationSystems.appendChild(opt);
+    }
+  }
+
+  // ============================================================
   // Render
   // ============================================================
   function render() {
@@ -447,26 +558,37 @@
   }
 
   function renderConditions() {
-    // Clear only condition cards, preserve the "In effect" label
-    const label = EL.conditions.querySelector('.ts-conditions-label');
-    EL.conditions.innerHTML = '';
-    if (label) EL.conditions.appendChild(label);
-    
     if (state.conditions.length === 0) {
       EL.conditions.style.display = 'none';
       return;
     }
     EL.conditions.style.display = 'flex';
-    for (const c of state.conditions) {
-      const card = document.createElement('div');
-      card.className = `ts-condition-card ${c.class}`;
-      card.innerHTML = `
-        <div class="ts-condition-kind">${c.kind}</div>
-        <div class="ts-condition-effect">${c.effect}</div>
-        <div class="ts-condition-source">${c.source}</div>
+    EL.chipRow.innerHTML = '';
+
+    const SHOWN = 3;
+    state.conditions.forEach((c, i) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `ts-effect-chip sev-${c.sev}`;
+      if (i >= SHOWN) chip.hidden = true;
+      const tipFull = (c.tipName || c.body) + (c.tip ? ' — ' + c.tip : '');
+      chip.setAttribute('data-tip', tipFull);
+      chip.setAttribute('title', tipFull);
+      chip.innerHTML = `
+        <span class="ts-effect-kind">${c.kind}</span>
+        <span class="ts-effect-body">${c.body}<span class="ts-effect-sub">${c.sub}</span></span>
+        <span class="ts-sr-only">${c.tip || c.body}</span>
       `;
-      EL.conditions.appendChild(card);
-    }
+      EL.chipRow.appendChild(chip);
+    });
+
+    const nHidden = Math.max(0, state.conditions.length - SHOWN);
+    EL.chipsMore.hidden = nHidden === 0;
+    EL.chipsMore.textContent = `+${nHidden} more`;
+    EL.chipsMore.onclick = () => {
+      EL.chipRow.querySelectorAll('.ts-effect-chip').forEach(c => c.hidden = false);
+      EL.chipsMore.hidden = true;
+    };
   }
 
   function renderPitch() {
@@ -476,7 +598,7 @@
     const editableTeamSide = editableTeam.side; // 'left' or 'right'
     const teamFormation = editableTeam.formation; // TeamClass.formation (already mirrored for side)
     
-    if (state.system === 'Default') {
+    if (state.useNatural) {
       // Use team's actual formation - convert from grid coords to percentages
       coords = [];
       for (let i = 0; i < 11; i++) {
@@ -485,7 +607,9 @@
           const [gridX, gridY] = teamFormation[player.name];
           // Convert grid (0-8, 0-6) to percentage (0-100)
           const xPct = Math.round((gridX / 8) * 100);
-          const yPct = Math.round((gridY / 6) * 100);
+          // Clamp width to the same 12-88% band the preset systems use, so
+          // the natural (grid) formation doesn't render wider than the others
+          const yPct = Math.round(12 + (gridY / 6) * 76);
           coords.push([xPct, yPct]);
         } else {
           // Fallback
@@ -502,6 +626,15 @@
 
     const tokensEl = EL.tokens;
     tokensEl.innerHTML = '';
+
+    // Sync pitch orientation UI (class on the field + toggle state)
+    const vertical = state.orient === 'vertical';
+    EL.pitch.classList.toggle('ts-pitch-vertical', vertical);
+    document.querySelectorAll('.ts-orient-opt').forEach(o => {
+      const on = o.dataset.orient === state.orient;
+      o.classList.toggle('active', on);
+      o.setAttribute('aria-pressed', String(on));
+    });
 
     // Update panel title with editable team name
     const editableTeamName = state.editableIsHome ? state.homeTeam : state.awayTeam;
@@ -523,8 +656,9 @@
 
       const token = document.createElement('div');
       token.className = `ts-token ts-pos-${player.position.toLowerCase()} ${isSelected ? 'selected' : ''}`;
-      token.style.left = `${xPct}%`;
-      token.style.top = `${yPct}%`;
+      token.style.left = `${vertical ? yPct : xPct}%`;
+      const bottomPct = editableTeamSide === 'right' ? 100 - xPct : xPct;
+      token.style[vertical ? 'bottom' : 'top'] = vertical ? `${bottomPct}%` : `${yPct}%`;
       token.style.background = colours.fill;
       token.style.borderColor = colours.ring;
       token.dataset.from = 'xi';
@@ -538,22 +672,8 @@
       tokensEl.appendChild(token);
     }
 
-    // Formation pills
-    EL.formationPills.innerHTML = '';
-    const formationKeys = ['Default', '4-4-2', '4-3-3', '3-5-2', '4-5-1', '3-4-3', '5-3-2', '4-2-3-1'];
-    for (const key of formationKeys) {
-      const btn = document.createElement('button');
-      btn.className = `ts-formation-pill ${state.system === key ? 'active' : ''}`;
-      btn.textContent = key;
-      btn.addEventListener('click', () => {
-        state.system = key;
-        // Rebuild order to identity for new formation
-        state.order = state.xi.map((_, i) => i);
-        renderPitch();
-        updateHints();
-      });
-      EL.formationPills.appendChild(btn);
-    }
+    // Formation selector state (system choice + natural toggle)
+    updateFormationControl();
   }
 
   function renderSquad() {
@@ -808,7 +928,8 @@
     state = {
       ...state,
       ...data,
-      system: 'Default', // default to team's actual formation
+      system: '4-4-2',
+      useNatural: true, // default to team's actual formation
       tab: 'xi',
       sel: null,
       order: data.xi.map((_, i) => i),
@@ -823,8 +944,15 @@
     EL.awayName = document.getElementById('ts-away-name');
     EL.meta = document.getElementById('ts-meta');
     EL.conditions = document.getElementById('ts-conditions');
-    EL.formationPills = document.getElementById('ts-formation-pills');
+    EL.chipRow = document.getElementById('ts-chip-row');
+    EL.chipsMore = document.getElementById('ts-chips-more');
+    EL.formationSelector = document.getElementById('ts-formation-selector');
+    EL.formationSystems = document.getElementById('ts-formation-systems');
+    EL.activeMini = document.getElementById('ts-active-mini');
+    EL.activeName = document.getElementById('ts-active-name');
+    EL.activeSub = document.getElementById('ts-active-sub');
     EL.tokens = document.getElementById('ts-tokens');
+    EL.pitch = document.getElementById('ts-pitch');
     EL.pitchHint = document.getElementById('ts-pitch-hint');
     EL.tabs = document.getElementById('ts-tabs');
     EL.xiCount = document.getElementById('ts-xi-count');
@@ -843,19 +971,44 @@
       btn.onclick = () => handleTabClick(btn.dataset.tab);
     });
 
+    // Formation selector + natural toggle
+    renderFormationSystems();
+    EL.formationSelector.onclick = (e) => {
+      e.stopPropagation();
+      const open = EL.formationSystems.classList.toggle('is-open');
+      EL.formationSelector.classList.toggle('open', open);
+      EL.formationSelector.setAttribute('aria-expanded', String(open));
+    };
+    document.querySelectorAll('.ts-default-opt').forEach(o => {
+      o.onclick = () => {
+        state.useNatural = o.dataset.natural === '1';
+        state.order = state.xi.map((_, i) => i);
+        renderPitch();
+        updateHints();
+      };
+    });
+
+    // Pitch orientation toggle
+    document.querySelectorAll('.ts-orient-opt').forEach(o => {
+      o.onclick = () => setOrient(o.dataset.orient);
+    });
+
     document.getElementById('ts-kickoff').onclick = () => {
       // Apply final lineup to team and start match
       applyLineupAndStart();
     };
 
-    // ESC to go back
+    // ESC: close the formation dropdown first, then go back
     const escHandler = (e) => {
-      if (e.key === 'Escape') {
-        hideTeamSheet();
-        if (typeof onBack === 'function') onBack();
-        else showSetupScreen();
-        document.removeEventListener('keydown', escHandler);
+      if (e.key !== 'Escape') return;
+      if (EL.formationSystems.classList.contains('is-open')) {
+        closeFormationSystems();
+        return;
       }
+      hideTeamSheet();
+      if (typeof onBack === 'function') onBack();
+      else showSetupScreen();
+      document.removeEventListener('keydown', escHandler);
     };
     document.addEventListener('keydown', escHandler);
 
@@ -880,9 +1033,10 @@
     editableTeam.currentGoalkeeper = editableTeam.currentPlayers.find(p => p.position === 'GK') || null;
 
     // Update formation coords based on current system and order
-    if (state.system !== 'Default') {
+    if (!state.useNatural) {
       // Custom formation selected - convert from percentages to grid
       const coords = FORMATIONS[state.system];
+      const isRight = editableTeam.side === 'right';
       editableTeam.formation = {};
       for (let slotIdx = 0; slotIdx < 11; slotIdx++) {
         const xiIdx = state.order[slotIdx];
@@ -890,8 +1044,10 @@
         if (player) {
           // Convert percentage coordinates to grid coordinates (9x7 grid)
           const [xPct, yPct] = coords[slotIdx];
-          const gridX = Math.round((xPct / 100) * 8);
+          let gridX = Math.round((xPct / 100) * 8);
           const gridY = Math.round((yPct / 100) * 6);
+          // Mirror to board space for a right-side team (own goal at column 8)
+          if (isRight) gridX = 8 - gridX;
           editableTeam.formation[player.name] = [gridX, gridY];
         }
       }
@@ -909,5 +1065,18 @@
   // ============================================================
   // Expose for debugging
   // ============================================================
+  document.addEventListener('click', function tsOutsideClick(e) {
+    const wrap = document.getElementById('ts-formation-wrap');
+    const systems = document.getElementById('ts-formation-systems');
+    if (wrap && systems && systems.classList.contains('is-open') && !wrap.contains(e.target) && !systems.contains(e.target)) {
+      systems.classList.remove('is-open');
+      const selector = document.getElementById('ts-formation-selector');
+      if (selector) {
+        selector.classList.remove('open');
+        selector.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+
   window.TeamSheetState = state;
 })();

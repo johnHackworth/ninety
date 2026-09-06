@@ -7819,12 +7819,14 @@ body.screen-shake #board {
   user-select: none;
 }
 
-/* ---- Conditions strip ---- */
+/* ---- Conditions strip (redesigned chips) ---- */
 .ts-conditions {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 16px 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(32, 30, 29, 0.08);
   flex-shrink: 0;
 }
 
@@ -7835,83 +7837,152 @@ body.screen-shake #board {
   text-transform: uppercase;
   letter-spacing: 0.6px;
   color: #6a6562;
-  display: flex;
-  align-items: center;
-  padding-right: 8px;
-  border-right: 1px solid rgba(32, 30, 29, 0.12);
-  margin-right: 4px;
+  margin-right: 2px;
   flex-shrink: 0;
 }
 
-.ts-condition-card {
-  flex: 1 1 0;
-  min-width: 0;
-  background: #fff;
-  border-radius: 28px;
-  border-left: 4px solid;
-  padding: 10px 12px;
-  box-shadow: 0 2px 8px rgba(32, 30, 29, 0.06);
+.ts-chip-row {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
-.ts-condition-kind {
+.ts-effect-hint {
   font-size: 11px;
+  font-weight: 500;
+  color: #6a6562;
+  margin-left: auto;
+  padding-left: 12px;
+  border-left: 1px solid rgba(32, 30, 29, 0.12);
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.ts-effect-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Figtree', sans-serif;
+  background: #fff;
+  border: 1px solid rgba(32, 30, 29, 0.1);
+  border-radius: 999px;
+  padding: 5px 12px 5px 6px;
+  box-shadow: 0 1px 4px rgba(32, 30, 29, 0.06);
+  max-width: 100%;
+  cursor: help;
+  color: #201e1d;
+}
+.ts-effect-chip:focus-visible { outline: 2px solid #c67139; outline-offset: 2px; }
+
+.ts-effect-kind {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  margin-bottom: 2px;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.ts-condition-effect {
+.ts-effect-body {
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 600;
   color: #201e1d;
-  line-height: 1.35;
-  margin-bottom: 2px;
+  line-height: 1.25;
+  white-space: normal;
 }
-
-.ts-condition-source {
+.ts-effect-sub {
+  display: block;
   font-size: 11px;
   color: #6a6562;
+  font-weight: 500;
 }
 
-/* Coach effects — blue */
-.ts-condition-card.coach {
-  border-left-color: #2f5bb7;
-  background: #dde6f7;
-}
-.ts-condition-card.coach .ts-condition-kind { color: #2f5bb7; }
-.ts-condition-card.coach .ts-condition-effect { color: #2f5bb7; }
-.ts-condition-card.coach .ts-condition-source { color: #2f5bb7; }
+/* severity — fills hold white text ≥ 4.5:1 */
+.ts-effect-chip.sev-neutral .ts-effect-kind { background: #2f5bb7; }
+.ts-effect-chip.sev-event .ts-effect-kind { background: #a05225; }
+.ts-effect-chip.sev-warn .ts-effect-kind { background: #9c3a86; }
+.ts-effect-chip.sev-ok .ts-effect-kind { background: #3a7d44; }
 
-/* Coach effects — gold */
-.ts-condition-card.coach.gold {
-  border-left-color: #8a6a10;
-  background: #f7ecc9;
+/* collapse + open-all */
+.ts-chips-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Figtree', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c67139;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 999px;
+  transition: background 0.12s ease;
 }
-.ts-condition-card.coach.gold .ts-condition-kind { color: #8a6a10; }
-.ts-condition-card.coach.gold .ts-condition-effect { color: #8a6a10; }
-.ts-condition-card.coach.gold .ts-condition-source { color: #8a6a10; }
+.ts-chips-more:hover { background: rgba(198, 113, 57, 0.12); }
+.ts-chips-more:focus-visible { outline: 2px solid #c67139; outline-offset: 2px; }
 
-/* Event effect — orange */
-.ts-condition-card.event {
-  border-left-color: #c06a25;
-  background: #fbe6d2;
+/* tooltip with the real mechanical effect of each chip, placed BELOW
+   the chip so the strip's position never clips it. Reads from data-tip;
+   the accessible name stays the visible chip text. */
+.ts-effect-chip[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  width: max-content;
+  max-width: 260px;
+  background: #201e1d;
+  color: #fff;
+  font-family: 'Figtree', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: 8px 11px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(32, 30, 29, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 40;
+  white-space: normal;
 }
-.ts-condition-card.event .ts-condition-kind { color: #c06a25; }
-.ts-condition-card.event .ts-condition-effect { color: #c06a25; }
-.ts-condition-card.event .ts-condition-source { color: #c06a25; }
+.ts-effect-chip[data-tip]::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: #201e1d;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+  z-index: 41;
+}
+.ts-effect-chip[data-tip]:hover::after,
+.ts-effect-chip[data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+.ts-effect-chip[data-tip]:hover::before,
+.ts-effect-chip[data-tip]:focus-visible::before { opacity: 1; }
 
-/* Unavailable / stopgap — plum */
-.ts-condition-card.unavail {
-  border-left-color: #9c3a86;
-  background: #f5dcef;
+/* sr-only — a chip's mechanical effect for AT */
+.ts-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
-.ts-condition-card.unavail .ts-condition-kind { color: #9c3a86; }
-.ts-condition-card.unavail .ts-condition-effect { color: #9c3a86; }
-.ts-condition-card.unavail .ts-condition-source { color: #9c3a86; }
 
 /* ---- Body grid ---- */
 .ts-body {
@@ -7952,29 +8023,141 @@ body.screen-shake #board {
   letter-spacing: 0.3px;
 }
 
-/* ---- Formation pills ---- */
-.ts-formation-pills {
+/* Orientation toggle (Vertical / Horizontal) */
+.ts-orient-switch { display: flex; gap: 0; }
+.ts-orient-opt {
+  font-family: 'Figtree', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6a6562;
+  background: rgba(32, 30, 29, 0.05);
+  border: 1px solid rgba(32, 30, 29, 0.12);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ts-orient-opt:first-child { border-radius: 999px 0 0 999px; }
+.ts-orient-opt:last-child { border-radius: 0 999px 999px 0; border-left: none; }
+.ts-orient-opt:not(.active):hover { color: #201e1d; background: rgba(32, 30, 29, 0.09); }
+.ts-orient-opt.active { background: #c67139; border-color: #c67139; color: #fff; }
+.ts-orient-opt:focus-visible { outline: 2px solid #c67139; outline-offset: 2px; z-index: 1; }
+
+/* ---- Formation control (redesigned selector) ---- */
+.ts-formation-control {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px 0;
+  flex-shrink: 0;
 }
 
-.ts-formation-pill {
-  font-family: 'Caprasimo', cursive;
-  font-size: 14px;
-  color: #201e1d;
-  background: rgba(32, 30, 29, 0.06);
+.ts-default-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ts-default-hint {
+  font-size: 12px;
+  color: #6a6562;
+  font-weight: 500;
+}
+.ts-default-switch { display: flex; gap: 0; }
+.ts-default-opt {
+  font-family: 'Figtree', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6a6562;
+  background: rgba(32, 30, 29, 0.05);
   border: 1px solid rgba(32, 30, 29, 0.12);
-  border-radius: 999px;
-  padding: 4px 14px;
+  padding: 6px 13px;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ts-default-opt:first-child { border-radius: 999px 0 0 999px; }
+.ts-default-opt:last-child { border-radius: 0 999px 999px 0; border-left: none; }
+.ts-default-opt:not(.active):hover { color: #201e1d; background: rgba(32, 30, 29, 0.09); }
+.ts-default-opt.active { background: #201e1d; border-color: #201e1d; color: #fff; }
+.ts-default-opt:focus-visible { outline: 2px solid #c67139; outline-offset: 2px; z-index: 1; }
+
+.ts-formation-wrap { position: relative; }
+.ts-formation-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(32, 30, 29, 0.035);
+  border: 1px solid rgba(32, 30, 29, 0.1);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Figtree', sans-serif;
   transition: all 0.15s ease;
 }
-.ts-formation-pill:hover { background: rgba(32, 30, 29, 0.1); }
-.ts-formation-pill.active {
-  background: #c67139;
-  color: #fff;
-  border-color: #c67139;
+.ts-formation-selector:hover { background: rgba(32, 30, 29, 0.07); border-color: rgba(32, 30, 29, 0.15); }
+.ts-formation-selector:focus-visible { outline: 2px solid #c67139; outline-offset: 2px; }
+.ts-formation-selector.open { border-color: #c67139; }
+
+.ts-mini-shape {
+  width: 96px;
+  height: 44px;
+  flex-shrink: 0;
+  position: relative;
 }
+.ts-mini-shape .ts-mini-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid rgba(32, 30, 29, 0.3);
+}
+
+.ts-formation-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ts-formation-name { font-family: 'Caprasimo', cursive; font-size: 18px; line-height: 1; color: #201e1d; }
+.ts-formation-sub { font-size: 12px; color: #6a6562; font-weight: 500; line-height: 1.3; }
+.ts-formation-caret { font-size: 9px; color: #6a6562; align-self: center; transition: transform 0.15s ease; }
+.ts-formation-selector.open .ts-formation-caret { transform: rotate(180deg); }
+
+.ts-formation-systems {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid rgba(32, 30, 29, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(32, 30, 29, 0.16);
+  padding: 6px;
+  z-index: 30;
+}
+.ts-formation-systems.is-open { display: block; }
+
+.ts-system-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Figtree', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #201e1d;
+  transition: background 0.12s ease;
+}
+.ts-system-opt:hover { background: rgba(32, 30, 29, 0.06); }
+.ts-system-opt.active { background: #201e1d; color: #fff; }
+.ts-system-opt:focus-visible { outline: 2px solid #c67139; outline-offset: -2px; }
+.ts-system-opt .ts-mini-shape { width: 84px; height: 32px; opacity: 0.6; }
+.ts-system-opt.active .ts-mini-shape { opacity: 1; }
 
 /* ---- LEFT PANEL: Your pitch ---- */
 .ts-pitch-wrap {
@@ -7983,19 +8166,30 @@ body.screen-shake #board {
   min-height: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 12px;
   overflow: hidden;
 }
 
 .ts-pitch {
   position: relative;
-  width: 100%;
-  max-width: 380px;
-  aspect-ratio: 90 / 56;
   background: #1f4a24;
   border-radius: 20px;
   overflow: hidden;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+.ts-pitch-vertical {
+  height: 100%;
+  max-height: 400px;
+  width: auto;
+  aspect-ratio: 56 / 90;
+  max-width: 100%;
+}
+.ts-pitch:not(.ts-pitch-vertical) {
+  width: auto;
+  height: min(100%, 236px);
+  aspect-ratio: 90 / 56;
+  max-width: min(380px, 100%);
 }
 
 .ts-pitch-markings {
@@ -8111,6 +8305,63 @@ body.screen-shake #board {
   border-radius: 0 4px 4px 0;
   border-right: 2px solid rgba(255, 255, 255, 0.42);
   border-left: none;
+}
+
+/* Vertical pitch: rotated 90° — own goal at bottom, opponent goal at top */
+.ts-pitch-vertical .ts-halfway {
+  left: 9px;
+  right: 9px;
+  top: 50%;
+  bottom: auto;
+  width: auto;
+  height: 2px;
+  transform: none;
+}
+.ts-pitch-vertical .ts-centre-circle { width: 92px; height: 92px; }
+.ts-pitch-vertical .ts-penalty-box {
+  width: auto;
+  height: 22%;
+  top: auto;
+  left: 9px;
+  right: 9px;
+  transform: none;
+}
+.ts-pitch-vertical .ts-penalty-box-left { bottom: 9px; }
+.ts-pitch-vertical .ts-penalty-box-right { top: 9px; }
+.ts-pitch-vertical .ts-penalty-spot {
+  left: 50%;
+  top: auto;
+  transform: translateX(-50%);
+}
+.ts-pitch-vertical .ts-penalty-spot-left { bottom: 13%; }
+.ts-pitch-vertical .ts-penalty-spot-right { top: 13%; }
+.ts-pitch-vertical .ts-goal {
+  width: auto;
+  height: 10px;
+  left: 22px;
+  right: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.42);
+  border-left: none;
+  border-right: none;
+}
+.ts-pitch-vertical .ts-goal-left {
+  top: auto;
+  bottom: 2px;
+  border-radius: 0 0 6px 6px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.42);
+}
+.ts-pitch-vertical .ts-goal-right {
+  top: 2px;
+  bottom: auto;
+  border-radius: 6px 6px 0 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.42);
+}
+
+/* Keep edge-row players fully inside the field: shrink the token container
+   box (inset) so the percentage origin moves 24px in from the sides and
+   22px from top/bottom — discs at 0%/100% stay inside instead of clipping. */
+.ts-pitch-vertical .ts-tokens {
+  inset: 22px 24px;
 }
 
 .ts-tokens {

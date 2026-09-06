@@ -428,13 +428,39 @@
 
       <div class="ts-conditions" id="ts-conditions">
         <span class="ts-conditions-label">In effect</span>
+        <div class="ts-chip-row" id="ts-chip-row"></div>
+        <button class="ts-chips-more" id="ts-chips-more" type="button" hidden></button>
+        <span class="ts-effect-hint">Hover or focus a chip to see its real effect</span>
       </div>
 
       <div class="ts-body">
         <section class="ts-panel ts-panel-left" id="ts-pitch-panel">
           <div class="ts-panel-header">
             <span class="ts-panel-title">Your shape</span>
-            <div class="ts-formation-pills" id="ts-formation-pills"></div>
+            <div class="ts-orient-switch" role="group" aria-label="Pitch orientation">
+              <button class="ts-orient-opt active" data-orient="vertical" type="button" aria-pressed="true">Vertical</button>
+              <button class="ts-orient-opt" data-orient="horizontal" type="button" aria-pressed="false">Horizontal</button>
+            </div>
+          </div>
+          <div class="ts-formation-control" id="ts-formation-control">
+            <div class="ts-default-row">
+              <span class="ts-default-hint">Use the team's natural formation</span>
+              <div class="ts-default-switch" role="group" aria-label="Natural formation">
+                <button class="ts-default-opt active" data-natural="1" type="button" aria-pressed="true">Yes</button>
+                <button class="ts-default-opt" data-natural="0" type="button" aria-pressed="false">No</button>
+              </div>
+            </div>
+            <div class="ts-formation-wrap" id="ts-formation-wrap">
+              <button class="ts-formation-selector" id="ts-formation-selector" type="button" aria-expanded="false" aria-controls="ts-formation-systems">
+                <span class="ts-mini-shape" id="ts-active-mini" aria-hidden="true"></span>
+                <span class="ts-formation-meta">
+                  <span class="ts-formation-name" id="ts-active-name">Natural</span>
+                  <span class="ts-formation-sub" id="ts-active-sub">Follows the current XI</span>
+                </span>
+                <span class="ts-formation-caret" aria-hidden="true">▼</span>
+              </button>
+              <div class="ts-formation-systems" id="ts-formation-systems" role="group" aria-label="Formations"></div>
+            </div>
           </div>
           <div class="ts-pitch-wrap">
             <div class="ts-pitch" id="ts-pitch">

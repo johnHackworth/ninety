@@ -3995,7 +3995,11 @@ function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
     if (!TEAMS || !TEAMS[teamName]) {
       TEAMS = buildTeams([teamName]);
     }
-    const event = queuedEvent || pickRandomEvent();
+    const event = (queuedEvent && queuedEvent.options) ? queuedEvent : pickRandomEvent();
+    console.log(queuedEvent);
+    console.log('---')
+
+    console.log(event)
     if (event) {
       const instance = wcShowEventPhaseModal(teamName, event, () => {
         instance.close();

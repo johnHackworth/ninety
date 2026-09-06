@@ -12,7 +12,7 @@ class Team {
     this.reserveColor = reserveColor;
     this.shortsColor = shortsColor || primaryColor;
     this.awayShortsColor = awayShortsColor || reserveColor;
-    this.squad = squad.slice(0, 18);
+    this.squad = squad;
     this.startingXI = startingXI;
     this.currentPlayers = this.squad.filter((player) => startingXI.includes(player.name));
     this.starPlayers = starPlayers || [];
