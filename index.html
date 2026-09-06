@@ -317,7 +317,7 @@
       </div>
     </div>
   </div>
-  <div id="wc-setup-screen" class="hidden">
+  <div id="wc-setup-screen" class="wc-setup-screen hidden">
     <div class="wc-setup-layout">
       <main class="wc-setup-main">
         <header class="wc-setup-header">
@@ -325,8 +325,11 @@
           <h1 class="wc-setup-title">Who's playing?</h1>
           <p class="wc-setup-desc">Claim the teams you want to manage. Everything unclaimed is run by the AI — if you only want one team, click one team.</p>
           <div class="wc-setup-counter">
-            <span class="wc-setup-counter-value" id="wc-setup-counter">0</span>
-            <span class="wc-setup-counter-label">/ 48 claimed</span>
+            <div class="wc-setup-counter-num">
+              <span class="wc-setup-counter-value" id="wc-setup-counter">0</span>
+              <span class="wc-setup-counter-total">/48</span>
+            </div>
+            <span class="wc-setup-counter-label">claimed</span>
           </div>
         </header>
         <div class="wc-setup-groups" id="wc-setup-groups"></div>
@@ -341,22 +344,155 @@
           <p class="wc-setup-empty-title">Nobody claimed yet</p>
           <p class="wc-setup-empty-desc">Starting anyway means watching 48 AI teams play a World Cup without you.</p>
         </div>
-        <div class="wc-setup-randomize-wrap">
-          <label class="wc-setup-toggle">
-            <input type="checkbox" id="wc-setup-randomize">
-            <span class="wc-setup-toggle-track"></span>
-            <span class="wc-setup-toggle-thumb"></span>
-          </label>
-          <div class="wc-setup-toggle-caption" id="wc-setup-toggle-caption">The real 2026 draw is used.</div>
+        <div class="wc-setup-footer-group">
+          <div class="wc-setup-randomize-wrap">
+            <label class="wc-setup-toggle-row" for="wc-setup-randomize">
+              <input type="checkbox" id="wc-setup-randomize">
+              <span class="wc-setup-toggle-track"></span>
+              <span class="wc-setup-toggle-text">
+                <span class="wc-setup-toggle-title">Randomize groups</span>
+                <span class="wc-setup-toggle-caption" id="wc-setup-toggle-caption">The real 2026 draw is used.</span>
+              </span>
+            </label>
+          </div>
+          <button class="wc-setup-start-btn" id="wc-setup-start">Start World Cup</button>
+          <footer class="wc-setup-footer">
+            <span class="wc-setup-footer-status" id="wc-setup-footer-status">Spectator run — 48 AI teams</span>
+            <span class="wc-setup-footer-keys">Esc · Back</span>
+          </footer>
         </div>
-        <button class="wc-setup-start-btn" id="wc-setup-start">Start World Cup</button>
-        <footer class="wc-setup-footer">
-          <span class="wc-setup-footer-status" id="wc-setup-footer-status">Spectator run — 48 AI teams</span>
-          <span class="wc-setup-footer-keys">Esc · Back</span>
-        </footer>
       </aside>
     </div>
   </div>
+
+  <div id="staff-picks-screen" class="staff-picks-screen hidden">
+    <div class="staff-picks-layout">
+      <header class="staff-picks-header">
+        <div class="staff-picks-header-left">
+          <div class="staff-picks-kicker" id="staff-picks-kicker">Staff picks · before matchday 1</div>
+          <h1 class="staff-picks-title">One coach joins your staff</h1>
+          <p class="staff-picks-desc">Five candidates. One hire. Choose wisely — the rest walk away.</p>
+          <div class="staff-picks-legend" id="staff-picks-legend">
+            <span class="staff-picks-legend-label">Domains</span>
+            <span class="staff-picks-legend-pill"><span class="staff-picks-legend-swatch attack"></span>Attack</span>
+            <span class="staff-picks-legend-pill"><span class="staff-picks-legend-swatch defense"></span>Defense</span>
+            <span class="staff-picks-legend-pill"><span class="staff-picks-legend-swatch tempo"></span>Tempo</span>
+            <span class="staff-picks-legend-pill"><span class="staff-picks-legend-swatch squad"></span>Squad</span>
+          </div>
+        </div>
+        <div class="staff-picks-header-right">
+          <div class="staff-picks-team-pill" id="staff-picks-team-pill">
+            <span class="staff-picks-team-flag" id="staff-picks-team-flag"></span>
+            <div class="staff-picks-team-info">
+              <span class="staff-picks-team-name" id="staff-picks-team-name"></span>
+              <span class="staff-picks-team-vs" id="staff-picks-team-vs"></span>
+            </div>
+          </div>
+          <div class="staff-picks-esc">Esc · Decide later</div>
+        </div>
+      </header>
+
+      <div class="staff-picks-row" id="staff-picks-row">
+      </div>
+
+      <div class="staff-picks-confirm" id="staff-picks-confirm">
+        <div class="staff-picks-confirm-status" id="staff-picks-confirm-status">Pick a coach to continue</div>
+        <button class="staff-picks-hire-btn" id="staff-picks-hire-btn" disabled>Hire</button>
+      </div>
+
+      <div class="staff-picks-staff-section">
+        <div class="staff-picks-staff-heading">Already on your staff.</div>
+        <div class="staff-picks-staff-bar" id="staff-picks-staff-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="team-sheet-screen" class="hidden">
+    <div class="team-sheet-shell">
+      <header class="ts-header">
+        <span class="ts-kicker">Team sheet</span>
+        <div class="ts-divider" aria-hidden="true"></div>
+        <div class="ts-matchup">
+          <span class="ts-flag" id="ts-home-flag"></span>
+          <span class="ts-team" id="ts-home-name"></span>
+          <span class="ts-vs">vs</span>
+          <span class="ts-team" id="ts-away-name"></span>
+          <span class="ts-flag" id="ts-away-flag"></span>
+        </div>
+        <div class="ts-meta" id="ts-meta"></div>
+<div class="ts-actions">
+          <button id="ts-kickoff" class="ts-pill-primary cta">Kick off</button>
+          <span class="ts-esc">Esc · Back</span>
+        </div>
+      </header>
+
+      <div class="ts-conditions" id="ts-conditions">
+        <span class="ts-conditions-label">In effect</span>
+      </div>
+
+      <div class="ts-body">
+        <section class="ts-panel ts-panel-left" id="ts-pitch-panel">
+          <div class="ts-panel-header">
+            <span class="ts-panel-title">Your shape</span>
+            <div class="ts-formation-pills" id="ts-formation-pills"></div>
+          </div>
+          <div class="ts-pitch-wrap">
+            <div class="ts-pitch" id="ts-pitch">
+              <div class="ts-pitch-markings">
+                <div class="ts-touchline ts-touchline-top"></div>
+                <div class="ts-touchline ts-touchline-bottom"></div>
+                <div class="ts-touchline ts-touchline-left"></div>
+                <div class="ts-touchline ts-touchline-right"></div>
+                <div class="ts-halfway"></div>
+                <div class="ts-centre-circle"></div>
+                <div class="ts-centre-spot"></div>
+                <div class="ts-penalty-box ts-penalty-box-left"></div>
+                <div class="ts-penalty-box ts-penalty-box-right"></div>
+                <div class="ts-penalty-spot ts-penalty-spot-left"></div>
+                <div class="ts-penalty-spot ts-penalty-spot-right"></div>
+                <div class="ts-goal ts-goal-left"></div>
+                <div class="ts-goal ts-goal-right"></div>
+              </div>
+              <div class="ts-tokens" id="ts-tokens"></div>
+            </div>
+          </div>
+          <div class="ts-hint" id="ts-pitch-hint"></div>
+        </section>
+
+        <section class="ts-panel ts-panel-middle" id="ts-squad-panel">
+          <div class="ts-panel-header">
+            <span class="ts-panel-title">Squad</span>
+            <div class="ts-tabs" id="ts-tabs">
+              <button class="ts-tab active" data-tab="xi">Starting XI <span class="ts-tab-count" id="ts-xi-count">11</span></button>
+              <button class="ts-tab" data-tab="bench">Bench <span class="ts-tab-count" id="ts-bench-count">7</span></button>
+            </div>
+          </div>
+          <div class="ts-squad-scroll" id="ts-squad-scroll">
+            <div class="ts-squad-list" id="ts-xi-list"></div>
+            <div class="ts-squad-list hidden" id="ts-bench-list"></div>
+          </div>
+          <div class="ts-hint" id="ts-squad-hint"></div>
+        </section>
+
+        <section class="ts-panel ts-panel-right" id="ts-opposition-panel">
+          <div class="ts-panel-header">
+            <span class="ts-panel-title" id="ts-opp-name">Belgium</span>
+            <span class="ts-chip ts-chip-scouted">Scouted</span>
+          </div>
+          <div class="ts-opp-formation" id="ts-opp-formation"></div>
+          <div class="ts-section-rule"></div>
+          <div class="ts-opp-news" id="ts-opp-news"></div>
+          <div class="ts-section-rule"></div>
+          <div class="ts-opp-traits" id="ts-opp-traits"></div>
+          <div class="ts-section-rule ts-section-rule-gold"></div>
+          <div class="ts-danger-scroll" id="ts-danger-scroll">
+            <div class="ts-danger-list" id="ts-danger-list"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <div id="event-phase-screen" class="hidden">
     <div class="event-screen">
       <div class="event-left">
@@ -369,6 +505,31 @@
         <div class="event-options" id="event-options"></div>
         <div class="event-footer" id="event-footer"></div>
       </div>
+    </div>
+  </div>
+  <div id="training-phase-screen" class="hidden">
+    <div class="training-screen">
+      <header class="tr-header">
+        <div class="tr-header-left">
+          <div class="tr-kicker" id="tr-kicker"></div>
+          <h1 class="tr-heading" id="tr-heading"></h1>
+          <p class="tr-paragraph" id="tr-paragraph"></p>
+        </div>
+        <div class="tr-header-right">
+          <div class="tr-team-pill" id="tr-team-pill"></div>
+          <div class="tr-focus-chip-row hidden" id="tr-focus-chip-row"></div>
+          <div class="tr-esc">Esc · Skip training</div>
+        </div>
+      </header>
+      <div class="tr-body">
+        <div id="tr-step1"></div>
+        <div id="tr-step2" class="hidden"></div>
+      </div>
+      <footer class="tr-footer">
+        <div class="tr-state" id="tr-state"></div>
+        <div class="tr-deck-strip" id="tr-deck-strip"></div>
+        <button id="tr-confirm" class="tr-confirm" disabled>Add to deck</button>
+      </footer>
     </div>
   </div>
   <div id="board">
@@ -656,6 +817,7 @@
   <script src="game/save-load.js"></script>
   <script src="game/wc-save.js"></script>
   <script src="ui/click-handlers.js"></script>
+  <script src="ui/team-sheet.js"></script>
   <script src="ui/training-mode.js"></script>
   <script src="app.js"></script>
 </body>

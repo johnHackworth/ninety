@@ -86,8 +86,7 @@ function tournamentPlayNextMatch() {
     showTournamentView();
   } else {
     tournamentMode = true;
-    startMatch(m.home, m.away, homeCtrl, awayCtrl);
-    showBoard();
+    showTeamSheet(m.home, m.away, tournament.currentMatchIndex + 1, 'Tournament', homeCtrl, awayCtrl);
   }
 }
 

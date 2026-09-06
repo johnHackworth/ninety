@@ -35,3 +35,13 @@ doesn't reflect the real 2026 host cities schedule.
 ## Ticker / banner
 - Ticker pills: `+N more →` shows totals; upset detection uses `wcTeamStrength`.
 - Banner kicker "Matchday N of 3 · <venue>" is hardcoded to a 3-matchday group stage.
+
+## Training session screen
+- Step-1 focus panels have displayed copy (`desc`, tempo chips `Reactive /
+  Aggressive / Engine / Gamble`, example card names from the actual pool) — the
+  example chips and tempo labels are generated wording, tune with a designer.
+- Card-fit annotations in step 2 are heuristic rules on deck state (copy count,
+  rarity, thinnest category, star player out). They are placeholder wording that
+  should be replaced with tailored content per card.
+- Deck strip `Average cost X · N cards exhaust` computed from `team.actions` +
+  pending training cards; hard-coded baseline expectation is a 16-card deck.

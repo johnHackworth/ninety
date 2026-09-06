@@ -622,8 +622,9 @@ function bindCardTooltip(card, tooltip) {
 
   const show = () => {
     if (dismissedByClick) return;
+    if (!card.isConnected) { tooltip.remove(); return; }
     clearTimeout(hideTimer);
-    if (card.classList.contains('disabled')) {
+    if (card.classList.contains('disabled') || card.classList.contains('face-down')) {
       tooltip.style.display = 'none';
       return;
     }
@@ -646,6 +647,7 @@ function bindCardTooltip(card, tooltip) {
     tooltip.style.left = left + 'px';
   };
   const hide = () => {
+    if (!card.isConnected) { tooltip.remove(); return; }
     hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
   const resetDismissed = () => { dismissedByClick = false; };

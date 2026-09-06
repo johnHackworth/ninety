@@ -1447,13 +1447,16 @@ simStartBtn.addEventListener('click', () => {
 });
 startBtn.addEventListener('click', () => {
   if (homeTeamSelect.value === awayTeamSelect.value) return;
-  startMatch(
+  const homeCtrl = controllerFromSelect(controllerHomeSelect.value);
+  const awayCtrl = controllerFromSelect(controllerAwaySelect.value);
+  showTeamSheet(
     homeTeamSelect.value,
     awayTeamSelect.value,
-    controllerFromSelect(homeControllerSelect.value),
-    controllerFromSelect(awayControllerSelect.value)
+    1,
+    'Neutral Ground',
+    homeCtrl,
+    awayCtrl
   );
-  showBoard();
 });
 for (const select of [homeTeamSelect, awayTeamSelect]) {
   select.addEventListener('change', updateStartBtn);
