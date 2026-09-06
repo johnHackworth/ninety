@@ -1215,6 +1215,7 @@ document.addEventListener('click', (event) => {
 
 const CARD_TYPES = [
   PassAction,
+  BackwardsPassAction,
   LongPassAction,
   TackleAction,
   MarkingAction,
@@ -1396,17 +1397,21 @@ document.getElementById('tour-back').addEventListener('click', showMainMenu);
 document.getElementById('tour-cancel').addEventListener('click', cancelTournament);
 document.getElementById('tour-play-next').addEventListener('click', tournamentPlayNextMatch);
 document.getElementById('wc-continue').addEventListener('click', wcContinue);
-document.getElementById('wc-setup-start').addEventListener('click', startWcFromSetup);
-
-// Sidebar navigation
-document.querySelectorAll('.wc-nav-item[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    wcStatsView = btn.dataset.view;
-    renderWorldCupView();
-  });
-});
-
+// wc-setup-start is now handled in world-cup-ui.js bindWcSetupEvents()
+for (const [id, view] of [
+  ['wc-tab-overview', 'overview'],
+  ['wc-tab-groups', 'groups'],
+  ['wc-tab-schedule', 'schedule'],
+  ['wc-tab-top', 'top'],
+  ['wc-tab-squad', 'myTeam'],
+  ['wc-tab-deck', 'deck'],
+  ['wc-tab-stats', 'stats'],
+]) {
+  const btn = document.getElementById(id);
+  if (btn) btn.addEventListener('click', () => wcSetTab(view));
+}
 document.getElementById('wc-save-load').addEventListener('click', openWcSaveLoadModal);
+document.getElementById('wc-tabs-esc').addEventListener('click', openWcSaveLoadModal);
 document.getElementById('wc-back').addEventListener('click', () => {
   wcSimRunning = false;
   worldCup = null;
@@ -1442,13 +1447,16 @@ simStartBtn.addEventListener('click', () => {
 });
 startBtn.addEventListener('click', () => {
   if (homeTeamSelect.value === awayTeamSelect.value) return;
-  startMatch(
+  const homeCtrl = controllerFromSelect(controllerHomeSelect.value);
+  const awayCtrl = controllerFromSelect(controllerAwaySelect.value);
+  showTeamSheet(
     homeTeamSelect.value,
     awayTeamSelect.value,
-    controllerFromSelect(homeControllerSelect.value),
-    controllerFromSelect(awayControllerSelect.value)
+    1,
+    'Neutral Ground',
+    homeCtrl,
+    awayCtrl
   );
-  showBoard();
 });
 for (const select of [homeTeamSelect, awayTeamSelect]) {
   select.addEventListener('change', updateStartBtn);

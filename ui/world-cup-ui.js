@@ -10,8 +10,7 @@ let wcHumanPlaying = false;
 let wcExtraHalves = 0;
 let wcEndingShown = false;
 let wcShootout = null;
-let wcStatsView = 'fixtures';
-let wcScheduleMatchday = 1;
+let wcStatsView = 'overview';
 let wcTrainingQueue = [];
 let wcTrainingActive = false;
 let wcTrainingTargetTeam = null;
@@ -33,6 +32,29 @@ const worldCupPhaseEl = document.getElementById('world-cup-phase');
 const worldCupContentEl = document.getElementById('world-cup-content');
 const wcNextMatchEl = document.getElementById('wc-next-match');
 const worldCupPlayNextBtn = document.getElementById('wc-continue');
+
+const wcBannerEl = document.getElementById('wc-banner');
+const wcTickerEl = document.getElementById('wc-ticker');
+const wcOverviewBodyEl = document.getElementById('wc-overview-body');
+const eventPhaseScreen = document.getElementById('event-phase-screen');
+const eventKickerEl = document.getElementById('event-kicker');
+const eventHeadingEl = document.getElementById('event-heading');
+const eventParagraphEl = document.getElementById('event-paragraph');
+const eventComingUpEl = document.getElementById('event-coming-up');
+const eventOptionsEl = document.getElementById('event-options');
+const eventFooterEl = document.getElementById('event-footer');
+
+const trainingPhaseScreen = document.getElementById('training-phase-screen');
+const trKickerEl = document.getElementById('tr-kicker');
+const trHeadingEl = document.getElementById('tr-heading');
+const trParagraphEl = document.getElementById('tr-paragraph');
+const trTeamPillEl = document.getElementById('tr-team-pill');
+const trFocusChipRowEl = document.getElementById('tr-focus-chip-row');
+const trStep1El = document.getElementById('tr-step1');
+const trStep2El = document.getElementById('tr-step2');
+const trDeckStripEl = document.getElementById('tr-deck-strip');
+const trStateEl = document.getElementById('tr-state');
+const trConfirmEl = document.getElementById('tr-confirm');
 
 // ---- World Cup card pool constants ----
 const WC_CARD_CATEGORIES = {
@@ -77,6 +99,7 @@ let wcPlayerBuffs = {};
 let wcRandomBoostApplied = {};
 let wcPendingDeckReshuffle = null;
 let wcMyTeamSelected = null;
+let wcMyTeamTab = 'xi';
 let wcSelectedFormation = null;
 let wcPendingLineup = {};
 let wcPendingFormationCoords = {};
@@ -240,73 +263,344 @@ function showWorldCupView() {
   openWcSetup();
 }
 
+// ===== WC SETUP SCREEN DATA =====
+const WC_TEAMS_DATA = [
+  // UEFA (13 teams for 2026)
+  { confed: 'UEFA', code: 'ESP', name: 'Spain', flag: '🇪🇸' },
+  { confed: 'UEFA', code: 'FRA', name: 'France', flag: '🇫🇷' },
+  { confed: 'UEFA', code: 'GER', name: 'Germany', flag: '🇩🇪' },
+  { confed: 'UEFA', code: 'ENG', name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { confed: 'UEFA', code: 'POR', name: 'Portugal', flag: '🇵🇹' },
+  { confed: 'UEFA', code: 'NED', name: 'Netherlands', flag: '🇳🇱' },
+  { confed: 'UEFA', code: 'BEL', name: 'Belgium', flag: '🇧🇪' },
+  { confed: 'UEFA', code: 'CRO', name: 'Croatia', flag: '🇭🇷' },
+  { confed: 'UEFA', code: 'SUI', name: 'Switzerland', flag: '🇨🇭' },
+  { confed: 'UEFA', code: 'AUT', name: 'Austria', flag: '🇦🇹' },
+  { confed: 'UEFA', code: 'SCO', name: 'Scotland', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { confed: 'UEFA', code: 'TUR', name: 'Türkiye', flag: '🇹🇷' },
+  { confed: 'UEFA', code: 'CZE', name: 'Czechia', flag: '🇨🇿' },
+  { confed: 'UEFA', code: 'BIH', name: 'Bosnia and Herzegovina', flag: '🇧🇦' },
+  // CONMEBOL (6 teams)
+  { confed: 'CONMEBOL', code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
+  { confed: 'CONMEBOL', code: 'BRA', name: 'Brazil', flag: '🇧🇷' },
+  { confed: 'CONMEBOL', code: 'URU', name: 'Uruguay', flag: '🇺🇾' },
+  { confed: 'CONMEBOL', code: 'COL', name: 'Colombia', flag: '🇨🇴' },
+  { confed: 'CONMEBOL', code: 'ECU', name: 'Ecuador', flag: '🇪🇨' },
+  { confed: 'CONMEBOL', code: 'PAR', name: 'Paraguay', flag: '🇵🇾' },
+  // CAF (9 teams)
+  { confed: 'CAF', code: 'MAR', name: 'Morocco', flag: '🇲🇦' },
+  { confed: 'CAF', code: 'SEN', name: 'Senegal', flag: '🇸🇳' },
+  { confed: 'CAF', code: 'TUN', name: 'Tunisia', flag: '🇹🇳' },
+  { confed: 'CAF', code: 'CMR', name: 'Cameroon', flag: '🇨🇲' },
+  { confed: 'CAF', code: 'GHA', name: 'Ghana', flag: '🇬🇭' },
+  { confed: 'CAF', code: 'CIV', name: 'Ivory Coast', flag: '🇨🇮' },
+  { confed: 'CAF', code: 'ALG', name: 'Algeria', flag: '🇩🇿' },
+  { confed: 'CAF', code: 'EGY', name: 'Egypt', flag: '🇪🇬' },
+  { confed: 'CAF', code: 'RSA', name: 'South Africa', flag: '🇿🇦' },
+  // AFC (8 teams)
+  { confed: 'AFC', code: 'JPN', name: 'Japan', flag: '🇯🇵' },
+  { confed: 'AFC', code: 'KOR', name: 'South Korea', flag: '🇰🇷' },
+  { confed: 'AFC', code: 'IRN', name: 'Iran', flag: '🇮🇷' },
+  { confed: 'AFC', code: 'AUS', name: 'Australia', flag: '🇦🇺' },
+  { confed: 'AFC', code: 'SAU', name: 'Saudi Arabia', flag: '🇸🇦' },
+  { confed: 'AFC', code: 'QAT', name: 'Qatar', flag: '🇶🇦' },
+  { confed: 'AFC', code: 'UZB', name: 'Uzbekistan', flag: '🇺🇿' },
+  { confed: 'AFC', code: 'IRQ', name: 'Iraq', flag: '🇮🇶' },
+  // CONCACAF (6 teams)
+  { confed: 'CONCACAF', code: 'USA', name: 'United States', flag: '🇺🇸' },
+  { confed: 'CONCACAF', code: 'MEX', name: 'Mexico', flag: '🇲🇽' },
+  { confed: 'CONCACAF', code: 'CAN', name: 'Canada', flag: '🇨🇦' },
+  { confed: 'CONCACAF', code: 'CRC', name: 'Costa Rica', flag: '🇨🇷' },
+  { confed: 'CONCACAF', code: 'PAN', name: 'Panama', flag: '🇵🇦' },
+  { confed: 'CONCACAF', code: 'JAM', name: 'Jamaica', flag: '🇯🇲' },
+  // OFC (1 team)
+  { confed: 'OFC', code: 'NZL', name: 'New Zealand', flag: '🇳🇿' },
+];
+
+const CONFED_ORDER = ['UEFA', 'CONMEBOL', 'CAF', 'AFC', 'CONCACAF', 'OFC'];
+const CONFED_LABELS = {
+  UEFA: 'UEFA',
+  CONMEBOL: 'CONMEBOL',
+  CAF: 'CAF',
+  AFC: 'AFC',
+  CONCACAF: 'CONCACAF',
+  OFC: 'OFC',
+};
+const CONFED_COLORS = {
+  UEFA: { tint: '#dde6f7', disc: '#c2d4f2', ink: '#17356f', bar: '#2f5bb7' },
+  CONMEBOL: { tint: '#e6f3d7', disc: '#cbe8ab', ink: '#1f3d10', bar: '#6fae3f' },
+  CAF: { tint: '#f7ecc9', disc: '#f0dc9c', ink: '#5a4409', bar: '#c9a02e' },
+  AFC: { tint: '#fbe6d2', disc: '#f6cfa8', ink: '#5c2a10', bar: '#c06a25' },
+  CONCACAF: { tint: '#d9efeb', disc: '#b4ded6', ink: '#123f3a', bar: '#2f8579' },
+  OFC: { tint: '#f5dcef', disc: '#e8bcdb', ink: '#4a1540', bar: '#9c3a86' },
+};
+const CONFED_SLUG = {
+  UEFA: 'uefa',
+  CONMEBOL: 'conmebol',
+  CAF: 'caf',
+  AFC: 'afc',
+  CONCACAF: 'concacaf',
+  OFC: 'ofc',
+};
+
+let wcSetupClaimed = [];
+let wcSetupRandomize = false;
+
 function openWcSetup() {
-  const list = document.getElementById('wc-setup-list');
-  if (list && list.children.length === 0) buildWcSetupList();
-  const overlay = document.getElementById('wc-setup-overlay');
-  if (overlay) overlay.classList.remove('hidden');
+  const screen = document.getElementById('wc-setup-screen');
+  if (!screen) return;
+  wcSetupClaimed = [];
+  wcSetupRandomize = false;
+  renderWcSetupScreen();
+  screen.classList.remove('hidden');
+  worldCupScreen.classList.add('hidden');
 }
 
-function buildWcSetupList() {
-  const list = document.getElementById('wc-setup-list');
-  if (!list) return;
-  list.innerHTML = '';
-  for (const name of TEAM_NAMES) {
-    const row = document.createElement('div');
-    row.className = 'wc-setup-row';
+function closeWcSetup() {
+  const screen = document.getElementById('wc-setup-screen');
+  if (screen) screen.classList.add('hidden');
+  worldCupScreen.classList.remove('hidden');
+}
 
-    const teamWrap = document.createElement('span');
-    teamWrap.className = 'wc-setup-team-wrap';
-    const teamName = document.createElement('span');
-    teamName.className = 'wc-setup-team';
-    const cls = TEAM_CLASSES[name];
-    try {
-      teamName.style.color = new (cls)().primaryColor;
-    } catch (e) {}
-    const flag = document.createElement('span');
-    flag.className = 'wc-setup-flag';
-    flag.textContent = TEAM_FLAGS[name] || '';
-    teamWrap.appendChild(flag);
-    teamName.textContent = name;
-    teamWrap.appendChild(teamName);
-    row.appendChild(teamWrap);
+function renderWcSetupScreen() {
+  renderWcSetupGroups();
+  renderWcSetupRail();
+  bindWcSetupEvents();
+}
 
-    const select = document.createElement('select');
-    select.className = 'wc-setup-ctrl';
-    select.dataset.team = name;
-    const aiOpt = document.createElement('option');
-    aiOpt.value = 'ai';
-    aiOpt.textContent = 'AI';
-    const humanOpt = document.createElement('option');
-    humanOpt.value = 'human';
-    humanOpt.textContent = 'Human';
-    select.appendChild(aiOpt);
-    select.appendChild(humanOpt);
-    row.appendChild(select);
-    list.appendChild(row);
+function renderWcSetupGroups() {
+  const container = document.getElementById('wc-setup-groups');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Update counter
+  const counter = document.getElementById('wc-setup-counter');
+  if (counter) counter.textContent = wcSetupClaimed.length;
+
+  // Group teams by confederation
+  const teamsByConfed = {};
+  for (const team of WC_TEAMS_DATA) {
+    if (!teamsByConfed[team.confed]) teamsByConfed[team.confed] = [];
+    teamsByConfed[team.confed].push(team);
   }
-  const allAi = document.getElementById('wc-setup-all-ai');
-  if (allAi) {
-    allAi.addEventListener('click', () => {
-      for (const sel of document.querySelectorAll('.wc-setup-ctrl')) sel.value = 'ai';
+
+  for (const confed of CONFED_ORDER) {
+    const teams = teamsByConfed[confed];
+    if (!teams || teams.length === 0) continue;
+
+    const section = document.createElement('section');
+    section.className = `wc-setup-confed confed-${CONFED_SLUG[confed]}`;
+
+    const header = document.createElement('div');
+    header.className = 'wc-setup-confed-header';
+    const label = document.createElement('span');
+    label.className = 'wc-setup-confed-label';
+    const dot = document.createElement('span');
+    dot.className = 'wc-setup-confed-dot';
+    const name = document.createElement('span');
+    name.className = 'wc-setup-confed-name';
+    name.textContent = CONFED_LABELS[confed];
+    label.appendChild(dot);
+    label.appendChild(name);
+    const rule = document.createElement('span');
+    rule.className = 'wc-setup-confed-rule';
+    const count = document.createElement('span');
+    count.className = 'wc-setup-confed-count';
+    count.textContent = teams.length;
+    header.appendChild(label);
+    header.appendChild(rule);
+    header.appendChild(count);
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'wc-setup-team-grid';
+
+    for (const team of teams) {
+      const isClaimed = wcSetupClaimed.includes(team.code);
+      const playerNum = isClaimed ? wcSetupClaimed.indexOf(team.code) + 1 : null;
+
+      const chip = document.createElement('button');
+      chip.className = 'wc-setup-team-chip' + (isClaimed ? ' claimed' : '') + ` confed-${CONFED_SLUG[team.confed]}`;
+      chip.dataset.code = team.code;
+      chip.dataset.name = team.name;
+      chip.dataset.confed = team.confed;
+      chip.type = 'button';
+
+      // Flag disc - use emoji with fallback for subdivision flags
+      const flagDisc = document.createElement('div');
+      flagDisc.className = 'wc-setup-flag-disc';
+      // England and Scotland use subdivision flags that may not render
+      const isSubdivision = team.code === 'ENG' || team.code === 'SCO';
+      if (isSubdivision) {
+        flagDisc.innerHTML = `<span class="wc-setup-flag-emoji">${team.flag}</span>`;
+      } else {
+        flagDisc.innerHTML = `<span class="wc-setup-flag-emoji">${team.flag}</span>`;
+      }
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'wc-setup-team-name';
+      nameEl.textContent = team.name;
+
+      const marker = document.createElement('span');
+      marker.className = 'wc-setup-chip-marker';
+      if (isClaimed) {
+        marker.textContent = `P${playerNum}`;
+      } else {
+        marker.textContent = 'AI';
+      }
+
+      chip.appendChild(flagDisc);
+      chip.appendChild(nameEl);
+      chip.appendChild(marker);
+      grid.appendChild(chip);
+    }
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+}
+
+function renderWcSetupRail() {
+  // Update claimed list
+  const claimedEl = document.getElementById('wc-setup-claimed');
+  if (claimedEl) {
+    claimedEl.innerHTML = '';
+    for (let i = 0; i < wcSetupClaimed.length; i++) {
+      const code = wcSetupClaimed[i];
+      const team = WC_TEAMS_DATA.find(t => t.code === code);
+      if (!team) continue;
+
+      const row = document.createElement('div');
+      row.className = `wc-setup-claimed-row confed-${CONFED_SLUG[team.confed]}`;
+      row.dataset.code = code;
+
+      row.innerHTML = `
+        <img class="wc-setup-claimed-flag" src="https://flagcdn.com/w40/${code.toLowerCase()}.png" alt="${team.name} flag" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="wc-setup-flag-emoji" style="display:none; width:28px; height:28px; border-radius:50%; align-items:center; justify-content:center; font-size:16px;">${TEAM_FLAGS[team.name] || ''}</span>
+        <div class="wc-setup-claimed-info">
+          <div class="wc-setup-claimed-name">${team.name}</div>
+          <div class="wc-setup-claimed-meta">Player ${i + 1} · ${team.confed}</div>
+        </div>
+        <button class="wc-setup-claimed-remove" data-code="${code}" aria-label="Remove ${team.name}">×</button>
+      `;
+      claimedEl.appendChild(row);
+    }
+  }
+
+  // Update empty state visibility
+  const emptyEl = document.getElementById('wc-setup-empty');
+  if (emptyEl) {
+    emptyEl.hidden = wcSetupClaimed.length > 0;
+  }
+
+  // Update randomize toggle
+  const randomizeInput = document.getElementById('wc-setup-randomize');
+  if (randomizeInput) {
+    randomizeInput.checked = wcSetupRandomize;
+  }
+  const captionEl = document.getElementById('wc-setup-toggle-caption');
+  if (captionEl) {
+    captionEl.textContent = wcSetupRandomize ? 'Draw is rerolled — seeding ignored.' : 'The real 2026 draw is used.';
+  }
+
+  // Update footer status
+  const footerStatus = document.getElementById('wc-setup-footer-status');
+  if (footerStatus) {
+    if (wcSetupClaimed.length === 0) {
+      footerStatus.textContent = 'Spectator run — 48 AI teams';
+    } else if (wcSetupClaimed.length === 1) {
+      footerStatus.textContent = 'Single-manager run';
+    } else {
+      footerStatus.textContent = `${wcSetupClaimed.length} managers, hot-seat`;
+    }
+  }
+
+  // Update counter
+  const counter = document.getElementById('wc-setup-counter');
+  if (counter) counter.textContent = wcSetupClaimed.length;
+}
+
+function bindWcSetupEvents() {
+  // Team chip clicks
+  document.querySelectorAll('.wc-setup-team-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const code = chip.dataset.code;
+      const idx = wcSetupClaimed.indexOf(code);
+      if (idx >= 0) {
+        // Unclaim
+        wcSetupClaimed.splice(idx, 1);
+      } else {
+        // Claim (max reasonable limit, but don't enforce hard limit)
+        wcSetupClaimed.push(code);
+      }
+      renderWcSetupScreen();
     });
+  });
+
+  // Remove buttons in claimed list
+  document.querySelectorAll('.wc-setup-claimed-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const code = btn.dataset.code;
+      const idx = wcSetupClaimed.indexOf(code);
+      if (idx >= 0) wcSetupClaimed.splice(idx, 1);
+      renderWcSetupScreen();
+    });
+  });
+
+  // Reset button
+  const resetBtn = document.getElementById('wc-setup-reset');
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      wcSetupClaimed = [];
+      renderWcSetupScreen();
+    };
+  }
+
+  // Randomize toggle
+  const randomizeInput = document.getElementById('wc-setup-randomize');
+  if (randomizeInput) {
+    randomizeInput.onchange = () => {
+      wcSetupRandomize = randomizeInput.checked;
+      renderWcSetupRail();
+    };
+  }
+
+  // Start button
+  const startBtn = document.getElementById('wc-setup-start');
+  if (startBtn) {
+    startBtn.onclick = () => startWcFromSetup();
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', handleWcSetupKeydown);
+}
+
+function handleWcSetupKeydown(e) {
+  if (e.key === 'Escape') {
+    closeWcSetup();
+    showWorldCupView();
   }
 }
 
 function startWcFromSetup() {
   wcControllers = {};
-  for (const sel of document.querySelectorAll('.wc-setup-ctrl')) {
-    const teamName = sel.dataset.team;
-    if (sel.value === 'human') {
-      wcControllers[teamName] = { type: 'human' };
+  // Build controllers from claimed teams
+  for (const teamData of WC_TEAMS_DATA) {
+    const idx = wcSetupClaimed.indexOf(teamData.code);
+    if (idx >= 0) {
+      wcControllers[teamData.name] = { type: 'human', playerNum: idx + 1 };
     } else {
-      wcControllers[teamName] = { type: 'ai', player: 'basic-coach' };
+      wcControllers[teamData.name] = { type: 'ai', player: 'basic-coach' };
     }
   }
-  const overlay = document.getElementById('wc-setup-overlay');
-  if (overlay) overlay.classList.add('hidden');
-  const randomize = document.getElementById('wc-setup-randomize');
-  worldCup = createWorldCup(randomize && randomize.checked);
+
+  const screen = document.getElementById('wc-setup-screen');
+  if (screen) screen.classList.add('hidden');
+
+  document.removeEventListener('keydown', handleWcSetupKeydown);
+
+  worldCup = createWorldCup(wcSetupRandomize);
   if (game) {
     game.finished = true;
     game = null;
@@ -335,12 +629,14 @@ function startWcFromSetup() {
   wcKnockoutPowerups = {};
   wcPendingDeckReshuffle = null;
   wcGroupToKnockoutPending = false;
+
   for (const [teamName, ctrl] of Object.entries(wcControllers)) {
     if (ctrl.type === 'human') {
       wcCoachPicksQueue.push({ teamName });
       wcQueueTraining(teamName, 3);
     }
   }
+  showWorldCupScreen();
   renderWorldCupView();
 }
 
@@ -609,7 +905,7 @@ function wcSetContinueLabel(text, teamName) {
     flagSpan.title = teamName;
     worldCupPlayNextBtn.appendChild(flagSpan);
   }
-  const label = document.createTextNode(` Continue: ${text}`);
+  const label = document.createTextNode(text);
   worldCupPlayNextBtn.appendChild(label);
 }
 
@@ -788,8 +1084,9 @@ async function wcContinueStep() {
   wcExtraHalves = 0;
   wcEndingShown = false;
   wcShootout = null;
-  startMatch(start.match.home, start.match.away, startHomeCtrl, startAwayCtrl);
-  showBoard();
+  const matchday = start.matchday || 1;
+  const venue = start.match.venue || (start.group ? `World Cup · Group ${start.group}` : 'World Cup');
+  showTeamSheet(start.match.home, start.match.away, matchday, venue, startHomeCtrl, startAwayCtrl);
 }
 
 function wcShootoutOrder(team) {
@@ -1041,10 +1338,19 @@ function wcPhaseTitle() {
   return `Knockout stage · ${nxt.round}`;
 }
 
-function renderWcViewButtons() {
-  const navItems = document.querySelectorAll('.wc-nav-item[data-view]');
-  navItems.forEach(btn => {
-    const view = btn.dataset.view;
+function renderWcTabs() {
+  const map = [
+    ['wc-tab-overview', 'overview'],
+    ['wc-tab-groups', 'groups'],
+    ['wc-tab-schedule', 'schedule'],
+    ['wc-tab-top', 'top'],
+    ['wc-tab-squad', 'myTeam'],
+    ['wc-tab-deck', 'deck'],
+    ['wc-tab-stats', 'stats'],
+  ];
+  for (const [id, view] of map) {
+    const btn = document.getElementById(id);
+    if (!btn) continue;
     btn.classList.toggle('active', wcStatsView === view);
     if (wcStatsView === view) {
       btn.setAttribute('aria-current', 'true');
@@ -1054,50 +1360,59 @@ function renderWcViewButtons() {
   });
 }
 
+function wcSetTab(view) {
+  wcStatsView = view;
+  renderWorldCupView();
+}
+
 function renderWorldCupView() {
   if (!worldCup) return;
 
-  const phaseEl = document.getElementById('wc-phase');
-  if (phaseEl) phaseEl.textContent = wcPhaseTitle();
-  renderWcViewButtons();
+  renderWcTabs();
+  const isOverview = wcStatsView === 'overview';
+  const isMyTeam = wcStatsView === 'myTeam';
 
-  const contentEl = document.getElementById('world-cup-content');
-  contentEl.innerHTML = '';
+  wcBannerEl.classList.toggle('hidden', isMyTeam);
+  wcTickerEl.classList.toggle('hidden', !isOverview);
+  wcOverviewBodyEl.classList.toggle('hidden', !isOverview);
+  worldCupContentEl.classList.toggle('hidden', isOverview);
+  worldCupScreen.classList.toggle('wc-mt-mode', isMyTeam);
+  const wcActionsEl = worldCupScreen.querySelector('.wc-actions');
+  if (wcActionsEl) wcActionsEl.classList.toggle('hidden', isMyTeam);
 
-  if (worldCup.completed) {
-    const banner = document.createElement('div');
-    banner.className = 'wc-champion-banner';
-    banner.innerHTML = `<span class="wc-champion-icon">🏆</span><span>${worldCup.champion} are World Cup 2026 champions!</span>`;
-    contentEl.appendChild(banner);
-  }
-
-  let viewEl = null;
-  if (wcStatsView === 'fixtures') {
-    viewEl = renderWcFixturesDashboard();
-  } else if (wcStatsView === 'schedule') {
-    viewEl = renderWcSchedule();
-  } else if (wcStatsView === 'standings') {
-    viewEl = renderWcStandings();
-  } else if (wcStatsView === 'top') {
-    viewEl = renderWcTopPlayers();
-  } else if (wcStatsView === 'myTeam') {
-    viewEl = renderWcMyTeam();
-  } else if (wcStatsView === 'knockouts') {
-    viewEl = renderWcKnockoutBracket();
-  } else if (worldCup.phase === 'groups') {
-    viewEl = renderWcFixturesDashboard();
-  } else if (worldCup.rounds.length > 0) {
-    viewEl = renderWcKnockoutBracket();
+  renderWcBanner();
+  if (isOverview) {
+    renderWcOverview();
+  } else {
+    worldCupContentEl.innerHTML = '';
+    if (worldCup.completed) {
+      const banner = document.createElement('div');
+      banner.className = 'world-cup-champion';
+      banner.textContent = `🏆 ${worldCup.champion} are World Cup 2026 champions!`;
+      worldCupContentEl.appendChild(banner);
+    }
+    if (wcStatsView === 'schedule') {
+      worldCupContentEl.appendChild(renderWcSchedule());
+    } else if (wcStatsView === 'groups') {
+      worldCupContentEl.appendChild(renderWorldCupGroups());
+    } else if (wcStatsView === 'stats') {
+      worldCupContentEl.appendChild(renderWcStandings());
+    } else if (wcStatsView === 'top') {
+      worldCupContentEl.appendChild(renderWcTopPlayers());
+    } else if (wcStatsView === 'myTeam') {
+      worldCupContentEl.appendChild(renderWcMyTeam());
+    } else if (wcStatsView === 'deck') {
+      worldCupContentEl.appendChild(renderWcDeckTab());
+    } else if (worldCup.phase === 'groups') {
+      worldCupContentEl.appendChild(renderWorldCupGroups());
+    } else if (worldCup.rounds.length > 0) {
+      worldCupContentEl.appendChild(renderWorldCupBracket());
+    }
   }
 
   if (viewEl) contentEl.appendChild(viewEl);
 
   const nxt = wcNextMatch(worldCup);
-  const nextMatchEl = document.getElementById('wc-next-match');
-  if (nextMatchEl) {
-    nextMatchEl.innerHTML = '';
-    if (nxt) nextMatchEl.appendChild(renderWcUpNextCard(nxt));
-  }
 
   // Pre-decide whether the next human match is preceded by a training session,
   // so the Continue label reflects it before the user clicks. The decision is
@@ -1129,15 +1444,14 @@ function renderWorldCupView() {
     wcSetContinueLabel('Staff Picks', wcCoachPicksQueue[0].teamName);
   } else if (wcTrainingQueue.length > 0 || (wcPendingTrainingPhases && wcPendingTrainingPhases.variants.length > 0)) {
     worldCupPlayNextBtn.disabled = false;
-    // Attack/defense phases are full match-based special training sessions;
-    // the generic queue shows a focus-pick card-training modal.
     const isSpecial = wcPendingTrainingPhases && wcPendingTrainingPhases.variants.length > 0;
     const tTeam = (wcTrainingQueue.length > 0 && wcTrainingQueue[0].teamName) ||
       (wcPendingTrainingPhases && wcPendingTrainingPhases.teamName);
     wcSetContinueLabel(isSpecial ? 'Special Training' : 'Training Session', tTeam || undefined);
   } else if (wcEventQueue.length > 0) {
     worldCupPlayNextBtn.disabled = false;
-    wcSetContinueLabel('Event Phase', wcEventQueue[0].teamName);
+    const queued = wcEventQueue[0];
+    wcSetContinueLabel(queued && queued.event ? `Event: ${queued.event.title}` : 'Event Phase', queued && queued.teamName);
   } else if (nxt) {
     const nextIsHuman =
       wcControllerForTeam(nxt.match.home).type === 'human' ||
@@ -1145,7 +1459,7 @@ function renderWorldCupView() {
     worldCupPlayNextBtn.disabled = false;
     if (nextIsHuman) {
       wcSetContinueLabel(
-        nxt.round ? `Play Next: ${nxt.round}` : 'Play Next Match',
+        nxt.round ? `Kick off · ${nxt.round}` : 'Kick off',
         wcHumanTeamOf(nxt.match.home, nxt.match.away)
       );
     } else {
@@ -1161,234 +1475,865 @@ function renderWorldCupView() {
   }
 }
 
-function renderWcUpNextCard(nxt) {
-  const card = document.createElement('div');
-  card.className = 'wc-upnext-card';
-  const label = nxt.group ? `Group ${nxt.group} · Matchday ${nxt.matchday}` : nxt.round;
-  const homeIsHuman = wcControllerForTeam(nxt.match.home).type === 'human';
-  const awayIsHuman = wcControllerForTeam(nxt.match.away).type === 'human';
-  const isHumanMatch = homeIsHuman || awayIsHuman;
-  
-  card.innerHTML = `
-    <div class="wc-upnext-kicker">${label}</div>
-    <div class="wc-upnext-match">
-      <span class="wc-upnext-team ${homeIsHuman ? 'you' : ''}">${wcTeamName(nxt.match.home)}${homeIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}</span>
-      <span class="wc-upnext-vs">vs</span>
-      <span class="wc-upnext-team ${awayIsHuman ? 'you' : ''}">${wcTeamName(nxt.match.away)}${awayIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}</span>
-    </div>
-    ${isHumanMatch ? '<span class="wc-upnext-tag">Your match</span>' : ''}
-  `;
+// ---------------------------------------------------------------------------
+// Overview screen
+// ---------------------------------------------------------------------------
+
+const WC_VENUES = [
+  'Azteca, Mexico City', 'Estadio Akron, Guadalajara', 'Estadio BBVA, Monterrey',
+  'SoFi Stadium, Los Angeles', 'MetLife Stadium, New York', 'AT&T Stadium, Dallas',
+  'Mercedes-Benz Stadium, Atlanta', 'NRG Stadium, Houston', 'Hard Rock Stadium, Miami',
+  'Gillette Stadium, Boston', 'Lincoln Financial Field, Philadelphia', 'Levi\'s Stadium, San Francisco',
+  'Arrowhead Stadium, Kansas City', 'Lumen Field, Seattle', 'BMO Field, Toronto', 'Estadio Azteca Norte',
+];
+
+function wcHumanTeams() {
+  if (!wcControllers) return [];
+  return Object.keys(wcControllers).filter((name) => wcControllerForTeam(name).type === 'human');
+}
+
+function wcPrimaryHumanTeam() {
+  const humans = wcHumanTeams();
+  return humans.length > 0 ? humans[0] : null;
+}
+
+function wcShortName(name) {
+  const flag = (TEAM_FLAGS && TEAM_FLAGS[name]) || '';
+  const cleaned = name.replace(/[‘’'"]/g, '');
+  let short = cleaned.split(' ')[0];
+  if (short === 'Bosnia') short = 'Bosnia';
+  return flag ? `${flag} ${short}` : short;
+}
+
+function wcVenueFor(stageKey) {
+  let hash = 0;
+  for (let i = 0; i < stageKey.length; i++) hash = (hash * 31 + stageKey.charCodeAt(i)) >>> 0;
+  return WC_VENUES[hash % WC_VENUES.length];
+}
+
+function wcOpponentTraits(opponentName) {
+  const traits = [];
+  const eff = (WC_KNOCKOUT_POWERUPS && WC_KNOCKOUT_POWERUPS[opponentName]) || null;
+  if (eff && TEAM_EFFECTS && TEAM_EFFECTS[eff]) {
+    traits.push({ name: TEAM_EFFECTS[eff].label, effect: TEAM_EFFECTS[eff].explanation });
+  }
+  const level = (TEAMS && TEAMS[opponentName] && TEAMS[opponentName].level);
+  const lvl = typeof level === 'number' ? level : null;
+  if (lvl === 3) traits.push({ name: 'World beaters', effect: 'Top-10 ranked side. Clinical everywhere on the pitch.' });
+  else if (lvl === 2) traits.push({ name: 'Tournament dark horse', effect: 'Slippery mid-ranks. They press high and break fast.' });
+  else traits.push({ name: 'Underdogs', effect: 'Deep block and a dangerous dead-ball threat.' });
+  return traits.slice(0, 2);
+}
+
+function wcMatchdayLine() {
+  const nxt = wcNextMatch(worldCup);
+  if (worldCup.completed) return 'Tournament complete';
+  if (!nxt) return worldCup.phase === 'groups' ? 'Group stage complete' : 'Knockout complete';
+  if (nxt.round) return `${nxt.round} · ${wcVenueFor(nxt.round)}`;
+  return `Matchday ${nxt.matchday} of 3 · ${wcVenueFor('Group ' + (nxt.group || 'A'))}`;
+}
+
+function wcIsUpset(m) {
+  if (m.homeScore === m.awayScore) return false;
+  const winner = m.homeScore > m.awayScore ? m.home : m.away;
+  const loser = winner === m.home ? m.away : m.home;
+  return wcTeamStrength(winner) < wcTeamStrength(loser);
+}
+
+function renderWcBanner() {
+  if (!wcBannerEl) return;
+  wcBannerEl.innerHTML = '';
+  const human = wcPrimaryHumanTeam();
+  const nxt = human ? wcNextMatchForTeam(human) : wcNextMatch(worldCup);
+
+  const left = document.createElement('div');
+  left.className = 'wc-banner-left';
+
+  const kicker = document.createElement('div');
+  kicker.className = 'wc-banner-kicker';
+  kicker.textContent = wcMatchdayLine();
+  left.appendChild(kicker);
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'wc-banner-title';
+  if (worldCup.completed) {
+    titleEl.innerHTML = `${wcTeamName(worldCup.champion)} lift the trophy`;
+  } else if (nxt && human) {
+    const opp = nxt.match.home === human ? nxt.match.away : nxt.match.home;
+    titleEl.innerHTML = `${wcShortName(human)} <span class="wc-banner-vs">vs</span> ${wcShortName(opp)}`;
+  } else if (nxt && !human) {
+    titleEl.textContent = `${wcShortName(nxt.match.home)} vs ${wcShortName(nxt.match.away)}`;
+  } else {
+    titleEl.textContent = 'Next: no fixture scheduled';
+  }
+  left.appendChild(titleEl);
+  wcBannerEl.appendChild(left);
+
+  const mid = document.createElement('div');
+  mid.className = 'wc-banner-mid';
+  if (nxt && human) {
+    const opp = nxt.match.home === human ? nxt.match.away : nxt.match.home;
+    const label = document.createElement('div');
+    label.className = 'wc-banner-label';
+    label.textContent = 'Their traits';
+    mid.appendChild(label);
+    const pills = document.createElement('div');
+    pills.className = 'wc-banner-traits';
+    for (const t of wcOpponentTraits(opp)) {
+      const pill = document.createElement('span');
+      pill.className = 'wc-trait-pill';
+      pill.innerHTML = `<strong>${t.name}</strong> — ${t.effect}`;
+      pills.appendChild(pill);
+    }
+    mid.appendChild(pills);
+  }
+  wcBannerEl.appendChild(mid);
+
+  const right = document.createElement('div');
+  right.className = 'wc-banner-right';
+  if (worldCupPlayNextBtn) {
+    worldCupPlayNextBtn.classList.add('wc-kickoff-btn');
+    right.appendChild(worldCupPlayNextBtn);
+  }
+  wcBannerEl.appendChild(right);
+}
+
+function renderWcTicker() {
+  if (!wcTickerEl) return;
+  wcTickerEl.innerHTML = '';
+  const human = wcPrimaryHumanTeam();
+  const humanGroup = human ? (worldCup.groups.find((g) => g.teams.includes(human)) || {}).name : null;
+  const nxt = wcNextMatch(worldCup);
+  const currentMatchday = nxt && nxt.matchday ? nxt.matchday : 99;
+
+  const played = [];
+  for (const g of worldCup.groups) {
+    for (const m of g.matches) {
+      if (!m.played) continue;
+      played.push({
+        m,
+        label: `Group ${g.name}`,
+        relevant:
+          (human ? g.name !== humanGroup : true) &&
+          (nxt && nxt.group ? m.matchday < currentMatchday || g.name !== nxt.group : true) &&
+          (human ? (m.home !== human && m.away !== human) : true),
+      });
+    }
+  }
+  for (const r of worldCup.rounds) {
+    for (const m of r.matches) {
+      if (!m.played) continue;
+      played.push({ m, label: r.name, relevant: human ? (m.home !== human && m.away !== human) : true });
+    }
+  }
+
+  const ordered = played.sort((a, b) => {
+    // Group matches: later matchdays first
+    const da = a.m.matchday || 0;
+    const db = b.m.matchday || 0;
+    return db - da;
+  });
+
+  const pills = ordered.filter((p) => p.relevant).slice(0, 5);
+  const total = ordered.filter((p) => p.relevant).length;
+
+  for (const entry of pills) {
+    const pill = document.createElement('span');
+    pill.className = 'wc-ticker-pill';
+    if (wcIsUpset(entry.m)) pill.classList.add('upset');
+    const pen = entry.m.pen ? ` (${entry.m.penHome}-${entry.m.penAway})` : '';
+    pill.innerHTML =
+      `<span class="wc-tick-team">${wcShortName(entry.m.home)}</span>` +
+      `<span class="wc-tick-score">${entry.m.homeScore}-${entry.m.awayScore}${pen}</span>` +
+      `<span class="wc-tick-team">${wcShortName(entry.m.away)}</span>`;
+    wcTickerEl.appendChild(pill);
+  }
+
+  const more = total - pills.length;
+  if (more > 0) {
+    const moreEl = document.createElement('span');
+    moreEl.className = 'wc-ticker-more';
+    moreEl.textContent = `+${more} more →`;
+    moreEl.addEventListener('click', () => wcSetTab('groups'));
+    wcTickerEl.appendChild(moreEl);
+  }
+  if (pills.length === 0) {
+    const pill = document.createElement('span');
+    pill.className = 'wc-ticker-pill';
+    pill.textContent = 'No results yet — the first round kicks off soon.';
+    wcTickerEl.appendChild(pill);
+  }
+}
+
+function wcGroupTableFor(teamName) {
+  return worldCup.groups.find((g) => g.teams.includes(teamName)) || null;
+}
+
+function renderWcBody() {
+  if (!wcOverviewBodyEl) return;
+  wcOverviewBodyEl.innerHTML = '';
+  const human = wcPrimaryHumanTeam();
+  if (!human) {
+    const p = document.createElement('p');
+    p.className = 'wc-empty-note';
+    p.textContent = 'No human-controlled team in this World Cup.';
+    wcOverviewBodyEl.appendChild(p);
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-overview-grid';
+
+  const main = document.createElement('div');
+  main.className = 'wc-overview-main';
+
+  const group = wcGroupTableFor(human);
+  const standings = group ? computeGroupStandings(group) : [];
+  main.appendChild(renderWcGroupTable(human, group, standings));
+  main.appendChild(renderWcQualificationCard(human, group, standings));
+  grid.appendChild(main);
+
+  const rail = document.createElement('div');
+  rail.className = 'wc-overview-rail';
+  rail.appendChild(renderWcUnavailableCard(human));
+  rail.appendChild(renderWcInEffectCard(human));
+  rail.appendChild(renderWcGoldenBootCard(human));
+  grid.appendChild(rail);
+
+  wcOverviewBodyEl.appendChild(grid);
+
+  const other = renderWcOtherGroups(human);
+  if (other) wcOverviewBodyEl.appendChild(other);
+}
+
+function renderWcGroupTable(human, group, standings) {
+  const panel = document.createElement('section');
+  panel.className = 'wc-panel wc-group-panel';
+
+  const header = document.createElement('div');
+  header.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = `Group ${group ? group.name : '?'} — your table`;
+  header.appendChild(title);
+  panel.appendChild(header);
+
+  const table = document.createElement('table');
+  table.className = 'wc-table';
+  const thead = document.createElement('thead');
+  thead.innerHTML =
+    '<tr><th class="num">#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr>';
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+
+  const opp = wcNextOpponentFor(human);
+  for (let i = 0; i < standings.length; i++) {
+    const row = standings[i];
+    const tr = document.createElement('tr');
+    if (row.team === human) tr.classList.add('you');
+    if (i >= 2) tr.classList.add('below');
+    const nameTd = document.createElement('td');
+    nameTd.className = 'wc-team';
+    nameTd.innerHTML = wcTeamName(row.team);
+    if (row.team === human) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-you';
+      badge.textContent = 'You';
+      nameTd.appendChild(badge);
+    }
+    if (opp && row.team === opp) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-opp';
+      badge.textContent = 'Next';
+      nameTd.appendChild(badge);
+    }
+    tr.appendChild(nameTd);
+    for (const key of ['P', 'W', 'D', 'L', 'GF', 'GA', 'Pts']) {
+      const td = document.createElement('td');
+      td.textContent = row[key];
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+
+  if (standings.length === 4) {
+    // Insert the cut line between 2nd and 3rd as a visual row.
+    const cut = document.createElement('tr');
+    cut.className = 'wc-cut-row';
+    const cutTd = document.createElement('td');
+    cutTd.colSpan = 9;
+    cutTd.innerHTML = '<span class="wc-cut-line"></span><span class="wc-cut-label">Cut</span>';
+    cut.appendChild(cutTd);
+    tbody.insertBefore(cut, tbody.children[2]);
+  }
+
+  table.appendChild(tbody);
+  panel.appendChild(table);
+  return panel;
+}
+
+function wcNextOpponentFor(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return null;
+  const nxt = wcNextMatch(worldCup);
+  if (nxt && nxt.group === group.name) {
+    if (nxt.match.home === teamName) return nxt.match.away;
+    if (nxt.match.away === teamName) return nxt.match.home;
+  }
+  for (const m of group.matches) {
+    if (m.played) continue;
+    if (m.home === teamName) return m.away;
+    if (m.away === teamName) return m.home;
+  }
+  return null;
+}
+
+function wcTeamIsEliminated(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return false;
+  const done = group.matches.every((m) => m.played);
+  if (!done) return false;
+  const st = computeGroupStandings(group);
+  return st[0].team !== teamName && st[1].team !== teamName && st[2].team !== teamName;
+}
+
+function wcSimResult(home, away) {
+  const hs = wcTeamStrength(home);
+  const as = wcTeamStrength(away);
+  const diff = hs - as;
+  const pHome = 0.42 + diff * 0.008;
+  const pDraw = 0.26;
+  const r = Math.random();
+  if (r < pHome) return { h: 1, a: 0 };
+  if (r < pHome + pDraw) return { h: 0, a: 0 };
+  return { h: 0, a: 1 };
+}
+
+function wcQualificationProjection(teamName) {
+  const group = wcGroupTableFor(teamName);
+  if (!group) return null;
+  const done = group.matches.every((m) => m.played);
+  if (done) {
+    const st = computeGroupStandings(group);
+    const pos = st.findIndex((r) => r.team === teamName);
+    const qualified = pos <= 1;
+    return {
+      pct: qualified ? 100 : 0,
+      sentence: qualified
+        ? 'The group is decided — you are through.'
+        : 'The group is decided — you cannot finish in the top two.',
+      decided: true,
+    };
+  }
+
+  const trials = 240;
+  let count = 0;
+  for (let t = 0; t < trials; t++) {
+    // Simulate every group's remaining matches, then compute final standings.
+    const simGroups = worldCup.groups.map((g) => {
+      const rows = {};
+      for (const tm of g.teams) {
+        rows[tm] = { team: tm, P: 0, W: 0, D: 0, L: 0, GF: 0, GA: 0, GD: 0, Pts: 0 };
+      }
+      for (const m of g.matches) {
+        if (m.played) {
+          const h = rows[m.home], a = rows[m.away];
+          h.P++; a.P++;
+          h.GF += m.homeScore; h.GA += m.awayScore;
+          a.GF += m.awayScore; a.GA += m.homeScore;
+          if (m.homeScore > m.awayScore) { h.W++; h.Pts += 3; a.L++; }
+          else if (m.homeScore < m.awayScore) { a.W++; a.Pts += 3; h.L++; }
+          else { h.D++; a.D++; h.Pts++; a.Pts++; }
+        } else {
+          const sim = wcSimResult(m.home, m.away);
+          const h = rows[m.home], a = rows[m.away];
+          h.P++; a.P++;
+          if (sim.h) { h.GF++; a.GA++; h.W++; h.Pts += 3; a.L++; }
+          else if (sim.a) { a.GF++; h.GA++; a.W++; a.Pts += 3; h.L++; }
+          else { h.D++; a.D++; h.Pts++; a.Pts++; }
+        }
+      }
+      for (const tm of g.teams) rows[tm].GD = rows[tm].GF - rows[tm].GA;
+      return g.teams
+        .map((tm) => rows[tm])
+        .sort((x, y) => {
+          if (y.Pts !== x.Pts) return y.Pts - x.Pts;
+          if (y.GD !== x.GD) return y.GD - x.GD;
+          return y.GF - x.GF;
+        });
+    });
+
+    let qualifies = false;
+    for (const st of simGroups) {
+      if (!st.some((r) => r.team === teamName)) continue;
+      const pos = st.findIndex((r) => r.team === teamName);
+      if (pos <= 1) qualifies = true;
+      else if (pos === 2) {
+        const thirds = simGroups.map((s, gi) => ({ group: WORLD_CUP_GROUPS[gi] ? worldCup.groups[gi].name : '', row: s[2] }));
+        thirds.sort((a, b) => {
+          if (b.row.Pts !== a.row.Pts) return b.row.Pts - a.row.Pts;
+          if (b.row.GD !== a.row.GD) return b.row.GD - a.row.GD;
+          return b.row.GF - a.row.GF;
+        });
+        if (thirds.slice(0, 8).some((x) => x.row.team === teamName)) qualifies = true;
+      }
+    }
+    if (qualifies) count++;
+  }
+
+  const pct = Math.round((count / trials) * 100);
+  let sentence;
+  const st = computeGroupStandings(group);
+  const pos = st.findIndex((r) => r.team === teamName);
+  if (pct >= 95) {
+    sentence = 'A win makes it certain. Even a point keeps it firmly in your own hands.';
+  } else if (pct >= 80) {
+    sentence = 'A win makes it certain. A loss puts it on the last game.';
+  } else if (pct >= 55) {
+    sentence = 'A win all but seals it. A draw still keeps your fate in your hands.';
+  } else if (pct >= 30) {
+    sentence = pos === 2
+      ? 'Still wide open — a win and a helping result should do it.'
+      : 'Still wide open. Win, and you seize control of the group.';
+  } else if (pct > 0) {
+    sentence = 'You need results your way. A win reopens the door.';
+  } else {
+    sentence = 'Mathematically on the brink. Only a near-perfect finish rescues this.';
+  }
+  return { pct, sentence, decided: false };
+}
+
+function renderWcQualificationCard(human, group, standings) {
+  const card = document.createElement('section');
+  card.className = 'wc-panel wc-qual-card';
+  const proj = wcQualificationProjection(human);
+  if (!proj) {
+    card.textContent = 'Qualification projection computes after the first round.';
+    return card;
+  }
+  const pct = document.createElement('div');
+  pct.className = 'wc-qual-pct';
+  pct.textContent = `${proj.pct}%`;
+  card.appendChild(pct);
+  const note = document.createElement('div');
+  note.className = 'wc-qual-note';
+  note.textContent = proj.sentence;
+  card.appendChild(note);
+  const sub = document.createElement('div');
+  sub.className = 'wc-qual-sub';
+  sub.textContent = 'chance to qualify for the knockout rounds';
+  card.appendChild(sub);
   return card;
 }
 
-function renderWcFixturesDashboard() {
-  const wrap = document.createElement('div');
-  wrap.className = 'wc-fixtures-dashboard';
+function wcUnavailableItems(teamName) {
+  const team = wcGetTeam(teamName);
+  const items = [];
+  const out = (worldCup && worldCup.outPlayers && worldCup.outPlayers[teamName]) || {};
+  const suspended = wcSuspendedPlayers[teamName] || [];
+  const debuffs = wcPlayerDebuffs[teamName] || {};
+  const seen = new Set();
 
-  const humanTeams = TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human');
-  const myTeam = humanTeams[0];
-
-  // Hero row - My Group
-  if (myTeam && worldCup.groups) {
-    const myGroup = worldCup.groups.find(g => g.teams.includes(myTeam));
-    if (myGroup) {
-      const heroCard = document.createElement('section');
-      heroCard.className = 'wc-hero-group';
-      heroCard.innerHTML = `
-        <h2 class="wc-hero-title">Group ${myGroup.name}</h2>
-        <div class="wc-hero-main"></div>
-        <div class="wc-hero-side"></div>
-      `;
-      wrap.appendChild(heroCard);
-
-      // Fill hero main with group table
-      const heroMain = heroCard.querySelector('.wc-hero-main');
-      heroMain.appendChild(renderWcGroupTable(myGroup, myTeam));
-
-      // Fill hero side with qualification panel + squad problems
-      const heroSide = heroCard.querySelector('.wc-hero-side');
-      heroSide.appendChild(renderWcQualificationPanel(myGroup, myTeam));
-      // Only render squad problems if TEAMS is initialized
-      if (TEAMS && TEAMS[myTeam]) {
-        heroSide.appendChild(renderWcSquadProblems(myTeam));
+  if (team) {
+    for (const p of team.squad) {
+      if (p.hasEffect('injured') || out[p.name] === 'injured') {
+        if (seen.has(p.name)) continue;
+        seen.add(p.name);
+        items.push({
+          name: p.name,
+          tagClass: 'Inj',
+          tagLabel: 'Inj',
+          note: out[p.name] === 'injured' ? 'injured' : 'injured',
+          star: team.starPlayers.includes(p.name),
+        });
       }
     }
   }
-
-  // Other 11 groups in 4-wide grid
-  const otherGroups = worldCup.groups ? worldCup.groups.filter(g => !g.teams.includes(myTeam)) : [];
-  if (otherGroups.length > 0) {
-    const grid = document.createElement('div');
-    grid.className = 'wc-groups-grid';
-    
-    for (const group of otherGroups) {
-      grid.appendChild(renderWcCompactGroup(group));
-    }
-
-    // 12th slot: How you qualify card
-    const qualifyCard = document.createElement('div');
-    qualifyCard.className = 'wc-qualify-card';
-    qualifyCard.innerHTML = `
-      <h3 class="wc-qualify-title">How you qualify</h3>
-      <div class="wc-qualify-body">
-        <p>Top 2 from each group advance to the Round of 32.</p>
-        <p>The 4 best 3rd-placed teams also qualify.</p>
-        <p class="wc-qualify-note">12 groups × 4 teams = 48 teams. 32 reach knockouts.</p>
-      </div>
-    `;
-    grid.appendChild(qualifyCard);
-    wrap.appendChild(grid);
+  for (const [name, reason] of Object.entries(out)) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({
+      name,
+      tagClass: reason === 'red' ? 'Susp' : 'Back',
+      tagLabel: reason === 'red' ? 'Susp' : 'Back',
+      note: reason === 'red' ? 'sent off' : 'worn out — back next match',
+      star: team ? team.starPlayers.includes(name) : false,
+    });
   }
+  for (const name of suspended) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({ name, tagClass: 'Susp', tagLabel: 'Susp', note: 'suspended', star: team ? team.starPlayers.includes(name) : false });
+  }
+  for (const name of Object.keys(debuffs)) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    items.push({ name, tagClass: 'Back', tagLabel: 'Back', note: 'returns this match', star: team ? team.starPlayers.includes(name) : false });
+  }
+  return items;
+}
 
-  // Projected Round of 32
-  if (worldCup.rounds && worldCup.rounds.length > 0) {
-    const r32 = worldCup.rounds.find(r => r.name === 'Round of 32');
-    if (r32) {
-      const projSection = document.createElement('section');
-      projSection.className = 'wc-projected-ko';
-      projSection.innerHTML = `
-        <h2 class="wc-section-title">Projected Round of 32</h2>
-        <p class="wc-proj-note">Seeding TBC — groups still in progress</p>
-        <div class="wc-proj-grid"></div>
-      `;
-      const projGrid = projSection.querySelector('.wc-proj-grid');
-      for (const m of r32.matches) {
-        projGrid.appendChild(renderWcProjectedTie(m));
+function renderWcUnavailableCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'Unavailable';
+  card.appendChild(head);
+
+  const items = wcUnavailableItems(teamName);
+  if (items.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'Full squad available.';
+    card.appendChild(li);
+    return card;
+  }
+  for (const item of items) {
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row';
+    const top = document.createElement('div');
+    top.className = 'wc-rail-row-top';
+    const name = document.createElement('span');
+    name.className = 'wc-rail-name';
+    name.textContent = item.name;
+    const tag = document.createElement('span');
+    tag.className = `wc-tag wc-tag-${item.tagClass}`;
+    tag.textContent = item.tagLabel;
+    top.appendChild(name);
+    top.appendChild(tag);
+    row.appendChild(top);
+    if (item.star) {
+      const cons = document.createElement('div');
+      cons.className = 'wc-rail-cons';
+      cons.innerHTML = '<strong>Anchor</strong> <span class="wc-arrow">→</span> <strong>Stopgap Pivot</strong> <em>−1 power</em>';
+      row.appendChild(cons);
+    } else {
+      const cons = document.createElement('div');
+      cons.className = 'wc-rail-cons';
+      cons.textContent = 'Slot in from the bench.';
+      row.appendChild(cons);
+    }
+    card.appendChild(row);
+  }
+  return card;
+}
+
+function wcEffectSourceMap(teamName) {
+  const map = {};
+  const coaches = [];
+  if (TEAMS && TEAMS[teamName] && TEAMS[teamName].coaches) coaches.push(...TEAMS[teamName].coaches);
+  if (wcOwnedCoaches && wcOwnedCoaches[teamName]) coaches.push(...wcOwnedCoaches[teamName]);
+  for (const c of coaches) {
+    for (const e of (c.effects || [])) {
+      if (!map[e]) map[e] = c.name;
+    }
+    if (c.cards && c.cards.length) {
+      for (const C of c.cards) {
+        let name = null;
+        try { name = new C().name; } catch (_) {}
+        if (name) map[name] = c.name;
       }
-      wrap.appendChild(projSection);
     }
   }
+  return map;
+}
 
+function wcInEffectItems(teamName) {
+  const team = wcGetTeam(teamName);
+  const source = wcEffectSourceMap(teamName);
+  const items = [];
+
+  if (team) {
+    for (const obj of team.teamEffectObjects) {
+      const name = source[obj.type];
+      items.push({
+        label: `${obj.char} ${obj.label} — ${obj.explanation}`,
+        source: name ? `Coach ${name}` : 'Coach',
+        duration: obj.turns === Infinity ? 'Permanent' : `${obj.turns} left`,
+        permanent: obj.turns === Infinity,
+        positive: true,
+      });
+    }
+  }
+  const teamBuff = wcTeamBuffs[teamName];
+  if (teamBuff) {
+    const turns = teamBuff.turns != null ? teamBuff.turns : 1;
+    items.push({
+      label: 'Team boost — +1 all stats',
+      source: 'Event',
+      duration: turns === Infinity ? 'Permanent' : `${turns} left`,
+      permanent: turns === Infinity,
+      positive: true,
+    });
+  }
+  const recurring = (wcRecurringPenalties && wcRecurringPenalties[teamName]) || 0;
+  if (recurring > 0) {
+    items.push({
+      label: "🎩 Benefactor's curse — a penalty card every match",
+      source: 'Event',
+      duration: `${recurring} left`,
+      permanent: false,
+      positive: false,
+    });
+  }
+  const teamDebuff = wcTeamDebuffs[teamName];
+  if (teamDebuff && teamDebuff.drawPenalty) {
+    items.push({
+      label: `📉 Draw penalty — ${teamDebuff.drawPenalty} fewer card(s) per turn`,
+      source: 'Event',
+      duration: '2 left',
+      permanent: false,
+      positive: false,
+    });
+  }
+  const bonuses = (wcTeamDrawBonuses && wcTeamDrawBonuses[teamName]) || 0;
+  if (bonuses > 0) {
+    items.push({
+      label: `🎟️ Federation prize — +${bonuses} card(s) per turn`,
+      source: 'Event',
+      duration: 'Permanent',
+      permanent: true,
+      positive: true,
+    });
+  }
+  return items;
+}
+
+function renderWcInEffectCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'In effect';
+  card.appendChild(head);
+
+  const items = wcInEffectItems(teamName);
+  if (items.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'No active effects.';
+    card.appendChild(li);
+  }
+  for (const item of items) {
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row';
+    const line = document.createElement('div');
+    line.className = 'wc-rail-effect ' + (item.positive ? 'good' : 'bad');
+    line.textContent = item.label;
+    row.appendChild(line);
+    const meta = document.createElement('div');
+    meta.className = 'wc-rail-meta';
+    const src = document.createElement('span');
+    src.className = 'wc-rail-src';
+    src.textContent = item.source;
+    const dur = document.createElement('span');
+    dur.className = item.permanent ? 'wc-dur wc-dur-perm' : 'wc-dur';
+    dur.textContent = item.duration;
+    meta.appendChild(src);
+    meta.appendChild(dur);
+    row.appendChild(meta);
+    card.appendChild(row);
+  }
+
+  const coaching = (wcCoachPicksQueue && wcCoachPicksQueue.length > 0) || (wcPendingCoaches && wcPendingCoaches[teamName]);
+  const foot = document.createElement('div');
+  foot.className = 'wc-rail-foot';
+  foot.textContent = coaching
+    ? 'A staff pick is coming in this round.'
+    : 'No staff pick expected this round.';
+  card.appendChild(foot);
+  return card;
+}
+
+function wcGoldenBootTop() {
+  return wcTopPlayersAggregate()
+    .filter((p) => (p.weightedGoals || 0) > 0)
+    .sort(
+      (a, b) =>
+        (b.weightedGoals || 0) - (a.weightedGoals || 0) ||
+        (b.assists || 0) - (a.assists || 0)
+    )
+    .slice(0, 3);
+}
+
+function renderWcGoldenBootCard(teamName) {
+  const card = document.createElement('section');
+  card.className = 'wc-rail-card';
+  const head = document.createElement('div');
+  head.className = 'wc-rail-title';
+  head.textContent = 'Golden Boot';
+  card.appendChild(head);
+
+  const top = wcGoldenBootTop();
+  if (top.length === 0) {
+    const li = document.createElement('div');
+    li.className = 'wc-rail-row';
+    li.textContent = 'No goals scored yet.';
+    card.appendChild(li);
+    return card;
+  }
+  for (let i = 0; i < top.length; i++) {
+    const p = top[i];
+    const row = document.createElement('div');
+    row.className = 'wc-rail-row ' + (top.length > i ? 'wc-gb' : '');
+    const med = document.createElement('span');
+    med.className = 'wc-gb-medal';
+    med.textContent = ['🥇', '🥈', '🥉'][i] || '';
+    const info = document.createElement('span');
+    info.className = 'wc-gb-info';
+    info.textContent = `${p.name} — ${p.team || '?'} (${p.weightedGoals})`;
+    row.appendChild(med);
+    row.appendChild(info);
+    if (p.team === teamName) {
+      const badge = document.createElement('span');
+      badge.className = 'wc-badge wc-badge-you';
+      badge.textContent = 'You';
+      row.appendChild(badge);
+    }
+    card.appendChild(row);
+  }
+  return card;
+}
+
+function renderWcOtherGroups(human) {
+  const others = worldCup.groups.filter((g) => !g.teams.includes(human));
+  if (others.length === 0) return null;
+
+  const wrap = document.createElement('section');
+  wrap.className = 'wc-other-groups-wrap';
+  const head = document.createElement('div');
+  head.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = 'The other eleven groups';
+  head.appendChild(title);
+  wrap.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-other-groups';
+  for (const g of others) {
+    const card = document.createElement('button');
+    card.className = 'wc-other-group';
+    card.type = 'button';
+    const name = document.createElement('div');
+    name.className = 'wc-other-group-name';
+    name.textContent = `Group ${g.name}`;
+    card.appendChild(name);
+    const st = computeGroupStandings(g);
+    for (let i = 0; i < st.length; i++) {
+      const row = st[i];
+      const line = document.createElement('div');
+      line.className = 'wc-other-team' + (i < 2 ? ' up' : ' down');
+      const dot = document.createElement('span');
+      dot.className = 'wc-dot';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'wc-other-team-name';
+      nameEl.textContent = wcShortName(row.team);
+      const pts = document.createElement('span');
+      pts.className = 'wc-other-team-pts';
+      pts.textContent = `${row.Pts}`;
+      line.appendChild(dot);
+      line.appendChild(nameEl);
+      line.appendChild(pts);
+      card.appendChild(line);
+    }
+    card.addEventListener('click', () => {
+      wcStatsView = 'groups';
+      renderWorldCupView();
+    });
+    grid.appendChild(card);
+  }
+  wrap.appendChild(grid);
   return wrap;
 }
 
-function renderWcGroupTable(group, myTeam) {
-  const standings = computeGroupStandings(group);
-  const table = document.createElement('table');
-  table.className = 'wc-group-table';
-  table.innerHTML = `
-    <thead>
-      <tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
-    </thead>
-    <tbody></tbody>
-  `;
-  const tbody = table.querySelector('tbody');
-  
-  for (let i = 0; i < standings.length; i++) {
-    const row = standings[i];
-    const isMe = row.team === myTeam;
-    const tr = document.createElement('tr');
-    if (isMe) tr.classList.add('you');
-    else if (i < 2) tr.classList.add('qualifies');
-    else if (i === 2) tr.classList.add('third');
-    
-    const statusBadge = isMe ? '<span class="wc-status you">You</span>' : 
-                       i < 2 ? '<span class="wc-status qualify">Qualifying</span>' :
-                       i === 2 ? '<span class="wc-status third">3rd place</span>' :
-                       '<span class="wc-status out">Out</span>';
-    
-    tr.innerHTML = `
-      <td class="wc-pos">${i + 1}</td>
-      <td class="wc-team">${wcTeamName(row.team)} ${statusBadge}</td>
-      <td>${row.P}</td><td>${row.W}</td><td>${row.D}</td><td>${row.L}</td>
-      <td>${row.GF}</td><td>${row.GA}</td>
-      <td class="wc-gd">${row.GD > 0 ? '+' + row.GD : row.GD}</td>
-      <td class="wc-pts">${row.Pts}</td>
-    `;
-    tbody.appendChild(tr);
+function renderWcDeckTab() {
+  const wrap = document.createElement('div');
+  wrap.className = 'wc-tab-page';
+  const human = wcPrimaryHumanTeam();
+  if (!human) {
+    const p = document.createElement('p');
+    p.className = 'wc-schedule-empty';
+    p.textContent = 'No human teams in this World Cup.';
+    wrap.appendChild(p);
+    return wrap;
   }
-  return table;
-}
+  const team = wcGetTeam(human);
+  const head = document.createElement('div');
+  head.className = 'wc-panel-head';
+  const title = document.createElement('div');
+  title.className = 'wc-panel-title';
+  title.textContent = `${team.name} — deck (${team.actions.length} cards)`;
+  head.appendChild(title);
+  wrap.appendChild(head);
 
-function renderWcCompactGroup(group) {
-  const standings = computeGroupStandings(group);
-  const card = document.createElement('div');
-  card.className = 'wc-compact-group';
-  
-  const nextMatch = group.matches.find(m => !m.played);
-  const nextLine = nextMatch ? `${wcTeamName(nextMatch.home)} vs ${wcTeamName(nextMatch.away)}` : 'All played';
-  
-  card.innerHTML = `
-    <div class="wc-compact-header">
-      <span class="wc-compact-group-label">Group ${group.name}</span>
-    </div>
-    <div class="wc-compact-table">
-      ${standings.map((row, i) => {
-        const dotClass = i < 2 ? 'qualified' : i === 2 ? 'third' : '';
-        const dot = `<span class="wc-dot ${dotClass}" title="${i < 2 ? 'Qualified' : i === 2 ? '3rd place' : ''}"></span>`;
-        return `<div class="wc-compact-row">${dot}${wcTeamName(row.team)} <span class="wc-compact-pts">${row.Pts} pts</span></div>`;
-      }).join('')}
-    </div>
-    <div class="wc-compact-next">Next: ${nextLine}</div>
-  `;
-  return card;
-}
-
-function renderWcQualificationPanel(group, myTeam) {
-  const standings = computeGroupStandings(group);
-  const myRow = standings.find(r => r.team === myTeam);
-  if (!myRow) return document.createElement('div');
-  
-  const card = document.createElement('div');
-  card.className = 'wc-qual-panel';
-  
-  const lastThree = myRow.form || [];
-  const formDots = lastThree.map(r => `<span class="wc-form-dot ${r === 'W' ? 'win' : r === 'D' ? 'draw' : 'loss'}"></span>`).join('');
-  
-  card.innerHTML = `
-    <h3 class="wc-qual-title">Qualification</h3>
-    <div class="wc-qual-stats">
-      <div class="wc-qual-row"><span>Position</span><strong>${standings.findIndex(r => r.team === myTeam) + 1}</strong></div>
-      <div class="wc-qual-row"><span>Points</span><strong>${myRow.Pts}</strong></div>
-      <div class="wc-qual-row"><span>Last 3</span><div class="wc-form">${formDots}</div></div>
-    </div>
-  `;
-  return card;
-}
-
-function renderWcSquadProblems(teamName) {
-  if (!TEAMS) return document.createElement('div');
-  const team = TEAMS[teamName];
-  if (!team) return document.createElement('div');
-  
-  const problems = [];
-  for (const p of team.squad) {
-    if (p.injured) problems.push({ player: p, issue: p.injury || 'Injured', type: 'injury' });
-    else if (p.fatigue && p.fatigue > 70) problems.push({ player: p, issue: `Fatigue ${p.fatigue}%`, type: 'fatigue' });
-    else if (p.doubt) problems.push({ player: p, issue: 'Doubt', type: 'doubt' });
+  const cats = {};
+  for (const card of team.actions) {
+    const c = card.category || 'other';
+    cats[c] = (cats[c] || 0) + 1;
   }
-  
-  if (problems.length === 0) return document.createElement('div');
-  
-  const card = document.createElement('div');
-  card.className = 'wc-squad-problems';
-  card.innerHTML = `
-    <h3 class="wc-squad-title">Squad problems</h3>
-    <ul class="wc-squad-list">
-      ${problems.map(p => `<li><span class="wc-squad-player">${p.player.name}</span><span class="wc-squad-issue ${p.type}">${p.issue}</span></li>`).join('')}
-    </ul>
-  `;
-  return card;
+  const summary = document.createElement('div');
+  summary.className = 'wc-deck-summary';
+  for (const [cat, count] of Object.entries(cats)) {
+    const tag = document.createElement('span');
+    tag.className = `wc-mt-deck-tag category-${cat}`;
+    tag.textContent = `${cat}: ${count}`;
+    summary.appendChild(tag);
+  }
+  wrap.appendChild(summary);
+
+  const grid = document.createElement('div');
+  grid.className = 'wc-deck-grid';
+  const sorted = [...team.actions].sort((a, b) => {
+    const catOrder = { offense: 0, defense: 1, tactical: 2, effect: 3, penalty: 4 };
+    const ca = catOrder[a.category] ?? 5;
+    const cb = catOrder[b.category] ?? 5;
+    if (ca !== cb) return ca - cb;
+    return (b.rarity || 0) - (a.rarity || 0);
+  });
+  for (const card of sorted) {
+    const el = createActionCard(card);
+    el.classList.add('wc-deck-card');
+    grid.appendChild(el);
+  }
+  wrap.appendChild(grid);
+  return wrap;
 }
 
-function renderWcProjectedTie(match) {
-  const homeLabel = match.home === 'TBD' ? 'Winner A' : wcTeamName(match.home);
-  const awayLabel = match.away === 'TBD' ? 'Runner-up B' : wcTeamName(match.away);
-  const homeIsMe = TEAM_NAMES.filter(n => wcControllerForTeam(n).type === 'human').includes(match.home);
-  const awayIsMe = TEAM_NAMES.filter(n => wcControllerForTeam(n).type === 'human').includes(match.away);
-  const isMyPath = homeIsMe || awayIsMe;
-  
-  const card = document.createElement('div');
-  card.className = 'wc-proj-tie' + (isMyPath ? ' my-path' : '');
-  card.innerHTML = `
-    <div class="wc-proj-teams">
-      <span class="wc-proj-team ${homeIsMe ? 'you' : ''}">${homeLabel}${homeIsMe ? ' <span class="wc-you-badge">You</span>' : ''}</span>
-      <span class="wc-proj-vs">vs</span>
-      <span class="wc-proj-team ${awayIsMe ? 'you' : ''}">${awayLabel}${awayIsMe ? ' <span class="wc-you-badge">You</span>' : ''}</span>
-    </div>
-    <span class="wc-proj-tag">${isMyPath ? 'Your path' : 'Seeding TBC'}</span>
-  `;
-  return card;
+function wcGetTeam(teamName) {
+  let team = TEAMS && TEAMS[teamName];
+  if (team) return team;
+  const built = buildTeams([teamName]);
+  team = built[teamName];
+  if (!matchState) {
+    if (!TEAMS) TEAMS = {};
+    TEAMS[teamName] = team;
+  }
+  const trainingCards = wcTrainingCards[teamName] || [];
+  if (trainingCards.length > 0) {
+    team.actions.push(...trainingCards);
+    team.availableActions.push(...trainingCards);
+  }
+  const owned = wcOwnedCoaches[teamName] || [];
+  for (const c of owned) c.applyToTeam(team);
+  const pending = wcPendingCoaches && wcPendingCoaches[teamName];
+  if (pending) pending.applyToTeam(team);
+  if (team.hasTeamEffect('randomBoost') && !wcRandomBoostApplied[team.name]) {
+    wcRandomBoostApplied[team.name] = true;
+    const allEffects = Object.keys(TEAM_EFFECTS).filter((k) => k !== 'randomBoost');
+    const shuffled = allEffects.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 2 && i < shuffled.length; i++) {
+      team.addTeamEffect(shuffled[i], Infinity);
+    }
+  }
+  return team;
+}
+
+function renderWcOverview() {
+  renderWcBanner();
+  renderWcTicker();
+  renderWcBody();
 }
 
 function wcTeamName(name) {
@@ -1573,72 +2518,742 @@ function renderWcSchedule() {
   return wrap;
 }
 
-function renderWcScheduleMatchRow(m, myTeam) {
+// ---- My Squad screen ----
+
+const WC_MT_ROLE_STATS = {
+  GK: [['GK', 'goalkeeping'], ['HDG', 'heading'], ['PAS', 'passing'], ['TAC', 'tacticalThinking']],
+  DF: [['MRK', 'marking'], ['TCK', 'tackling'], ['HDG', 'heading'], ['SPD', 'speed']],
+  MF: [['PAS', 'passing'], ['TAC', 'tacticalThinking'], ['DRI', 'dribbling'], ['TCK', 'tackling']],
+  FW: [['SHT', 'shooting'], ['DRI', 'dribbling'], ['SPD', 'speed'], ['PAS', 'passing']],
+};
+
+const WC_MT_ALL_STATS = [
+  ['SPD', 'speed'], ['MRK', 'marking'], ['TCK', 'tackling'], ['SHT', 'shooting'],
+  ['PAS', 'passing'], ['DRI', 'dribbling'], ['TAC', 'tacticalThinking'],
+  ['HDG', 'heading'], ['GK', 'goalkeeping'],
+];
+
+const WC_MT_POS_STYLE = {
+  GK: { bg: '#f2d06b', fg: '#3a2c05', ring: '#c7a33e' },
+  DF: { bg: '#a5e06f', fg: '#1f3d10', ring: '#6f963e' },
+  MF: { bg: '#2f5bb7', fg: '#ffffff', ring: '#1f3f85' },
+  FW: { bg: '#f0a35e', fg: '#3a1b06', ring: '#c46f2e' },
+};
+
+const WC_MT_STAT_LABEL = {
+  speed: 'speed', marking: 'marking', tackling: 'tackling', shooting: 'shooting',
+  passing: 'passing', dribbling: 'dribbling', tacticalThinking: 'tactical',
+  heading: 'heading', goalkeeping: 'goalkeeping',
+};
+
+function wcMtPosStyle(position) {
+  return WC_MT_POS_STYLE[position] || WC_MT_POS_STYLE.MF;
+}
+
+function wcMtKeyStats(position) {
+  return WC_MT_ROLE_STATS[position] || WC_MT_ROLE_STATS.MF;
+}
+
+function wcMtOvr(player) {
+  const stats = wcMtKeyStats(player.position);
+  const vals = stats.map(([, key]) => player[key] || 0);
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+function wcMtInitials(name) {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+}
+
+function wcMtSurname(name) {
+  const parts = name.split(' ').filter(Boolean);
+  return parts[parts.length - 1] || name;
+}
+
+function wcMtCaptain(team) {
+  const starters = team.currentPlayers || [];
+  const star = starters.find((p) => team.starPlayers && team.starPlayers.includes(p.name));
+  if (star) return star;
+  const sorted = [...starters].sort((a, b) => wcMtOvr(b) - wcMtOvr(a));
+  return sorted[0] || null;
+}
+
+function wcMtCanFlex(pPos, slotPos, cx, cy) {
+  if (pPos === slotPos) return true;
+  if (slotPos === 'MF' && pPos === 'DF' && cx < 5) return true;
+  if (slotPos === 'FW' && pPos === 'MF' && !(cx === 6 && (cy === 2 || cy === 3 || cy === 4))) return true;
+  if (slotPos === 'MF' && pPos === 'FW' && (cy === 0 || cy === 6) && cx >= 5) return true;
+  return false;
+}
+
+function wcMtToPercent(tx, ty, mirrorX) {
+  const vx = ty;
+  const az = mirrorX ? 8 - tx : tx;
+  return {
+    x: 7 + (vx / 6) * 86,
+    y: 9 + (az / 8) * 78,
+  };
+}
+
+function wcMtTemplateSlots(key, mirrorX) {
+  const tmpl = FORMATION_TEMPLATES[key] || FORMATION_TEMPLATES['4-4-2'];
+  const slots = [];
+  for (const [pos, coords] of Object.entries(tmpl)) {
+    const role = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
+    for (const coord of coords) {
+      const pct = wcMtToPercent(coord[0], coord[1], mirrorX);
+      slots.push({ role, rawTx: coord[0], rawTy: coord[1], x: pct.x, y: pct.y });
+    }
+  }
+  return slots;
+}
+
+function wcMtFormationAssignment(team, mirrorX) {
+  const slots = wcMtTemplateSlots(wcSelectedFormation, mirrorX);
+  const used = new Set();
+  const out = [];
+  const placed = new Set();
+
+  for (const p of team.currentPlayers) {
+    const pos = team.formation && team.formation[p.name];
+    if (!pos) continue;
+    const idx = slots.findIndex(
+      (s) => !used.has(s) && s.rawTx === pos[0] && s.rawTy === pos[1] && s.role === (p.position === 'GK' ? 'GK' : p.position)
+    );
+    if (idx !== -1) {
+      const s = slots[idx];
+      used.add(s);
+      out.push({ player: p, x: s.x, y: s.y });
+      placed.add(p.name);
+    }
+  }
+
+  const remaining = team.currentPlayers.filter((p) => !placed.has(p.name));
+  for (const s of slots) {
+    if (used.has(s)) continue;
+    const cx = mirrorX ? 8 - s.rawTx : s.rawTx;
+    let picked = remaining.find(
+      (p) => !placed.has(p.name) && wcMtCanFlex(p.position, s.role, cx, s.rawTy)
+    );
+    if (!picked) picked = remaining.find((p) => !placed.has(p.name));
+    if (picked) {
+      used.add(s);
+      placed.add(picked.name);
+      out.push({ player: picked, x: s.x, y: s.y });
+    }
+  }
+
+  return out;
+}
+
+function wcMtApplyFormation(team, teamName, mirrorX, key) {
+  const tmpl = FORMATION_TEMPLATES[key];
+  if (!tmpl) return;
+  const placed = [];
+  const placedNames = new Set();
+
+  for (const [pos, coords] of Object.entries(tmpl)) {
+    const matchPos = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
+    for (const coord of coords) {
+      const [rawCx, cy] = coord;
+      const cx = mirrorX ? 8 - rawCx : rawCx;
+      const canFlex = (pPos) => wcMtCanFlex(pPos, matchPos, cx, cy);
+      let picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && canFlex(p.position));
+      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && canFlex(p.position));
+      if (!picked) picked = team.currentPlayers.find((p) => !placedNames.has(p.name));
+      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name));
+      if (picked) {
+        placed.push(picked);
+        placedNames.add(picked.name);
+      }
+    }
+  }
+
+  const droppedFromXI = team.currentPlayers.filter((p) => !placedNames.has(p.name));
+  for (const p of droppedFromXI) {
+    const idx = team.substitutedOut.indexOf(p);
+    if (idx !== -1) team.substitutedOut.splice(idx, 1);
+  }
+
+  team.currentPlayers.length = 0;
+  team.currentPlayers.push(...placed);
+  team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
+
+  const newFormation = {};
+  let i = 0;
+  for (const [pos, coords] of Object.entries(tmpl)) {
+    for (const coord of coords) {
+      if (i < placed.length) {
+        newFormation[placed[i].name] = coord;
+        i++;
+      }
+    }
+  }
+
+  wcSelectedFormation = key;
+  wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
+  wcPendingFormationCoords[teamName] = { ...newFormation };
+}
+
+function wcMtUnavailablePlayers(teamName, team) {
+  const list = [];
+  const add = (name, reason, icon) => list.push({ name, reason, icon });
+
+  for (const p of team.squad) {
+    if (p.injured) add(p.name, 'Injured — out until healed', '🤕');
+  }
+
+  const outMap = worldCup && worldCup.outPlayers ? worldCup.outPlayers[teamName] : null;
+  for (const [name, reason] of Object.entries(outMap || {})) {
+    if (reason === 'exhausted') add(name, 'Worn out — out for the next match', '🫠');
+  }
+
+  for (const name of (wcSuspendedPlayers[teamName] || [])) {
+    add(name, 'Suspended — out for the next match', '🚫');
+  }
+
+  const debuffs = wcPlayerDebuffs[teamName] || {};
+  for (const [name, debuff] of Object.entries(debuffs)) {
+    const label = debuff.effect === 'captainUnhappy' ? 'Unhappy' : 'Hungover';
+    add(name, label, debuff.effect === 'captainUnhappy' ? '😒' : '🍺');
+  }
+
+  return list;
+}
+
+function wcMtScoutingNote(player, team) {
+  const all = (team && team.squad) || [player];
+  const best = {};
+  for (const s of all) {
+    for (const [, key] of WC_MT_ALL_STATS) {
+      best[key] = Math.max(best[key] || 0, s[key] || 0);
+    }
+  }
+  for (const [label, key] of WC_MT_ALL_STATS) {
+    const val = player[key] || 0;
+    if (val >= Math.max(best[key], 1) && val >= 8) {
+      return `Highest ${WC_MT_STAT_LABEL[key] || label.toLowerCase()} rating in the squad — ${val}.`;
+    }
+  }
+  if (player.position !== 'GK' && (player.speed || 0) <= 5) {
+    return 'Slow, so exposed on a counter.';
+  }
+  return 'Reliable all-rounder — fits any system.';
+}
+
+function wcMtEffectChip(team) {
+  const buff = wcTeamBuffs && wcTeamBuffs[team.name];
+  if (buff) {
+    const entries = Object.entries(buff).filter(
+      ([k, v]) =>
+        k !== 'turns' &&
+        k !== 'teamMoralePenalty' &&
+        k !== 'mediaFrenzyMorale' &&
+        k !== 'teamMoraleBoost' &&
+        k !== 'deckReshuffle' &&
+        k !== 'drawBonus' &&
+        typeof v === 'number' &&
+        v !== 0
+    );
+    if (entries.length > 0) {
+      const [stat, delta] = entries[0];
+      const text = stat === 'tacticalThinking'
+        ? `Tactical calm — +${delta} tactical thinking, whole team`
+        : `${delta > 0 ? '+' : ''}${delta} ${WC_MT_STAT_LABEL[stat] || stat}, whole team`;
+      const chip = document.createElement('span');
+      chip.className = 'wc-mt-chip wc-mt-chip-effect';
+      chip.textContent = text;
+      return chip;
+    }
+  }
+  if (team.teamEffectObjects && team.teamEffectObjects.length > 0) {
+    const obj = team.teamEffectObjects[0];
+    const turns = obj.turns === Infinity ? '' : ` (${obj.turns}t)`;
+    const chip = document.createElement('span');
+    chip.className = 'wc-mt-chip wc-mt-chip-effect';
+    chip.textContent = `${obj.char} ${obj.label}${turns} — ${obj.explanation}`;
+    return chip;
+  }
+  return null;
+}
+
+function wcMtNextChip(teamName) {
+  const chip = document.createElement('span');
+  chip.className = 'wc-mt-chip wc-mt-chip-surface';
+  const nxt = wcNextMatchForTeam(teamName);
+  if (!nxt) {
+    chip.textContent = 'Next · no fixture yet';
+    return chip;
+  }
+  const opp = nxt.match.home === teamName ? nxt.match.away : nxt.match.home;
+  const stage = nxt.round || `MD${nxt.matchday}`;
+  const venue = wcVenueFor(nxt.round || ('Group ' + (nxt.group || 'A')));
+  chip.textContent = `Next · vs ${wcShortName(opp)} · ${stage} · ${venue.split(',')[0]}`;
+  return chip;
+}
+
+function showWcStaffModal(team) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'wc-modal shot-modal halftime-modal';
+  modal.style.maxWidth = '560px';
+
+  const content = document.createElement('div');
+  content.className = 'shot-modal-content halftime-content';
+
+  const title = document.createElement('div');
+  title.className = 'halftime-title';
+  title.textContent = 'Staff Picks';
+  content.appendChild(title);
+
+  const staff = (team.coaches && team.coaches.slice()) || [];
+  if (staff.length === 0) {
+    const none = document.createElement('div');
+    none.style.cssText = 'color:#6a6157;font-size:14px;text-align:center;padding:24px 0;';
+    none.textContent = 'No staff hired yet.';
+    content.appendChild(none);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+    for (const coach of staff) {
+      const card = document.createElement('div');
+      card.className = 'wc-mt-staff-card';
+      const effects = (coach.effects || []).map((e) => {
+        const spec = TEAM_EFFECTS && TEAM_EFFECTS[e];
+        return spec ? `${spec.char} ${spec.explanation}` : e;
+      }).join(' ');
+      const cards = (coach.cards || []).map((C) => {
+        try { return `⚠️ ${new C().name}`; } catch (err) { return ''; }
+      }).filter(Boolean).join(', ');
+      card.innerHTML =
+        `<div class="wc-mt-staff-name">${coach.name}</div>` +
+        `<div class="wc-mt-staff-desc">${effects}${cards ? ' · ' + cards : ''}</div>`;
+      wrap.appendChild(card);
+    }
+    content.appendChild(wrap);
+  }
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'event-phase-option';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => overlay.remove());
+  content.appendChild(closeBtn);
+
+  modal.appendChild(content);
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function wcMtPitchMarkings() {
+  const frag = document.createDocumentFragment();
+  const mk = (cls, styles) => {
+    const d = document.createElement('div');
+    d.className = cls;
+    if (styles) for (const [k, v] of Object.entries(styles)) d.style[k] = v;
+    return d;
+  };
+
+  frag.appendChild(mk('wc-mt-line', {
+    top: '10px', left: '10px', right: '10px', bottom: '10px',
+    border: '2px solid rgba(255,255,255,.42)', borderRadius: '14px',
+  }));
+  frag.appendChild(mk('wc-mt-line', {
+    top: '50%', left: '10px', right: '10px', height: '2px',
+    transform: 'translateY(-50%)', background: 'rgba(255,255,255,.42)',
+  }));
+  frag.appendChild(mk('wc-mt-centre-circle'));
+  frag.appendChild(mk('wc-mt-centre-spot'));
+
+  for (const end of ['top', 'bottom']) {
+    frag.appendChild(mk('wc-mt-box wc-mt-penalty', { [end]: '10px' }));
+    frag.appendChild(mk('wc-mt-box wc-mt-sixyard', { [end]: '10px' }));
+    frag.appendChild(mk('wc-mt-spot', { [end]: 'calc(10px + 12%)' }));
+  }
+
+  return frag;
+}
+
+function wcMtToken(player, xPct, yPct) {
+  const meta = wcMtPosStyle(player.position);
+  const tok = document.createElement('button');
+  tok.type = 'button';
+  tok.className = 'wc-mt-token' + (wcMyTeamSelected === player ? ' selected' : '');
+  tok.style.left = xPct + '%';
+  tok.style.top = yPct + '%';
+  tok.style.background = meta.bg;
+  tok.style.color = meta.fg;
+  tok.style.setProperty('--ring', meta.ring);
+  tok.textContent = wcMtInitials(player.name);
+  tok.title = `${player.name} (${player.position})`;
+
+  const surname = document.createElement('span');
+  surname.className = 'wc-mt-token-name';
+  surname.textContent = wcMtSurname(player.name);
+  tok.appendChild(surname);
+
+  tok.addEventListener('click', () => {
+    wcMyTeamSelected = wcMyTeamSelected === player ? null : player;
+    renderWorldCupView();
+  });
+
+  return tok;
+}
+
+function wcMtStatUnit(label, value) {
+  const unit = document.createElement('div');
+  unit.className = 'wc-mt-stat';
+
+  const lab = document.createElement('span');
+  lab.className = 'wc-mt-stat-label';
+  lab.textContent = label;
+
+  const body = document.createElement('span');
+  body.className = 'wc-mt-stat-body';
+  const bar = document.createElement('span');
+  bar.className = 'wc-mt-stat-bar';
+  const fill = document.createElement('i');
+  fill.style.width = Math.max(5, Math.round((value / 12) * 100)) + '%';
+  bar.appendChild(fill);
+  const val = document.createElement('span');
+  val.className = 'wc-mt-stat-val';
+  val.textContent = value;
+  body.appendChild(bar);
+  body.appendChild(val);
+
+  unit.appendChild(lab);
+  unit.appendChild(body);
+  return unit;
+}
+
+function wcMtPlayerRow(player, team) {
+  const isOpen = wcMyTeamSelected === player;
+  const meta = wcMtPosStyle(player.position);
+
   const row = document.createElement('div');
-  row.className = 'wc-schedule-match';
-  const isMyMatch = m.home === myTeam || m.away === myTeam;
-  if (isMyMatch) row.classList.add('my-match');
-  
-  const homeIsHuman = wcControllerForTeam(m.home).type === 'human';
-  const awayIsHuman = wcControllerForTeam(m.away).type === 'human';
-  
-  const status = m.played ? 'Full time' : 'Kick-off';
-  const timeStr = m.played ? '' : ` · ${m.kickoff || 'TBD'}`;
-  
-  const homeScore = m.played ? m.homeScore : '';
-  const awayScore = m.played ? m.awayScore : '';
-  const homeWon = m.played && m.winner === m.home;
-  const awayWon = m.played && m.winner === m.away;
-  
-  row.innerHTML = `
-    <span class="wc-sched-group-badge">${m.group}</span>
-    <div class="wc-sched-teams">
-      <div class="wc-sched-team ${homeWon ? 'won' : ''} ${awayWon ? 'lost' : ''} ${homeIsHuman ? 'you' : ''}">
-        ${wcTeamName(m.home)}${homeIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}
-        ${m.played ? `<span class="wc-sched-score">${homeScore}</span>` : ''}
-      </div>
-      <div class="wc-sched-team ${awayWon ? 'won' : ''} ${homeWon ? 'lost' : ''} ${awayIsHuman ? 'you' : ''}">
-        ${wcTeamName(m.away)}${awayIsHuman ? ' <span class="wc-you-badge">You</span>' : ''}
-        ${m.played ? `<span class="wc-sched-score">${awayScore}</span>` : ''}
-      </div>
-    </div>
-    <div class="wc-sched-status">${status}${timeStr}</div>
-  `;
+  row.className = 'wc-mt-row' + (isOpen ? ' open' : '');
+
+  const top = document.createElement('div');
+  top.className = 'wc-mt-row-top';
+
+  const disc = document.createElement('span');
+  disc.className = 'wc-mt-disc';
+  disc.style.background = meta.bg;
+  disc.style.color = meta.fg;
+  disc.style.setProperty('--ring', meta.ring);
+  disc.textContent = wcMtInitials(player.name);
+
+  const info = document.createElement('div');
+  info.className = 'wc-mt-mini-info';
+  const nameEl = document.createElement('div');
+  nameEl.className = 'wc-mt-mini-name';
+  nameEl.textContent = player.name;
+  const metaEl = document.createElement('div');
+  metaEl.className = 'wc-mt-mini-meta';
+  metaEl.textContent = `${player.position} · ${player.age}yo`;
+  info.appendChild(nameEl);
+  info.appendChild(metaEl);
+
+  const stats = document.createElement('div');
+  stats.className = 'wc-mt-mini-stats';
+  for (const [label, key] of wcMtKeyStats(player.position)) {
+    stats.appendChild(wcMtStatUnit(label, player[key] || 0));
+  }
+
+  const ovr = document.createElement('div');
+  ovr.className = 'wc-mt-ovr';
+  const ovrNum = document.createElement('span');
+  ovrNum.className = 'wc-mt-ovr-num';
+  ovrNum.textContent = wcMtOvr(player).toFixed(1);
+  const ovrLabel = document.createElement('span');
+  ovrLabel.className = 'wc-mt-ovr-label';
+  ovrLabel.textContent = 'OVR';
+  ovr.appendChild(ovrNum);
+  ovr.appendChild(ovrLabel);
+
+  top.appendChild(disc);
+  top.appendChild(info);
+  top.appendChild(stats);
+  top.appendChild(ovr);
+  row.appendChild(top);
+
+  const toggle = () => {
+    wcMyTeamSelected = wcMyTeamSelected === player ? null : player;
+    renderWorldCupView();
+  };
+  top.addEventListener('click', toggle);
+  top.setAttribute('tabindex', '0');
+  top.setAttribute('role', 'button');
+  top.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  top.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  if (isOpen) {
+    const body = document.createElement('div');
+    body.className = 'wc-mt-row-body';
+
+    const grid = document.createElement('div');
+    grid.className = 'wc-mt-stats-grid';
+    for (const [label, key] of WC_MT_ALL_STATS) {
+      grid.appendChild(wcMtStatUnit(label, player[key] || 0));
+    }
+    body.appendChild(grid);
+
+    const note = document.createElement('div');
+    note.className = 'wc-mt-note';
+    note.textContent = wcMtScoutingNote(player, team);
+    body.appendChild(note);
+
+    row.appendChild(body);
+  }
+
   return row;
 }
 
-function paintWcPitchLines(cell, x, y) {
-  const sides = [];
+function renderWcMtHeader(team, teamName) {
+  const header = document.createElement('div');
+  header.className = 'wc-mt-header';
 
-  if (x === 0) sides.push('left');
-  if (x === 8) sides.push('right');
-  if (y === 0) sides.push('top');
-  if (y === 6) sides.push('bottom');
+  const identity = document.createElement('div');
+  identity.className = 'wc-mt-identity';
 
-  if (x === 4) sides.push('midR');
-  if (x === 5) sides.push('midL');
+  const flag = document.createElement('span');
+  flag.className = 'wc-mt-flag';
+  flag.textContent = TEAM_FLAGS[teamName] || '🏳️';
 
-  const inBoxRows = y >= 2 && y <= 4;
-  if ((x === 0 || x === 1) && inBoxRows) {
-    cell.classList.add('wc-box-left');
-    if (x === 0) sides.push('boxGoalLeft');
-    if (x === 1) sides.push('boxFrontLeft');
-    if (y === 2) sides.push('boxTop');
-    if (y === 4) sides.push('boxBottom');
-  }
-  if ((x === 7 || x === 8) && inBoxRows) {
-    cell.classList.add('wc-box-right');
-    if (x === 7) sides.push('boxFrontRight');
-    if (x === 8) sides.push('boxGoalRight');
-    if (y === 2) sides.push('boxTop');
-    if (y === 4) sides.push('boxBottom');
-  }
+  const nameCol = document.createElement('div');
+  nameCol.className = 'wc-mt-name-col';
+  const name = document.createElement('div');
+  name.className = 'wc-mt-name';
+  name.textContent = teamName;
+  const sub = document.createElement('div');
+  sub.className = 'wc-mt-sub';
+  const captain = wcMtCaptain(team);
+  const caps = captain ? wcMtSurname(captain.name) : 'No captain';
+  sub.textContent = `${team.squad.length} players · ${wcSelectedFormation} · ${caps} captains`;
+  nameCol.appendChild(name);
+  nameCol.appendChild(sub);
 
-  for (const s of sides) cell.classList.add(`wc-line-${s}`);
+  identity.appendChild(flag);
+  identity.appendChild(nameCol);
+
+  const side = document.createElement('div');
+  side.className = 'wc-mt-header-side';
+
+  const effectChip = wcMtEffectChip(team);
+  if (effectChip) side.appendChild(effectChip);
+
+  side.appendChild(wcMtNextChip(teamName));
+
+  const staffBtn = document.createElement('button');
+  staffBtn.className = 'wc-mt-staff-btn';
+  staffBtn.textContent = 'Staff picks';
+  staffBtn.addEventListener('click', () => showWcStaffModal(team));
+  side.appendChild(staffBtn);
+
+  header.appendChild(identity);
+  header.appendChild(side);
+  return header;
 }
 
-function renderWcMyTeam() {  const wrap = document.createElement('div');
-  wrap.className = 'wc-my-team';
+function renderWcMtPitch(team, teamName, mirrorX) {
+  const col = document.createElement('div');
+  col.className = 'wc-mt-pitch-col';
+
+  const panel = document.createElement('div');
+  panel.className = 'wc-mt-pitch-panel';
+
+  const pills = document.createElement('div');
+  pills.className = 'wc-mt-form-pills';
+  for (const key of Object.keys(FORMATION_TEMPLATES)) {
+    const pill = document.createElement('button');
+    pill.className = 'wc-mt-form-pill' + (key === wcSelectedFormation ? ' active' : '');
+    pill.textContent = key;
+    pill.type = 'button';
+    pill.addEventListener('click', () => {
+      if (key === wcSelectedFormation) return;
+      wcMtApplyFormation(team, teamName, mirrorX, key);
+      wcMyTeamSelected = null;
+      renderWorldCupView();
+    });
+    pills.appendChild(pill);
+  }
+  panel.appendChild(pills);
+
+  const field = document.createElement('div');
+  field.className = 'wc-mt-pitch-field';
+  field.appendChild(wcMtPitchMarkings());
+  for (const slot of wcMtFormationAssignment(team, mirrorX)) {
+    field.appendChild(wcMtToken(slot.player, slot.x, slot.y));
+  }
+  panel.appendChild(field);
+
+  col.appendChild(panel);
+  return col;
+}
+
+function renderWcMtList(team, teamName) {
+  const col = document.createElement('div');
+  col.className = 'wc-mt-list-col';
+
+  const seg = document.createElement('div');
+  seg.className = 'wc-mt-seg';
+  const bench = team.availableSubstitutes();
+  const unavail = wcMtUnavailablePlayers(teamName, team);
+  const segments = [
+    ['xi', `Starting XI (${team.currentPlayers.length})`],
+    ['bench', `Bench (${bench.length})`],
+    ['out', `Unavailable (${unavail.length})`],
+  ];
+  for (const [key, label] of segments) {
+    const btn = document.createElement('button');
+    btn.className = 'wc-mt-seg-btn' + (wcMyTeamTab === key ? ' active' : '');
+    btn.textContent = label;
+    btn.type = 'button';
+    btn.addEventListener('click', () => {
+      wcMyTeamTab = key;
+      wcMyTeamSelected = null;
+      renderWorldCupView();
+    });
+    seg.appendChild(btn);
+  }
+  col.appendChild(seg);
+
+  const list = document.createElement('div');
+  list.className = 'wc-mt-list';
+
+  if (wcMyTeamTab === 'out') {
+    if (unavail.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'wc-mt-empty';
+      const emptyTitle = document.createElement('div');
+      emptyTitle.className = 'wc-mt-empty-title';
+      emptyTitle.textContent = 'All fit';
+      const emptyDesc = document.createElement('div');
+      emptyDesc.className = 'wc-mt-empty-desc';
+      emptyDesc.textContent = 'Everyone is fit — no injuries, no suspensions, nothing to work around.';
+      empty.appendChild(emptyTitle);
+      empty.appendChild(emptyDesc);
+      list.appendChild(empty);
+    } else {
+      for (const u of unavail) {
+        const row = document.createElement('div');
+        row.className = 'wc-mt-row wc-mt-row-unavail';
+        const icon = document.createElement('span');
+        icon.className = 'wc-mt-unavail-icon';
+        icon.textContent = u.icon;
+        const blk = document.createElement('div');
+        blk.className = 'wc-mt-mini-info';
+        const nameEl = document.createElement('div');
+        nameEl.className = 'wc-mt-mini-name';
+        nameEl.textContent = u.name;
+        const reasonEl = document.createElement('div');
+        reasonEl.className = 'wc-mt-unavail-reason';
+        reasonEl.textContent = u.reason;
+        blk.appendChild(nameEl);
+        blk.appendChild(reasonEl);
+        row.appendChild(icon);
+        row.appendChild(blk);
+        list.appendChild(row);
+      }
+    }
+  } else {
+    const players = wcMyTeamTab === 'xi' ? team.currentPlayers : bench;
+    if (players.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'wc-mt-empty';
+      const emptyTitle = document.createElement('div');
+      emptyTitle.className = 'wc-mt-empty-title';
+      emptyTitle.textContent = 'Nobody here';
+      const emptyDesc = document.createElement('div');
+      emptyDesc.className = 'wc-mt-empty-desc';
+      emptyDesc.textContent = 'No players in this group.';
+      empty.appendChild(emptyTitle);
+      empty.appendChild(emptyDesc);
+      list.appendChild(empty);
+    }
+    for (const p of players) {
+      list.appendChild(wcMtPlayerRow(p, team));
+    }
+  }
+
+  col.appendChild(list);
+  return col;
+}
+
+function renderWcMtFooter(team, teamName, preMatch) {
+  const footer = document.createElement('footer');
+  footer.className = 'wc-mt-footer';
+
+  const count = document.createElement('span');
+  count.className = 'wc-mt-deck-count';
+  count.textContent = `Deck — ${team.actions.length} cards`;
+  footer.appendChild(count);
+
+  const cats = {};
+  for (const card of team.actions) {
+    const c = card.category || 'other';
+    cats[c] = (cats[c] || 0) + 1;
+  }
+  const catLabel = {
+    offense: 'Offense', defense: 'Defense', tactical: 'Tactical',
+    effect: 'Effect', penalty: 'Penalty', other: 'Other',
+  };
+  for (const [cat, n] of Object.entries(cats)) {
+    const chip = document.createElement('span');
+    chip.className = 'wc-mt-cat-chip';
+    const swatch = document.createElement('span');
+    swatch.className = `wc-mt-cat-swatch sw-${cat}`;
+    chip.appendChild(swatch);
+    chip.appendChild(document.createTextNode(`${catLabel[cat] || cat} ${n}`));
+    footer.appendChild(chip);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'wc-mt-foot-actions';
+
+  const deckBtn = document.createElement('button');
+  deckBtn.className = 'wc-mt-chrome-btn';
+  deckBtn.textContent = 'View deck';
+  deckBtn.type = 'button';
+  deckBtn.addEventListener('click', () => showWcDeckModal(team));
+  actions.appendChild(deckBtn);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'wc-mt-chrome-btn';
+  saveBtn.textContent = 'Save / Load';
+  saveBtn.type = 'button';
+  saveBtn.addEventListener('click', () => openWcSaveLoadModal());
+  actions.appendChild(saveBtn);
+
+  if (preMatch) {
+    const escBtn = document.createElement('button');
+    escBtn.className = 'wc-mt-chrome-btn';
+    escBtn.textContent = 'Esc · Menu';
+    escBtn.type = 'button';
+    escBtn.addEventListener('click', () => openWcSaveLoadModal());
+    actions.appendChild(escBtn);
+  }
+
+  footer.appendChild(actions);
+  return footer;
+}
+
+function renderWcMyTeam(opts) {
+  const wrap = document.createElement('div');
+  wrap.className = 'wc-mt-screen';
+  const preMatch = !!(opts && opts.variant === 'pre');
 
   const humanTeams = TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human');
   if (humanTeams.length === 0) {
@@ -1650,12 +3265,9 @@ function renderWcMyTeam() {  const wrap = document.createElement('div');
   }
 
   const teamName = humanTeams[0];
-  console.log('[MyTeam] renderWcMyTeam called, TEAMS=', TEAMS ? 'exists' : 'null', 'teamName=', teamName);
   let team = TEAMS && TEAMS[teamName];
-  console.log('[MyTeam] team from TEAMS=', team ? team.name : 'null/undefined');
-  const mirrorX = team && team.side === 'right';
+
   if (!team) {
-    console.log('[MyTeam] building team from scratch');
     const built = buildTeams([teamName]);
     team = built[teamName];
     if (!matchState) {
@@ -1680,6 +3292,7 @@ function renderWcMyTeam() {  const wrap = document.createElement('div');
       }
     }
   }
+
   const pendingNames = wcPendingLineup[teamName];
   if (pendingNames && pendingNames.length === 11) {
     const pendingStarters = pendingNames
@@ -1696,528 +3309,21 @@ function renderWcMyTeam() {  const wrap = document.createElement('div');
     }
   }
 
-  // --- Team Header ---
-  const header = document.createElement('div');
-  header.className = 'wc-mt-header';
-  header.style.borderLeftColor = team.primaryColor;
-  header.innerHTML = `<span class="wc-mt-team-name">${teamName}</span>` +
-    (team.coaches.length > 0 ? `<span class="wc-mt-coach-line">Coach: ${team.coaches.map((c) => c.name).join(', ')}</span>` : '');
-  wrap.appendChild(header);
+  if (!wcSelectedFormation) wcSelectedFormation = Object.keys(FORMATION_TEMPLATES)[0] || '4-4-2';
+  const mirrorX = team && team.side === 'right';
 
-  // --- Section: Starting XI ---
-  const xiSection = document.createElement('div');
-  xiSection.className = 'wc-mt-section';
-  xiSection.innerHTML = '<div class="wc-mt-section-title">Starting XI <span class="wc-mt-hint">(click to swap with bench)</span></div>';
-  const xiGrid = document.createElement('div');
-  xiGrid.className = 'wc-mt-players';
-  for (const player of team.currentPlayers) {
-    const el = renderWcMiniPlayer(player, team.primaryColor);
-    el.classList.add('wc-mt-player-selectable');
-    el.addEventListener('click', () => {
-      if (wcMyTeamSelected) {
-        const inCurrent = team.currentPlayers.includes(player);
-        const selectedInCurrent = team.currentPlayers.includes(wcMyTeamSelected);
-        if (inCurrent && !selectedInCurrent) {
-          const outIdx = team.currentPlayers.indexOf(player);
-          const benchList = team.availableSubstitutes();
-          const inIdx = benchList.indexOf(wcMyTeamSelected);
-          if (outIdx !== -1 && inIdx !== -1) {
-            const slot = team.formation[player.name];
-            const [rawSx, sy] = slot || [4, 3];
-            const sx = mirrorX ? 8 - rawSx : rawSx;
-            const canFlex = (pPos, slotPos) => {
-              if (pPos === slotPos) return true;
-              if (slotPos === 'MF' && pPos === 'DF' && sx < 5) return true;
-              if (slotPos === 'FW' && pPos === 'MF' && !(sx === 6 && (sy === 2 || sy === 3 || sy === 4))) return true;
-              if (slotPos === 'MF' && pPos === 'FW' && (sy === 0 || sy === 6) && sx >= 5) return true;
-              return false;
-            };
-            if (canFlex(wcMyTeamSelected.position, player.position)) {
-              team.currentPlayers[outIdx] = wcMyTeamSelected;
-              if (slot) {
-                team.formation[wcMyTeamSelected.name] = slot;
-                delete team.formation[player.name];
-              }
-              wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
-              wcPendingFormationCoords[teamName] = { ...team.formation };
-            }
-          }
-        }
-        wcMyTeamSelected = null;
-        renderWorldCupView();
-        return;
-      }
-      wcMyTeamSelected = player;
-      renderWorldCupView();
-    });
-    if (wcMyTeamSelected === player) el.classList.add('wc-mt-player-selected');
-    xiGrid.appendChild(el);
-  }
-  xiSection.appendChild(xiGrid);
-  wrap.appendChild(xiSection);
-
-  // --- Section: Bench ---
-  const bench = team.availableSubstitutes();
-  console.log('[MyTeam] bench=', bench.map(p => p.name + '(' + p.position + ')'), 'substitutedOut=', team.substitutedOut.map(p => p.name));
-  if (bench.length > 0) {
-    const benchSection = document.createElement('div');
-    benchSection.className = 'wc-mt-section';
-    benchSection.innerHTML = '<div class="wc-mt-section-title">Bench</div>';
-    const benchGrid = document.createElement('div');
-    benchGrid.className = 'wc-mt-players';
-    for (const player of bench) {
-      const el = renderWcMiniPlayer(player, team.reserveColor);
-      el.classList.add('wc-mt-player-selectable');
-      el.addEventListener('click', () => {
-        if (wcMyTeamSelected) {
-          const inCurrent = team.currentPlayers.includes(player);
-          const selectedInCurrent = team.currentPlayers.includes(wcMyTeamSelected);
-          if (!inCurrent && selectedInCurrent) {
-            const outIdx = team.currentPlayers.indexOf(wcMyTeamSelected);
-            if (outIdx !== -1) {
-              const slot = team.formation[wcMyTeamSelected.name];
-              const [rawSx, sy] = slot || [4, 3];
-              const sx = mirrorX ? 8 - rawSx : rawSx;
-              const canFlex = (pPos, slotPos) => {
-                if (pPos === slotPos) return true;
-                if (slotPos === 'MF' && pPos === 'DF' && sx < 5) return true;
-                if (slotPos === 'FW' && pPos === 'MF' && !(sx === 6 && (sy === 2 || sy === 3 || sy === 4))) return true;
-                if (slotPos === 'MF' && pPos === 'FW' && (sy === 0 || sy === 6) && sx >= 5) return true;
-                return false;
-              };
-              if (canFlex(player.position, wcMyTeamSelected.position)) {
-                team.currentPlayers[outIdx] = player;
-                if (slot) {
-                  team.formation[player.name] = slot;
-                  delete team.formation[wcMyTeamSelected.name];
-                }
-                wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
-                wcPendingFormationCoords[teamName] = { ...team.formation };
-              }
-            }
-          }
-          wcMyTeamSelected = null;
-          renderWorldCupView();
-          return;
-        }
-        wcMyTeamSelected = player;
-        renderWorldCupView();
-      });
-      if (wcMyTeamSelected === player) el.classList.add('wc-mt-player-selected');
-      benchGrid.appendChild(el);
-    }
-    benchSection.appendChild(benchGrid);
-    wrap.appendChild(benchSection);
-  }
-
-  // --- Section: Coaches ---
-  if (team.coaches.length > 0) {
-    const coachSection = document.createElement('div');
-    coachSection.className = 'wc-mt-section';
-    coachSection.innerHTML = '<div class="wc-mt-section-title">Coaches</div>';
-    for (const coach of team.coaches) {
-      const row = document.createElement('div');
-      row.className = 'wc-mt-coach';
-      const effects = coach.effects.map((e) => {
-        const spec = TEAM_EFFECTS[e];
-        return spec ? `${spec.char} ${spec.explanation}` : e;
-      }).join(' ');
-      const cards = coach.cards.map((C) => {
-        const c = new C();
-        return `⚠️ ${c.name}`;
-      }).join(', ');
-      row.innerHTML = `<span class="wc-mt-coach-name">${coach.name}</span>` +
-        `<span class="wc-mt-coach-effects">${effects}${cards ? ' · ' + cards : ''}</span>`;
-      coachSection.appendChild(row);
-    }
-    wrap.appendChild(coachSection);
-  }
-
-  // --- Section: Pending Effects for Next Match ---
-  const effectsSection = document.createElement('div');
-  effectsSection.className = 'wc-mt-section';
-  effectsSection.innerHTML = '<div class="wc-mt-section-title">Next Match Effects</div>';
-  let hasEffects = false;
-
-  const teamBuff = wcTeamBuffs[teamName];
-  if (teamBuff) {
-    for (const [stat, delta] of Object.entries(teamBuff)) {
-      if (stat === 'turns' || stat === 'teamMoralePenalty' || stat === 'deckReshuffle' || stat === 'mediaFrenzyMorale' || stat === 'teamMoraleBoost' || stat === 'drawBonus') continue;
-      if (typeof delta === 'number' && delta !== 0) {
-        const eff = document.createElement('div');
-        eff.className = 'wc-mt-effect ' + (delta > 0 ? 'positive' : 'negative');
-        eff.textContent = `${delta > 0 ? '↑' : '↓'} ${stat}: ${delta > 0 ? '+' : ''}${delta}`;
-        effectsSection.appendChild(eff);
-        hasEffects = true;
-      }
-    }
-    if (teamBuff.teamMoralePenalty) {
-      const eff = document.createElement('div');
-      eff.className = 'wc-mt-effect negative';
-      eff.textContent = '😤 Team morale penalty: -1 all stats';
-      effectsSection.appendChild(eff);
-      hasEffects = true;
-    }
-    if (teamBuff.mediaFrenzyMorale) {
-      const eff = document.createElement('div');
-      eff.className = 'wc-mt-effect positive';
-      eff.textContent = '📣 Media morale: +1 all stats';
-      effectsSection.appendChild(eff);
-      hasEffects = true;
-    }
-    if (teamBuff.teamMoraleBoost) {
-      const eff = document.createElement('div');
-      eff.className = 'wc-mt-effect positive';
-      eff.textContent = '🎉 Team morale boost: +2 all stats';
-      effectsSection.appendChild(eff);
-      hasEffects = true;
-    }
-    if (teamBuff.drawBonus) {
-      const eff = document.createElement('div');
-      eff.className = 'wc-mt-effect positive';
-      eff.textContent = `🎟️ Federation prize: +${teamBuff.drawBonus} card(s) per turn`;
-      effectsSection.appendChild(eff);
-      hasEffects = true;
-    }
-  }
-
-  const recurringPenalties = (wcRecurringPenalties && wcRecurringPenalties[teamName]) || 0;
-  if (recurringPenalties > 0) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect negative';
-    eff.textContent = `🎩 Benefactor's curse: a penalty card every match (${recurringPenalties} remaining)`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  const teamDebuff = wcTeamDebuffs[teamName];
-  if (teamDebuff && teamDebuff.drawPenalty) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect negative';
-    eff.textContent = `📉 Draw penalty: -${teamDebuff.drawPenalty} card(s) per turn`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  const playerBuffs = wcPlayerBuffs[teamName] || {};
-  for (const [name] of Object.entries(playerBuffs)) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect positive';
-    eff.textContent = `💪 ${name}: +2 all stats (captain boost)`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  const playerDebuffs = wcPlayerDebuffs[teamName] || {};
-  for (const [name, debuff] of Object.entries(playerDebuffs)) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect negative';
-    const label = debuff.effect === 'captainUnhappy' ? '😒 unhappy (-2 all)' : '🍺 hungover (-3 all)';
-    eff.textContent = `${name}: ${label}`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  const suspended = wcSuspendedPlayers[teamName] || [];
-  for (const name of suspended) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect negative';
-    eff.textContent = `🚫 ${name}: suspended`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  const penalties = wcPendingPenalties[teamName] || [];
-  if (penalties.length > 0) {
-    const eff = document.createElement('div');
-    eff.className = 'wc-mt-effect negative';
-    eff.textContent = `⚠️ ${penalties.length} penalty card(s) incoming`;
-    effectsSection.appendChild(eff);
-    hasEffects = true;
-  }
-
-  if (team.teamEffectObjects.length > 0) {
-    for (const obj of team.teamEffectObjects) {
-      const eff = document.createElement('div');
-      eff.className = 'wc-mt-effect positive';
-      const turns = obj.turns === Infinity ? '' : ` (${obj.turns}t)`;
-      eff.textContent = `${obj.char} ${obj.label}${turns} — ${obj.explanation}`;
-      effectsSection.appendChild(eff);
-      hasEffects = true;
-    }
-  }
-
-  if (!hasEffects) {
-    const none = document.createElement('div');
-    none.className = 'wc-mt-effect none';
-    none.textContent = 'No pending effects';
-    effectsSection.appendChild(none);
-  }
-  wrap.appendChild(effectsSection);
-
-  // --- Section: Unavailable Players ---
-  const unavailSection = document.createElement('div');
-  unavailSection.className = 'wc-mt-section';
-  unavailSection.innerHTML = '<div class="wc-mt-section-title">Unavailable Players</div>';
-  let hasUnavail = false;
-
-  const allSquad = team.squad;
-
-  for (const p of allSquad) {
-    if (p.injured) {
-      const row = document.createElement('div');
-      row.className = 'wc-mt-unavail wc-mt-unavail-injury';
-      row.innerHTML = `<span class="wc-mt-unavail-icon">🤕</span><span class="wc-mt-unavail-name">${p.name}</span><span class="wc-mt-unavail-reason">Injured — out until healed</span>`;
-      unavailSection.appendChild(row);
-      hasUnavail = true;
-    }
-  }
-
-  const outMap = worldCup && worldCup.outPlayers ? worldCup.outPlayers[teamName] : null;
-  for (const [name, reason] of Object.entries(outMap || {})) {
-    if (reason !== 'exhausted') continue;
-    const row = document.createElement('div');
-    row.className = 'wc-mt-unavail wc-mt-unavail-suspended';
-    row.innerHTML = `<span class="wc-mt-unavail-icon">🫠</span><span class="wc-mt-unavail-name">${name}</span><span class="wc-mt-unavail-reason">Worn out — out for next match</span>`;
-    unavailSection.appendChild(row);
-    hasUnavail = true;
-  }
-
-  const suspendedPlayers = wcSuspendedPlayers[teamName] || [];
-  for (const name of suspendedPlayers) {
-    const row = document.createElement('div');
-    row.className = 'wc-mt-unavail wc-mt-unavail-suspended';
-    row.innerHTML = `<span class="wc-mt-unavail-icon">🚫</span><span class="wc-mt-unavail-name">${name}</span><span class="wc-mt-unavail-reason">Suspended — out for next match</span>`;
-    unavailSection.appendChild(row);
-    hasUnavail = true;
-  }
-
-  const unavailDebuffs = wcPlayerDebuffs[teamName] || {};
-  for (const [name, debuff] of Object.entries(unavailDebuffs)) {
-    const label = debuff.effect === 'captainUnhappy' ? 'Unhappy' : 'Hungover';
-    const turns = debuff.turns != null ? ` (${debuff.turns}t left)` : '';
-    const row = document.createElement('div');
-    row.className = 'wc-mt-unavail wc-mt-unavail-debuff';
-    row.innerHTML = `<span class="wc-mt-unavail-icon">${debuff.effect === 'captainUnhappy' ? '😒' : '🍺'}</span><span class="wc-mt-unavail-name">${name}</span><span class="wc-mt-unavail-reason">${label}${turns}</span>`;
-    unavailSection.appendChild(row);
-    hasUnavail = true;
-  }
-
-  if (!hasUnavail) {
-    const none = document.createElement('div');
-    none.className = 'wc-mt-unavail none';
-    none.textContent = 'All players available';
-    unavailSection.appendChild(none);
-  }
-  wrap.appendChild(unavailSection);
-
-  // --- Section: Formation ---
-  const formSection = document.createElement('div');
-  formSection.className = 'wc-mt-section';
-  formSection.innerHTML = '<div class="wc-mt-section-title">Formation</div>';
-
-  // Formation picker
-  const pickerRow = document.createElement('div');
-  pickerRow.className = 'wc-mt-formation-picker';
-  const pickerLabel = document.createElement('span');
-  pickerLabel.className = 'wc-mt-formation-label';
-  pickerLabel.textContent = 'Tactical system:';
-  const picker = document.createElement('select');
-  picker.className = 'wc-mt-formation-select';
-  if (!wcSelectedFormation) wcSelectedFormation = Object.keys(FORMATION_TEMPLATES)[0];
-  for (const key of Object.keys(FORMATION_TEMPLATES)) {
-    const opt = document.createElement('option');
-    opt.value = key;
-    opt.textContent = key;
-    if (key === wcSelectedFormation) opt.selected = true;
-    picker.appendChild(opt);
-  }
-  picker.addEventListener('change', () => {
-    console.log('[Formation] change fired, picker.value=', picker.value);
-    wcSelectedFormation = picker.value;
-    const tmpl = FORMATION_TEMPLATES[picker.value];
-    if (!tmpl) { console.log('[Formation] no template found'); return; }
-
-    const placed = [];
-    const placedNames = new Set();
-    const startersByName = {};
-    for (const p of team.currentPlayers) startersByName[p.name] = p;
-    const bench = team.availableSubstitutes();
-    const benchByName = {};
-    for (const p of bench) benchByName[p.name] = p;
-
-    for (const [pos, coords] of Object.entries(tmpl)) {
-      const matchPos = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
-      for (const coord of coords) {
-        const [rawCx, cy] = coord;
-        const cx = mirrorX ? 8 - rawCx : rawCx;
-        const canFlex = (pPos) => {
-          if (pPos === matchPos) return true;
-          if (matchPos === 'MF' && pPos === 'DF' && cx < 5) return true;
-          if (matchPos === 'FW' && pPos === 'MF' && !(cx === 6 && (cy === 2 || cy === 3 || cy === 4))) return true;
-          if (matchPos === 'MF' && pPos === 'FW' && (cy === 0 || cy === 6) && cx >= 5) return true;
-          return false;
-        };
-        let picked = null;
-        for (const p of team.currentPlayers) {
-          if (!placedNames.has(p.name) && canFlex(p.position)) { picked = p; break; }
-        }
-        if (!picked) {
-          for (const p of bench) {
-            if (!placedNames.has(p.name) && canFlex(p.position)) { picked = p; break; }
-          }
-        }
-        if (!picked) {
-          for (const p of team.currentPlayers) {
-            if (!placedNames.has(p.name)) { picked = p; break; }
-          }
-        }
-        if (!picked) {
-          for (const p of bench) {
-            if (!placedNames.has(p.name)) { picked = p; break; }
-          }
-        }
-        if (picked) {
-          placed.push(picked);
-          placedNames.add(picked.name);
-        }
-      }
-    }
-
-    const droppedFromXI = team.currentPlayers.filter((p) => !placedNames.has(p.name));
-    for (const p of droppedFromXI) {
-      const idx = team.substitutedOut.indexOf(p);
-      if (idx !== -1) team.substitutedOut.splice(idx, 1);
-    }
-
-    team.currentPlayers.length = 0;
-    team.currentPlayers.push(...placed);
-
-    const newFormation = {};
-    let i = 0;
-    for (const [pos, coords] of Object.entries(tmpl)) {
-      for (const coord of coords) {
-        if (i < placed.length) { newFormation[placed[i].name] = coord; i++; }
-      }
-    }
-
-    wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
-    wcPendingFormationCoords[teamName] = { ...newFormation };
-    wcSelectedFormation = picker.value;
-
-    console.log('[Formation] newStarters=', placed.map(p => p.name + '(' + p.position + ')'));
-    console.log('[Formation] substitutedOut=', team.substitutedOut.map(p => p.name));
-    console.log('[Formation] newFormation=', newFormation);
-    console.log('[Formation] calling renderWorldCupView');
-
-    renderWorldCupView();
-  });
-  pickerRow.appendChild(pickerLabel);
-  pickerRow.appendChild(picker);
-  formSection.appendChild(pickerRow);
-
-  const pitch = document.createElement('div');
-  pitch.className = 'wc-mt-pitch';
-  const POS_X = { GK: 0, DF: 2, MF: 4, FW: 6 };
-  const grid = Array.from({ length: 7 }, () => Array(9).fill(null));
-  for (const player of team.currentPlayers) {
-    const pos = team.formation[player.name];
-    if (pos) {
-      const dx = mirrorX ? 8 - pos[0] : pos[0];
-      grid[pos[1]][dx] = player;
-    } else {
-      const baseX = POS_X[player.position] !== undefined ? POS_X[player.position] : 4;
-      const x = mirrorX ? 8 - baseX : baseX;
-      for (let tryY = 0; tryY < 7; tryY++) {
-        if (!grid[tryY][x]) { grid[tryY][x] = player; break; }
-      }
-    }
-  }
-  const stripColor = (team.wearingAwayKit ? team.awayShortsColor : team.shortsColor) ||
-    (team.wearingAwayKit ? team.reserveColor : team.primaryColor);
-  for (let y = 0; y < 7; y++) {
-    for (let x = 0; x < 9; x++) {
-      const cell = document.createElement('div');
-      cell.className = 'wc-mt-pitch-cell';
-      paintWcPitchLines(cell, x, y);
-      const player = grid[y][x];
-      if (player) {
-        cell.style.backgroundColor = team.primaryColor;
-        cell.classList.add('wc-mt-token');
-        cell.style.setProperty('--shorts', stripColor);
-        cell.textContent = player.name.split(' ').pop().substring(0, 3).toUpperCase();
-        cell.title = `${player.name} (${player.position})`;
-      }
-      pitch.appendChild(cell);
-    }
-  }
-  formSection.appendChild(pitch);
-  wrap.appendChild(formSection);
-
-  // --- Section: Deck ---
-  const deckSection = document.createElement('div');
-  deckSection.className = 'wc-mt-section';
-  deckSection.innerHTML = '<div class="wc-mt-section-title">Deck of Cards</div>';
-  const deckBtn = document.createElement('button');
-  deckBtn.className = 'wc-mt-deck-btn';
-  deckBtn.textContent = `View Deck (${team.actions.length} cards)`;
-  deckBtn.addEventListener('click', () => showWcDeckModal(team));
-  deckSection.appendChild(deckBtn);
-
-  const deckSummary = document.createElement('div');
-  deckSummary.className = 'wc-mt-deck-summary';
-  const cats = {};
-  for (const card of team.actions) {
-    const c = card.category || 'other';
-    cats[c] = (cats[c] || 0) + 1;
-  }
-  for (const [cat, count] of Object.entries(cats)) {
-    const tag = document.createElement('span');
-    tag.className = `wc-mt-deck-tag category-${cat}`;
-    tag.textContent = `${cat}: ${count}`;
-    deckSummary.appendChild(tag);
-  }
-  deckSection.appendChild(deckSummary);
-  wrap.appendChild(deckSection);
-
+  wrap.appendChild(renderWcMtHeader(team, teamName));
+  wrap.appendChild(renderWcMtBody(team, teamName, mirrorX));
+  wrap.appendChild(renderWcMtFooter(team, teamName, preMatch));
   return wrap;
 }
 
-function renderWcMiniPlayer(player, color) {
-  const el = document.createElement('div');
-  el.className = 'wc-mt-mini-player';
-  const avatar = document.createElement('div');
-  avatar.className = 'wc-mt-mini-avatar';
-  avatar.style.backgroundColor = color;
-  avatar.textContent = player.name.split(' ').map((n) => n[0]).join('').substring(0, 2);
-  const info = document.createElement('div');
-  info.className = 'wc-mt-mini-info';
-  const name = document.createElement('div');
-  name.className = 'wc-mt-mini-name';
-  name.textContent = player.name;
-  const meta = document.createElement('div');
-  meta.className = 'wc-mt-mini-meta';
-  meta.textContent = `${player.position} · ${player.age}yo`;
-  const stats = document.createElement('div');
-  stats.className = 'wc-mt-mini-stats';
-  const statList = [
-    ['SPD', player.speed], ['MRK', player.marking], ['TCK', player.tackling],
-    ['SHT', player.shooting], ['PAS', player.passing], ['DRI', player.dribbling],
-    ['TAC', player.tacticalThinking], ['HDG', player.heading],
-  ];
-  if (player.position === 'GK') statList.push(['GK', player.goalkeeping]);
-  for (const [label, value] of statList) {
-    const s = document.createElement('span');
-    s.className = 'wc-mt-mini-stat';
-    s.textContent = `${label}:${value}`;
-    stats.appendChild(s);
-  }
-  info.appendChild(name);
-  info.appendChild(meta);
-  info.appendChild(stats);
-  el.appendChild(avatar);
-  el.appendChild(info);
-  return el;
+function renderWcMtBody(team, teamName, mirrorX) {
+  const body = document.createElement('div');
+  body.className = 'wc-mt-body';
+  body.appendChild(renderWcMtPitch(team, teamName, mirrorX));
+  body.appendChild(renderWcMtList(team, teamName));
+  return body;
 }
 
 function showWcDeckModal(team) {
@@ -2315,146 +3421,435 @@ function wcAddTeamFlagBadge(modal, teamName) {
 }
 
 function wcShowTrainingModal(teamName, options, callback) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  if (!trainingPhaseScreen) return { close: () => {} };
+  trainingPhaseScreen.classList.remove('hidden');
 
-  const modal = document.createElement('div');
-  modal.className = 'wc-modal shot-modal halftime-modal training-modal';
-
-  const content = document.createElement('div');
-  content.className = 'shot-modal-content halftime-content';
-
-  const title = document.createElement('div');
-  title.className = 'halftime-title';
-  title.textContent = 'Training Session';
-  content.appendChild(title);
-
-  const subtitle = document.createElement('div');
-  subtitle.className = 'halftime-kickoff';
-  subtitle.textContent = `${teamName} — Choose your training focus:`;
-  content.appendChild(subtitle);
-
-  const focusWrap = document.createElement('div');
-  focusWrap.className = 'training-focus-row';
-
-  for (const focus of options) {
-    const btn = document.createElement('button');
-    btn.className = 'training-focus-btn';
-    btn.textContent = focus.charAt(0).toUpperCase() + focus.slice(1);
-    btn.addEventListener('click', () => {
-      focusWrap.remove();
-      subtitle.remove();
-      wcShowCardPick(content, teamName, focus, callback);
-    });
-    focusWrap.appendChild(btn);
-  }
-
-  content.appendChild(focusWrap);
-
-  modal.appendChild(content);
-  wcAddTeamFlagBadge(modal, teamName);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  function close() {
-    overlay.remove();
-  }
-
-  return { overlay, modal, content, close };
-}
-
-function wcShowCardPick(content, teamName, focus, callback) {
   const team = TEAMS && TEAMS[teamName];
   const pending = wcPendingCoaches && wcPendingCoaches[teamName];
   const hasEffect = (key) =>
     (team && team.hasTeamEffect(key)) ||
     (pending && pending.effects && pending.effects.includes(key));
 
-  const isKnockout = worldCup && worldCup.phase === 'knockout';
-  const maxRarity = hasEffect('goodCoaches') ? 3 : isKnockout ? 2 : 1;
-  const pool = wcCardsByCategory(focus, maxRarity);
+  // ---- Training-session state (drives both steps) ----
+  let focus = null; // 'defense' | 'offense' | 'tactical' | 'general'
+  let pick = null; // index into items (resolved card/pack under the chosen focus)
+  let items = []; // candidates offered in step 2 for the current focus
 
-  const choiceCount = hasEffect('extraTrainingChoices') ? 5 : 3;
-  const singleCards = wcPickRandomCards(pool, choiceCount);
-
-  // Build the final list of clickable items: single cards + synergy packs
-  const items = [];
-  for (const card of singleCards) {
-    items.push({ type: 'single', card });
+  function deckSnapshot() {
+    const t = wcGetTeam(teamName);
+    const actions = (t && t.actions) || [];
+    const pendingCards = (wcTrainingCards && wcTrainingCards[teamName]) || [];
+    const extra = pendingCards.filter((c) => !actions.includes(c));
+    return [...actions, ...extra];
   }
-
-  // Insert synergy packs: one pack for every 3 candidates
-  if (hasEffect('trainingSynergyPacks')) {
-    const packCount = Math.floor(choiceCount / 3);
-    const shuffledPacks = [...SYNERGY_PACKS].sort(() => Math.random() - 0.5);
-    for (let i = 0; i < packCount; i++) {
-      const pack = shuffledPacks[i % shuffledPacks.length];
-      const packCards = pack.cards.map((Ctor) => new Ctor());
-      const packRarity = Math.max(...packCards.map((c) => c.rarity));
-      items.push({ type: 'pack', label: pack.label, cards: packCards, rarity: packRarity });
+  function countCategory(cat) {
+    return deckSnapshot().filter((c) => c.category === cat).length;
+  }
+  function totalCards() {
+    return deckSnapshot().length;
+  }
+  function maxRarity() {
+    return hasEffect('goodCoaches') ? 3 : (worldCup && worldCup.phase === 'knockout') ? 2 : 1;
+  }
+  function exampleNames(cat) {
+    const pool = wcCardsByCategory(cat, maxRarity());
+    const names = [];
+    for (const Ctor of pool) {
+      const n = new Ctor().name;
+      if (!names.includes(n)) names.push(n);
+      if (names.length >= 3) break;
     }
+    return names;
+  }
+  function drawCandidates(cat) {
+    const choiceCount = hasEffect('extraTrainingChoices') ? 5 : 3;
+    const pool = wcCardsByCategory(cat, maxRarity());
+    const singles = wcPickRandomCards(pool, choiceCount);
+    const list = singles.map((card) => ({ type: 'single', card }));
+    if (hasEffect('trainingSynergyPacks')) {
+      const packCount = Math.floor(choiceCount / 3);
+      const shuffledPacks = [...SYNERGY_PACKS].sort(() => Math.random() - 0.5);
+      for (let i = 0; i < packCount; i++) {
+        const pack = shuffledPacks[i % shuffledPacks.length];
+        const packCards = pack.cards.map((Ctor) => new Ctor());
+        const packRarity = Math.max(...packCards.map((c) => c.rarity));
+        list.push({ type: 'pack', label: pack.label, cards: packCards, rarity: packRarity });
+      }
+    }
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list;
   }
 
-  // Shuffle items so packs aren't always at the end
-  for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [items[i], items[j]] = [items[j], items[i]];
+  // ---- Header helpers ----
+  function opponentLine() {
+    const nxt = wcNextMatchForTeam(teamName);
+    if (!nxt) return wcNextStageLabel(teamName);
+    const opp = nxt.match.home === teamName ? nxt.match.away : nxt.match.home;
+    const stage = nxt.round ? nxt.round : `MD${nxt.matchday}`;
+    return `before ${wcShortName(opp)} · ${stage}`;
   }
 
-  const subtitle = document.createElement('div');
-  subtitle.className = 'halftime-kickoff';
-  subtitle.textContent = `Focus: ${focus.charAt(0).toUpperCase() + focus.slice(1)} — Pick one card to add to your deck:`;
-  content.appendChild(subtitle);
+  function renderHeader(stepNum) {
+    trKickerEl.innerHTML = '';
+    const main = document.createElement('span');
+    main.className = 'tr-kicker-main';
+    main.textContent = 'Training session';
+    const sub = document.createElement('span');
+    sub.className = 'tr-kicker-sub';
+    sub.textContent = `Step ${stepNum} of 2`;
+    trKickerEl.appendChild(main);
+    trKickerEl.appendChild(sub);
 
-  const cardWrap = document.createElement('div');
-  cardWrap.className = 'training-cards-row';
+    trTeamPillEl.innerHTML = '';
+    const flag = document.createElement('span');
+    flag.className = 'tr-team-flag';
+    flag.textContent = TEAM_FLAGS[teamName] || '';
+    const nameWrap = document.createElement('span');
+    const nation = document.createElement('div');
+    nation.textContent = teamName;
+    const meta = document.createElement('div');
+    meta.className = 'tr-team-meta';
+    meta.textContent = opponentLine();
+    nameWrap.appendChild(nation);
+    nameWrap.appendChild(meta);
+    trTeamPillEl.appendChild(flag);
+    trTeamPillEl.appendChild(nameWrap);
+  }
 
-  for (const item of items) {
-    if (item.type === 'single') {
-      const cardEl = createActionCard(item.card);
-      cardEl.classList.add('training-pick', `rarity-${item.card.rarity}`);
-      cardEl.addEventListener('click', () => {
-        wcAddCardToTeamDeck(teamName, item.card);
-        if (TEAMS) logMatch(teamName, `Training: ${teamName} added ${item.card.name} to their deck.`);
-        cardWrap.remove();
-        subtitle.remove();
-        callback();
+  // ---- Deck strip ----
+  function renderDeckStrip() {
+    trDeckStripEl.innerHTML = '';
+    const label = document.createElement('span');
+    label.className = 'tr-deck-strip-label';
+    label.innerHTML = `Your deck — <b>${totalCards()}</b> cards`;
+    trDeckStripEl.appendChild(label);
+
+    const order = ['defense', 'offense', 'tactical', 'effect', 'penalty'];
+    for (const cat of order) {
+      const n = countCategory(cat);
+      const chip = document.createElement('span');
+      chip.className = 'tr-deck-chip';
+      const swatch = document.createElement('span');
+      swatch.className = `tr-deck-swatch sw-${cat}`;
+      chip.appendChild(swatch);
+      chip.appendChild(document.createTextNode(`${cat}: ${n}`));
+      trDeckStripEl.appendChild(chip);
+    }
+
+    const deck = deckSnapshot();
+    const costs = deck.filter((c) => !c.free && Array.isArray(c.cost) && c.cost[0] > 0).map((c) => c.cost[0]);
+    const avg = costs.length ? (costs.reduce((a, b) => a + b, 0) / costs.length).toFixed(1) : '0';
+    const exhaustN = deck.filter((c) => c.exhaust).length;
+    const meta = document.createElement('span');
+    meta.className = 'tr-deck-strip-meta';
+    meta.textContent = `Average cost ${avg} · ${exhaustN} card${exhaustN === 1 ? '' : 's'} exhaust`;
+    trDeckStripEl.appendChild(meta);
+  }
+
+  function thinnestCategory() {
+    const order = ['offense', 'defense', 'tactical', 'effect'];
+    let best = order[0];
+    let bestCount = countCategory(order[0]);
+    for (const cat of order) {
+      const n = countCategory(cat);
+      if (n < bestCount) { best = cat; bestCount = n; }
+    }
+    return { cat: best, count: bestCount };
+  }
+
+  // ---- Step 1: focus panels ----
+  const FOCUS_META = {
+    defense: {
+      name: 'Defense',
+      tempo: 'Reactive',
+      cat: 'defense',
+      desc: 'Marking, covering and last-ditch work to shore up the back line.',
+      minis: ['m-grn', 'm-grn', 'm-grn'],
+    },
+    offense: {
+      name: 'Offense',
+      tempo: 'Aggressive',
+      cat: 'offense',
+      desc: 'Shooting, passing and movement built to score goals.',
+      minis: ['m-org', 'm-org', 'm-org'],
+    },
+    tactical: {
+      name: 'Tactical',
+      tempo: 'Engine',
+      cat: 'tactical',
+      desc: 'Pressing, counters and set-piece patterns that control the game.',
+      minis: ['m-blu', 'm-blu', 'm-blu'],
+    },
+    general: {
+      name: 'General',
+      tempo: 'Gamble',
+      cat: null,
+      desc: 'A mixed bag from every shelf — the staff pick whatever helps most.',
+      minis: ['m-grn', 'm-blu', 'm-org'],
+    },
+  };
+
+  function renderStep1() {
+    focus = null;
+    pick = null;
+    trFocusChipRowEl.classList.add('hidden');
+    trFocusChipRowEl.innerHTML = '';
+    trStep2El.classList.add('hidden');
+    trStep2El.innerHTML = '';
+    trStep1El.classList.remove('hidden');
+    trStep1El.innerHTML = '';
+    renderHeader(1);
+    renderDeckStrip();
+
+    trHeadingEl.textContent = 'Choose your training focus';
+    trParagraphEl.textContent =
+      'Every session hands your squad one card for the rest of the run. Pick the shelf you want to strengthen — then pick which card it draws.';
+    trStateEl.textContent = 'Pick a training focus to prepare your squad.';
+    trConfirmEl.disabled = true;
+
+    const grid = document.createElement('div');
+    grid.className = 'tr-focus-grid';
+
+    for (const key of options) {
+      const meta = FOCUS_META[key] || FOCUS_META.general;
+      const thin = thinnestCategory();
+
+      const panel = document.createElement('button');
+      panel.type = 'button';
+      panel.className = `tr-focus-panel panel-${key}`;
+
+      const minis = document.createElement('div');
+      minis.className = 'tr-minis';
+      for (const m of meta.minis) {
+        const mini = document.createElement('div');
+        mini.className = `tr-mini ${m}`;
+        minis.appendChild(mini);
+      }
+      panel.appendChild(minis);
+
+      const tempo = document.createElement('div');
+      tempo.className = 'tr-tempo';
+      tempo.textContent = meta.tempo;
+      panel.appendChild(tempo);
+
+      const name = document.createElement('div');
+      name.className = 'tr-focus-name';
+      name.textContent = meta.name;
+      panel.appendChild(name);
+
+      const desc = document.createElement('div');
+      desc.className = 'tr-focus-desc';
+      desc.textContent = meta.desc;
+      panel.appendChild(desc);
+
+      const examples = document.createElement('div');
+      examples.className = 'tr-examples';
+      const exLabel = document.createElement('div');
+      exLabel.className = 'tr-focus-label';
+      exLabel.textContent = 'Draws from';
+      examples.appendChild(exLabel);
+      for (const ex of exampleNames(key)) {
+        const chip = document.createElement('span');
+        chip.className = 'tr-example-chip';
+        chip.textContent = ex;
+        examples.appendChild(chip);
+      }
+      panel.appendChild(examples);
+
+      const pin = document.createElement('div');
+      pin.className = 'tr-deckpin';
+      const pinLabel = document.createElement('div');
+      pinLabel.className = 'tr-deckpin-label';
+      const catCount = meta.cat ? countCategory(meta.cat) : thin.count;
+      const catLabel = meta.cat ? meta.cat : thin.cat;
+      pinLabel.innerHTML = `<b>${catCount} of ${totalCards()}</b> ${catLabel} in your deck`;
+      const bar = document.createElement('div');
+      bar.className = 'tr-progress';
+      const fill = document.createElement('div');
+      fill.className = 'tr-progress-fill';
+      const pct = totalCards() > 0 ? Math.min(100, Math.round((catCount / totalCards()) * 100)) : 0;
+      fill.style.width = pct + '%';
+      bar.appendChild(fill);
+      pin.appendChild(pinLabel);
+      pin.appendChild(bar);
+      if ((meta.cat && thin.cat === meta.cat) || (!meta.cat && catLabel === thin.cat)) {
+        const weak = document.createElement('div');
+        weak.className = 'tr-deckpin-label';
+        weak.textContent = 'Thinnest in your deck';
+        pin.appendChild(weak);
+      }
+      panel.appendChild(pin);
+
+      panel.addEventListener('click', () => {
+        focus = key;
+        pick = null;
+        renderStep2();
       });
-      cardWrap.appendChild(cardEl);
-    } else {
-      const packEl = document.createElement('div');
-      packEl.className = `training-pack rarity-${item.rarity}`;
+      grid.appendChild(panel);
+    }
+    trStep1El.appendChild(grid);
+  }
 
-      const packLabel = document.createElement('div');
-      packLabel.className = 'training-pack-label';
-      packLabel.textContent = item.label;
+  // ---- Step 2: pick a card ----
+  function annotationFor(item) {
+    const deck = deckSnapshot();
+    const t = wcGetTeam(teamName);
+    const unavailable = wcUnavailableItems(teamName);
+    const starOut = unavailable.find((u) => u.star) || (unavailable.length > 0 ? unavailable[0] : null);
 
-      const packCards = document.createElement('div');
-      packCards.className = 'training-pack-cards';
-      for (const card of item.cards) {
-        packCards.appendChild(createActionCard(card));
+    if (item.type === 'pack') {
+      if (starOut) return `${starOut.name} is out — ${item.label} keeps two threats alive.`;
+      return `${item.label} — take both, they work together.`;
+    }
+
+    const card = item.card;
+    const copies = deck.filter((c) => c.name === card.name).length;
+    if (copies >= 3) {
+      const words = ['', 'Second', 'Third', 'Fourth', 'Fifth'];
+      return `${words[Math.min(copies, 4)] || copies + 1} copy already — you draw ${card.name} often.`;
+    }
+    if (copies === 2) return `Second copy — steadier draws of ${card.name}.`;
+    if (card.rarity >= 3) return 'Rare — a real quality jump for your deck.';
+    if (starOut && t && t.starPlayers && t.starPlayers.includes(starOut.name)) {
+      return `${starOut.name} is out ${starOut.note} — ${card.name} covers the gap for a couple of matches.`;
+    }
+    if (thinFlagFor(item)) return "Fills your deck's thinnest area.";
+    return `A dependable ${card.name} to build around.`;
+  }
+
+  function thinFlagFor(item) {
+    if (item.type !== 'single') return false;
+    const thin = thinnestCategory();
+    return item.card.category === thin.cat;
+  }
+
+  function renderCandidates() {
+    items = drawCandidates(focus);
+    const grid = document.createElement('div');
+    grid.className = 'tr-cards';
+
+    items.forEach((item, idx) => {
+      const col = document.createElement('div');
+      col.className = 'tr-card-col';
+
+      if (item.type === 'single') {
+        const cardEl = createActionCard(item.card);
+        const catLabel = document.createElement('div');
+        catLabel.className = 'tr-catlabel';
+        catLabel.textContent = item.card.category;
+        cardEl.appendChild(catLabel);
+        col.appendChild(cardEl);
+      } else {
+        const packBody = document.createElement('div');
+        packBody.className = 'tr-pack-body';
+        const packCards = document.createElement('div');
+        packCards.className = 'tr-pack-cards';
+        for (const card of item.cards) packCards.appendChild(createActionCard(card));
+        const packLabel = document.createElement('div');
+        packLabel.className = 'tr-pack-label';
+        packLabel.textContent = item.label;
+        const packNote = document.createElement('div');
+        packNote.className = 'tr-pack-note';
+        packNote.textContent = `Level ${item.rarity} · Pick both`;
+        packBody.appendChild(packCards);
+        packBody.appendChild(packLabel);
+        packBody.appendChild(packNote);
+        col.appendChild(packBody);
       }
 
-      const packInfo = document.createElement('div');
-      packInfo.className = 'training-pack-info';
-      packInfo.textContent = `Level ${item.rarity} · Pick both`;
+      const anno = document.createElement('div');
+      anno.className = 'tr-anno';
+      anno.textContent = annotationFor(item);
+      col.appendChild(anno);
 
-      packEl.appendChild(packLabel);
-      packEl.appendChild(packCards);
-      packEl.appendChild(packInfo);
-      packEl.addEventListener('click', () => {
-        for (const card of item.cards) wcAddCardToTeamDeck(teamName, card);
-        const added = item.cards.map((c) => c.name).join(', ');
-        if (TEAMS) logMatch(teamName, `Training: ${teamName} added ${added} to their deck (synergy pack).`);
-        cardWrap.remove();
-        subtitle.remove();
-        callback();
+      col.addEventListener('click', () => {
+        pick = idx;
+        for (let i = 0; i < grid.children.length; i++) {
+          grid.children[i].classList.toggle('selected', i === pick);
+        }
+        const chosen = items[pick];
+        trStateEl.textContent =
+          chosen.type === 'pack'
+            ? `'${chosen.label}' — both cards join your deck for the rest of the run.`
+            : `'${chosen.card.name}' joins your deck for the rest of the run.`;
+        trConfirmEl.disabled = false;
       });
-      cardWrap.appendChild(packEl);
-    }
+      grid.appendChild(col);
+    });
+    return grid;
   }
 
-  content.appendChild(cardWrap);
+  function renderStep2() {
+    trStep1El.classList.add('hidden');
+    trStep2El.classList.remove('hidden');
+    trStep2El.innerHTML = '';
+    renderHeader(2);
+    renderDeckStrip();
+
+    trFocusChipRowEl.classList.remove('hidden');
+    trFocusChipRowEl.innerHTML = '';
+    const chip = document.createElement('span');
+    chip.className = 'tr-focus-chip';
+    chip.innerHTML = `<span class="tr-focus-dot"></span>Focus: ${FOCUS_META[focus].name}`;
+    const change = document.createElement('button');
+    change.type = 'button';
+    change.className = 'tr-change-focus';
+    change.textContent = 'Change focus';
+    change.addEventListener('click', renderStep1);
+    trFocusChipRowEl.appendChild(chip);
+    trFocusChipRowEl.appendChild(change);
+
+    trHeadingEl.textContent = 'Pick one card to keep';
+    trParagraphEl.textContent =
+      focus === 'general'
+        ? 'Your staff pooled everything — one card joins the squad for the rest of the run.'
+        : `Focus: ${FOCUS_META[focus].name} — pick one of the cards ${FOCUS_META[focus].tempo} sessions drew up.`;
+    trStateEl.textContent = 'Pick a card to continue.';
+    trConfirmEl.disabled = true;
+
+    trStep2El.appendChild(renderCandidates());
+  }
+
+  // ---- Confirm / skip ----
+  function confirmPick() {
+    if (pick === null || pick < 0 || pick >= items.length) return;
+    const item = items[pick];
+    if (item.type === 'single') {
+      wcAddCardToTeamDeck(teamName, item.card);
+      if (TEAMS) logMatch(teamName, `Training: ${teamName} added ${item.card.name} to their deck.`);
+    } else {
+      for (const card of item.cards) wcAddCardToTeamDeck(teamName, card);
+      const added = item.cards.map((c) => c.name).join(', ');
+      if (TEAMS) logMatch(teamName, `Training: ${teamName} added ${added} to their deck (synergy pack).`);
+    }
+    close();
+    if (callback) callback();
+  }
+
+  function skipTraining() {
+    close();
+    if (callback) callback();
+  }
+
+  function close() {
+    document.removeEventListener('keydown', onKey);
+    trainingPhaseScreen.classList.add('hidden');
+  }
+  function onKey(e) {
+    if (e.key === 'Escape') skipTraining();
+  }
+  document.addEventListener('keydown', onKey);
+
+  trConfirmEl.onclick = confirmPick;
+
+  const escHint = trainingPhaseScreen.querySelector('.tr-esc');
+  if (escHint) escHint.onclick = skipTraining;
+
+  renderStep1();
+  return { close };
 }
 
 function wcRunTrainingForTeam(teamName, cards = 1) {
@@ -2494,10 +3889,11 @@ function wcQueueTraining(teamName, cards = 1) {
 }
 
 function wcQueueEvent(teamName) {
-  wcEventQueue.push({ teamName });
+  const event = pickRandomEvent();
+  wcEventQueue.push({ teamName, event });
 }
 
-function wcRunEventForTeam(teamName, eventIndex, eventTotal) {
+function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
   return new Promise(async (resolve) => {
     wcEventActive = true;
     wcEventTargetTeam = teamName;
@@ -2507,7 +3903,7 @@ function wcRunEventForTeam(teamName, eventIndex, eventTotal) {
     if (!TEAMS || !TEAMS[teamName]) {
       TEAMS = buildTeams([teamName]);
     }
-    const event = pickRandomEvent();
+    const event = queuedEvent || pickRandomEvent();
     if (event) {
       const instance = wcShowEventPhaseModal(teamName, event, () => {
         instance.close();
@@ -2535,7 +3931,7 @@ async function wcProcessEventQueue(callback) {
   while (wcEventQueue.length > 0) {
     const next = wcEventQueue.shift();
     index += 1;
-    await wcRunEventForTeam(next.teamName, index, total);
+    await wcRunEventForTeam(next.teamName, index, total, next.event);
   }
   callback();
 }
@@ -2548,9 +3944,11 @@ function wcRunCoachPicksForTeam(teamName) {
   return new Promise(async (resolve) => {
     wcCoachPicksActive = true;
     await showNotice('STAFF PICKS');
-    const instance = wcShowCoachPickModal(teamName, choices, () => {
-      instance.close();
+    wcShowStaffPicksScreen(teamName, choices, (deferred, { pick, choices: pickedChoices }) => {
       wcCoachPicksActive = false;
+      if (!deferred && pick !== null && pickedChoices) {
+        wcHireCoach(teamName, pickedChoices[pick]);
+      }
       resolve();
     });
   });
@@ -2636,6 +4034,396 @@ function wcShowCoachPickModal(teamName, choices, callback) {
   return { overlay, modal, content, close };
 }
 
+/* ===== STAFF PICKS (full-screen) ===== */
+
+const STAFF_DOMAIN_CONFIG = {
+  attack: {
+    key: 'attack', label: 'Attack',
+    fill: '#f0a35e', border: '#c06a25', ink: '#3a1b06', rule: '#c06a25',
+    discBg: '#93491a', discInk: '#ffe6cd', costBg: 'rgba(58,27,6,.12)',
+    glow: '0 0 0 1px rgba(192,106,37,.35), 0 10px 24px rgba(147,73,26,.22)',
+    discClass: 'attack'
+  },
+  defense: {
+    key: 'defense', label: 'Defense',
+    fill: '#a5e06f', border: '#6fae3f', ink: '#1f3d10', rule: '#6fae3f',
+    discBg: '#3f7a1f', discInk: '#eaffd6', costBg: 'rgba(31,61,16,.12)',
+    glow: '0 0 0 1px rgba(111,174,63,.35), 0 10px 24px rgba(63,122,31,.22)',
+    discClass: 'defense'
+  },
+  tempo: {
+    key: 'tempo', label: 'Tempo',
+    fill: '#2f5bb7', border: '#7fb3ff', ink: '#ffffff', rule: '#7fb3ff',
+    discBg: '#17356f', discInk: '#ffd24a', costBg: 'rgba(255,255,255,.16)',
+    glow: '0 0 0 1px rgba(127,179,255,.35), 0 10px 24px rgba(23,53,111,.22)',
+    discClass: 'tempo'
+  },
+  squad: {
+    key: 'squad', label: 'Squad',
+    fill: '#f2d06b', border: '#c9a02e', ink: '#3a2c05', rule: '#c9a02e',
+    discBg: '#5f4707', discInk: '#ffe9a3', costBg: 'rgba(58,44,5,.12)',
+    glow: '0 0 0 1px rgba(201,160,46,.35), 0 10px 24px rgba(95,71,7,.22)',
+    discClass: 'squad'
+  }
+};
+
+const WC_COACH_EFFECT_DOMAIN = {
+  teamPassing: 'attack', teamDribbling: 'attack', teamTactics: 'attack',
+  metronome: 'attack', silkTouch: 'attack', grandmasterEye: 'attack',
+  thunderstrike: 'attack', aerialDominion: 'attack', clinicalFinish: 'attack',
+  hotStreak: 'attack', growingMenace: 'attack', gearAttack: 'attack',
+  totalFootball: 'attack', pepStyle: 'attack', teamEruption: 'attack',
+  teamRuthless: 'attack', ruthless: 'attack', teamFaceMelter: 'attack', faceMelter: 'attack',
+  teamDefense: 'defense', shadowLock: 'defense', steelTackle: 'defense',
+  ironCurtain: 'defense', blindEye: 'defense', ironGlove: 'defense',
+  counterPress: 'defense', lastDefender: 'defense', gearDefense: 'defense',
+  noPainNoGain: 'defense', gkStar: 'defense', triggerManMarking: 'defense',
+  enragedRival: 'defense', teamIronWall: 'defense', atlasWall: 'defense',
+  garraCharrua: 'defense', teamDagger: 'defense', mindGames: 'defense',
+  teamEnergy: 'tempo', sonicSurge: 'tempo', relentlessMomentum: 'tempo',
+  secondWind: 'tempo', flyingStart: 'tempo', squadDepth: 'tempo',
+  deadBallMastery: 'tempo', wideThinking: 'tempo', argentoPride: 'tempo',
+  comingHome: 'tempo', underdogBite: 'tempo', fullPressure: 'tempo',
+  teamHighPress: 'tempo', teamSpark: 'tempo', drawOnSkip: 'tempo',
+  highMobility: 'squad', magicSpray: 'squad', creativity: 'squad',
+  persistence: 'squad', cardHold: 'squad', randomBoost: 'squad',
+  goodCoaches: 'squad', doubleTrainingCards: 'squad', extraTrainingChoices: 'squad',
+  trainingSynergyPacks: 'squad', teamOmamori: 'squad', teamWrench: 'squad',
+  omamori: 'squad', wrench: 'squad', teamClover: 'squad',
+  teamFortuneFavor: 'squad', clover: 'squad', fortuneFavor: 'squad'
+};
+
+const WC_COACH_DOWNSIDE_TEXT = {
+  teamRuthless: 'End of each turn: 50% chance a random stat drops by 1 permanently.',
+  ruthless: 'End of each turn: 50% chance a random stat drops by 1 permanently.',
+  teamFaceMelter: 'End of each turn: 50% chance a random stat drops by 1 permanently (stacks).',
+  faceMelter: 'End of each turn: 50% chance a random stat drops by 1 permanently (stacks).',
+  enragedRival: 'Half of their tackles draw a yellow and leave the victim injured.',
+  fullPressure: 'Each turn one random player is exhausted for the rest of the match.',
+  teamDagger: 'Half your tackles are treated as fouls — a red card is possible.'
+};
+
+let staffPicksState = { teamName: null, choices: [], pick: null, callback: null, deferred: false };
+
+function wcCoachDomain(coach) {
+  const effectKey = coach.effects?.[0];
+  const domainKey = effectKey ? WC_COACH_EFFECT_DOMAIN[effectKey] : 'squad';
+  return STAFF_DOMAIN_CONFIG[domainKey] || STAFF_DOMAIN_CONFIG.squad;
+}
+
+function wcCoachDownside(coach) {
+  const parts = [];
+  for (const e of coach.effects || []) {
+    if (WC_COACH_DOWNSIDE_TEXT[e]) parts.push(WC_COACH_DOWNSIDE_TEXT[e]);
+  }
+  for (const CardClass of coach.cards || []) {
+    const card = new CardClass();
+    if (card.category === 'penalty') {
+      parts.push(`Adds "${card.name}" to your deck — a penalty card.`);
+    }
+  }
+  return parts.length ? parts.join(' ') : null;
+}
+
+function wcCoachMonogram(name) {
+  const clean = (name || '').replace(/["']/g, '');
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return clean.slice(0, 2).toUpperCase();
+}
+
+function wcCoachSurname(name) {
+  const clean = (name || '').replace(/["']/g, '');
+  const words = clean.split(/\s+/).filter(Boolean);
+  return words[words.length - 1] || clean;
+}
+
+function wcInjuryCount(teamName) {
+  const team = TEAMS && TEAMS[teamName];
+  let n = 0;
+  if (team && Array.isArray(team.squad)) {
+    for (const p of team.squad) if (p.hasEffect && p.hasEffect('injured')) n++;
+  }
+  const out = (worldCup && worldCup.outPlayers && worldCup.outPlayers[teamName]) || {};
+  for (const [, reason] of Object.entries(out)) if (reason === 'injured') n++;
+  return n;
+}
+
+function wcDeckCounts(teamName) {
+  const team = TEAMS && TEAMS[teamName];
+  const acts = (team && Array.isArray(team.actions) && team.actions) || [];
+  const counts = { offense: 0, defense: 0, tactical: 0, effect: 0, penalty: 0 };
+  let costTotal = 0;
+  for (const c of acts) {
+    const cat = c && c.category ? c.category : 'effect';
+    counts[cat] = (counts[cat] || 0) + 1;
+    if (typeof c.cost === 'number') costTotal += c.cost;
+  }
+  return { counts, deckSize: acts.length, avgCost: acts.length ? costTotal / acts.length : 0 };
+}
+
+function wcCoachFitAnnotation(coach, teamName) {
+  const { counts, deckSize, avgCost } = wcDeckCounts(teamName);
+  const domain = wcCoachDomain(coach);
+  const injured = wcInjuryCount(teamName);
+
+  if (domain.key === 'squad') {
+    if (injured > 0) return `You have ${injured} injured player${injured === 1 ? '' : 's'} right now`;
+    return 'Squad is healthy — keep the deck stocked';
+  }
+
+  if (domain.key === 'tempo') {
+    if (avgCost > 0) return `Average cost ${avgCost.toFixed(1)} — any extra draw buys more plays`;
+    return 'Draw is your engine — more cards in, more plays out';
+  }
+
+  const catMap = { attack: 'offense', defense: 'defense' };
+  const cat = catMap[domain.key];
+  const meaningful = ['offense', 'defense', 'tactical'];
+  let thinnest = null;
+  for (const m of meaningful) {
+    if (!counts[m]) continue;
+    if (!thinnest || counts[m] < counts[thinnest]) thinnest = m;
+  }
+  if (thinnest === cat) return `${domain.label} is your thinnest area — ${counts[cat]} of ${deckSize} cards`;
+  if (cat && counts[cat] > 0) return `Scales with your ${counts[cat]} ${cat} cards`;
+  return `${domain.label} coach for a ${deckSize}-card deck`;
+}
+
+function wcOwnedCoachList(teamName) {
+  const list = [];
+  const seen = new Set();
+  const team = TEAMS && TEAMS[teamName];
+  if (team && Array.isArray(team.coaches)) {
+    for (const c of team.coaches) if (c && !seen.has(c.name)) { seen.add(c.name); list.push(c); }
+  }
+  if (wcOwnedCoaches && wcOwnedCoaches[teamName]) {
+    for (const c of wcOwnedCoaches[teamName]) if (c && !seen.has(c.name)) { seen.add(c.name); list.push(c); }
+  }
+  if (wcPendingCoaches && wcPendingCoaches[teamName]) {
+    const c = wcPendingCoaches[teamName];
+    if (c && !seen.has(c.name)) { seen.add(c.name); list.push(c); }
+  }
+  return list;
+}
+
+function wcNextMatchKicker(teamName) {
+  const nxt = wcNextMatchForTeam && wcNextMatchForTeam(teamName);
+  if (!nxt) return 'Staff picks · before the next round';
+  if (nxt.round) return `Staff picks · before ${nxt.round}`;
+  return `Staff picks · before matchday ${nxt.matchday}`;
+}
+
+function wcNextOpponentInfo(teamName) {
+  const nxt = wcNextMatchForTeam && wcNextMatchForTeam(teamName);
+  if (!nxt) return { flag: '', name: '—', venue: '' };
+  const oppName = nxt.match?.home === teamName ? nxt.match?.away : nxt.match?.home;
+  const flag = oppName && TEAM_FLAGS ? TEAM_FLAGS[oppName] : '';
+  const short = oppName ? wcShortName(oppName) : '—';
+  const stage = nxt.round || ('Group ' + (nxt.group || 'A'));
+  const venue = wcVenueFor ? wcVenueFor(stage) : '';
+  return { flag, name: short, venue };
+}
+
+function renderStaffPicksScreen() {
+  const screen = document.getElementById('staff-picks-screen');
+  if (!screen) return;
+  const { teamName, choices, pick } = staffPicksState;
+
+  document.getElementById('staff-picks-kicker').textContent = wcNextMatchKicker(teamName);
+
+  const opp = wcNextOpponentInfo(teamName);
+  document.getElementById('staff-picks-team-flag').textContent = opp.flag;
+  document.getElementById('staff-picks-team-name').textContent = teamName;
+  document.getElementById('staff-picks-team-vs').textContent = `vs ${opp.name} · ${opp.venue}`;
+
+  const row = document.getElementById('staff-picks-row');
+  row.innerHTML = '';
+
+  for (let i = 0; i < choices.length; i++) {
+    const coach = choices[i];
+    const domain = wcCoachDomain(coach);
+    const downside = wcCoachDownside(coach);
+    const fit = wcCoachFitAnnotation(coach, teamName);
+    const monogram = wcCoachMonogram(coach.name);
+    const trait = coach.effects?.map(e => TEAM_EFFECTS[e]?.label || e).join(', ') || 'Coach';
+
+    const col = document.createElement('div');
+    col.className = 'staff-picks-col';
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = `staff-picks-card dom-${domain.key}`;
+    card.dataset.index = i;
+    card.setAttribute('aria-label', `${coach.name}, ${coach.nationality}, ${domain.label} coach`);
+
+    const costHtml = downside
+      ? `<div class="staff-picks-cost"><span class="staff-picks-cost-mark">!</span>${downside}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="staff-picks-card-header">
+        <div class="staff-picks-monogram">${monogram}</div>
+        <div class="staff-picks-card-id">
+          <span class="staff-picks-card-name">${coach.name}</span>
+          <span class="staff-picks-card-country">${coach.nationality}</span>
+        </div>
+      </div>
+      <div class="staff-picks-card-effect">${coach.explanation}</div>
+      ${costHtml}
+      <div class="staff-picks-card-footer">
+        <span class="staff-picks-trait">${trait}</span>
+        <span class="staff-picks-domain-word">${domain.label}</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      staffPicksState.pick = i;
+      updateStaffPicksSelection();
+    });
+
+    const fitEl = document.createElement('div');
+    fitEl.className = 'staff-picks-fit';
+    fitEl.textContent = fit;
+    fitEl.dataset.index = i;
+
+    col.appendChild(card);
+    col.appendChild(fitEl);
+    row.appendChild(col);
+  }
+
+  updateStaffPicksSelection();
+  renderOwnedStaffStrip();
+}
+
+function updateStaffPicksSelection() {
+  const { pick } = staffPicksState;
+  const cards = document.querySelectorAll('.staff-picks-card');
+  const fits = document.querySelectorAll('.staff-picks-fit');
+  const hireBtn = document.getElementById('staff-picks-hire-btn');
+  const statusEl = document.getElementById('staff-picks-confirm-status');
+
+  cards.forEach((c, i) => {
+    const isSel = i === pick;
+    c.classList.toggle('selected', isSel);
+  });
+  fits.forEach((f, i) => {
+    const isSel = i === pick;
+    f.classList.toggle('selected', isSel);
+  });
+
+  if (pick !== null) {
+    const coach = staffPicksState.choices[pick];
+    hireBtn.disabled = false;
+    hireBtn.textContent = `Hire ${wcCoachSurname(coach.name)}`;
+    statusEl.textContent = `${coach.name} joins your staff permanently`;
+  } else {
+    hireBtn.disabled = true;
+    hireBtn.textContent = 'Hire';
+    statusEl.textContent = 'Pick a coach to continue';
+  }
+}
+
+function renderOwnedStaffStrip() {
+  const bar = document.getElementById('staff-picks-staff-bar');
+  const { teamName } = staffPicksState;
+  const owned = wcOwnedCoachList(teamName);
+  bar.innerHTML = '';
+
+  if (owned.length === 0) {
+    bar.innerHTML = '<span class="staff-picks-staff-empty">No coaches hired yet.</span>';
+    return;
+  }
+
+  for (const coach of owned) {
+    const domain = wcCoachDomain(coach);
+    const trait = coach.effects?.map(e => TEAM_EFFECTS[e]?.label || e).join(', ') || 'Coach';
+    const monogram = wcCoachMonogram(coach.name);
+
+    const chip = document.createElement('span');
+    chip.className = 'staff-picks-staff-chip';
+    chip.innerHTML = `
+      <span class="staff-picks-staff-disc ${domain.discClass}">${monogram}</span>
+      <span class="staff-picks-staff-text">${coach.name} · ${trait}</span>
+    `;
+    bar.appendChild(chip);
+  }
+
+  const note = document.createElement('span');
+  note.className = 'staff-picks-staff-note';
+  note.textContent = 'Unlimited slots · at most one new coach per round';
+  bar.appendChild(note);
+}
+
+function handleStaffPicksKeydown(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeStaffPicksScreen({ defer: true });
+  }
+}
+
+function wcShowStaffPicksScreen(teamName, choices, callback) {
+  staffPicksState = { teamName, choices: choices || [], pick: null, callback, deferred: false };
+  const screen = document.getElementById('staff-picks-screen');
+  if (!screen) {
+    if (choices?.[0] && callback) {
+      wcHireCoach(teamName, choices[0]);
+      callback();
+    }
+    return;
+  }
+  renderStaffPicksScreen();
+  const wcScreen = document.getElementById('world-cup-screen');
+  if (wcScreen) wcScreen.classList.add('hidden');
+  screen.classList.remove('hidden');
+  document.addEventListener('keydown', handleStaffPicksKeydown);
+
+  const hireBtn = document.getElementById('staff-picks-hire-btn');
+  hireBtn.onclick = () => {
+    if (staffPicksState.pick !== null) {
+      closeStaffPicksScreen({ defer: false });
+    }
+  };
+}
+
+function closeStaffPicksScreen({ defer = false } = {}) {
+  const screen = document.getElementById('staff-picks-screen');
+  const wcScreen = document.getElementById('world-cup-screen');
+  if (screen) screen.classList.add('hidden');
+  if (wcScreen) wcScreen.classList.remove('hidden');
+  document.removeEventListener('keydown', handleStaffPicksKeydown);
+  const cb = staffPicksState.callback;
+  const tn = staffPicksState.teamName;
+  const pick = staffPicksState.pick;
+  const choices = staffPicksState.choices;
+  staffPicksState = { teamName: null, choices: [], pick: null, callback: null, deferred: false };
+  if (cb) {
+    if (defer && tn && wcCoachPicksQueue) {
+      wcCoachPicksQueue.unshift({ teamName: tn });
+    }
+    cb(defer, { pick, choices });
+  }
+}
+
+function wcHireCoach(teamName, coach) {
+  if (TEAMS && TEAMS[teamName]) {
+    coach.applyToTeam(TEAMS[teamName]);
+    if (TEAMS[teamName].hasTeamEffect('randomBoost') && !wcRandomBoostApplied[teamName]) {
+      wcRandomBoostApplied[teamName] = true;
+      const allEffects = Object.keys(TEAM_EFFECTS).filter((k) => k !== 'randomBoost');
+      const shuffled = allEffects.sort(() => Math.random() - 0.5);
+      for (let i = 0; i < 2 && i < shuffled.length; i++) {
+        TEAMS[teamName].addTeamEffect(shuffled[i], Infinity);
+      }
+    }
+    logMatch(teamName, `Staff Picks: ${teamName} hired coach ${coach.name} (${coach.nationality}).`);
+  } else {
+    if (!wcPendingCoaches) wcPendingCoaches = {};
+    wcPendingCoaches[teamName] = coach;
+  }
+  if (!wcOwnedCoaches[teamName]) wcOwnedCoaches[teamName] = [];
+  wcOwnedCoaches[teamName].push(coach);
+}
 function wcDeckReshuffle(teamName, callback) {
   const team = TEAMS[teamName];
   if (!team) { callback(); return; }
@@ -3053,49 +4841,195 @@ function wcShowCoachJoinedModal(teamName, coach, callback) {
   document.addEventListener('keydown', onKey);
 }
 
-function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+function wcNextStageLabel(teamName) {
+  const nxt = teamName ? wcNextMatchForTeam(teamName) : wcNextMatch(worldCup);
+  if (!nxt) return worldCup.phase === 'groups' ? 'knockout round' : 'the final';
+  if (nxt.round) return nxt.round;
+  return `matchday ${nxt.matchday}`;
+}
 
-  const modal = document.createElement('div');
-  modal.className = 'wc-modal shot-modal halftime-modal event-phase-modal';
-
-  const content = document.createElement('div');
-  content.className = 'shot-modal-content halftime-content';
-
-  const title = document.createElement('div');
-  title.className = 'halftime-title';
-  title.textContent = 'Event Phase';
-  content.appendChild(title);
-
-  if (eventIndex && eventTotal) {
-    const progress = document.createElement('div');
-    progress.className = 'event-phase-progress';
-    progress.textContent = `Event ${eventIndex} of ${eventTotal}`;
-    content.appendChild(progress);
+function wcEventGainLose(opt) {
+  if (opt.gain || opt.lose) return { gain: opt.gain, lose: opt.lose };
+  const label = opt.label || '';
+  const gain = [];
+  const lose = [];
+  const clauses = label.split(/[—,;]+/).map((c) => c.trim()).filter(Boolean);
+  for (const clause of clauses) {
+    const lower = clause.toLowerCase();
+    const neg = /(^|\s)(lose|losing|minus|risk|decline|forgo|drop|penalty|penalties|sit out|rest|suspended|removed|curse|haunts|worn|doubtful)\b|-\d|\+.*penalty/i.test(lower);
+    const pos = /(gain|gains|\+(\d|\w)|new|draw|dossier|elite|adds?|boost|upgrade|transform|coach|rare|earn|attract|improves?|pays? off|resolve|fired up|flow)/i.test(lower);
+    if (neg && !pos) lose.push(clause);
+    else if (pos && !neg) gain.push(clause);
+    else if (pos && neg) {
+      // Mixed clause — split on plus/minus markers if possible
+      const parts = clause.split(/(?=\+)|(?=-)/).map((p) => p.trim()).filter(Boolean);
+      for (const part of parts) {
+        if (/^\+\d|gain|new coach|rare card|boost|draw/.test(part)) gain.push(part);
+        else if (/^-\d|lose|penalty|curse|risk|sit out|doubtful/.test(part)) lose.push(part);
+        else lose.push(part);
+      }
+    } else if (/gain|boost|\+|draw|new|attract/.test(lower)) {
+      gain.push(clause);
+    } else {
+      lose.push(clause);
+    }
   }
+  if (gain.length === 0 && lose.length === 0) {
+    gain.push(label);
+  }
+  return {
+    gain: gain.join(' · ') || opt.label,
+    lose: lose.join(' · ') || '',
+  };
+}
 
-  const eventTitle = document.createElement('div');
-  eventTitle.className = 'event-phase-title';
-  eventTitle.textContent = event.title;
-  content.appendChild(eventTitle);
+function wcNextMatchForTeam(teamName) {
+  if (!worldCup) return null;
+  if (worldCup.phase === 'groups') {
+    for (const matchday of [1, 2, 3]) {
+      for (const g of worldCup.groups) {
+        const m = g.matches.find((m) => !m.played && m.matchday === matchday && (m.home === teamName || m.away === teamName));
+        if (m) return { group: g.name, matchday, match: m };
+      }
+    }
+    return null;
+  }
+  for (const r of worldCup.rounds) {
+    const m = r.matches.find((m) => !m.played && (m.home === teamName || m.away === teamName));
+    if (m) return { round: r.name, match: m };
+  }
+  return null;
+}
 
-  const desc = document.createElement('div');
-  desc.className = 'halftime-kickoff';
-  desc.textContent = event.description;
-  content.appendChild(desc);
+function renderWcEventComingUp(teamName) {
+  eventComingUpEl.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'event-coming-card';
+  const label = document.createElement('div');
+  label.className = 'event-coming-label';
+  label.textContent = 'Coming up';
+  card.appendChild(label);
+  const nxt = wcNextMatchForTeam(teamName);
+  if (nxt) {
+    const opp = nxt.match.home === teamName ? nxt.match.away : nxt.match.home;
+    const vs = document.createElement('div');
+    vs.className = 'event-coming-vs';
+    vs.innerHTML = `${wcShortName(teamName)} <span>vs</span> ${wcShortName(opp)}`;
+    card.appendChild(vs);
+    const where = document.createElement('div');
+    where.className = 'event-coming-where';
+    where.textContent = nxt.round || `Group ${nxt.group} · Matchday ${nxt.matchday}`;
+    card.appendChild(where);
+  } else {
+    const vs = document.createElement('div');
+    vs.className = 'event-coming-vs';
+    vs.textContent = 'No fixture yet';
+    card.appendChild(vs);
+  }
+  eventComingUpEl.appendChild(card);
+}
 
-  const optionsWrap = document.createElement('div');
-  optionsWrap.className = 'event-phase-options';
+function renderWcEventFooter(teamName) {
+  eventFooterEl.innerHTML = '';
+  const team = wcGetTeam(teamName);
+  const decksize = team && team.actions ? team.actions.length : 0;
+  let coachesCount = 0;
+  if (team && team.coaches) coachesCount += team.coaches.length;
+  if (wcOwnedCoaches && wcOwnedCoaches[teamName]) coachesCount = Math.max(coachesCount, wcOwnedCoaches[teamName].length);
+  if (wcPendingCoaches && wcPendingCoaches[teamName]) coachesCount += 1;
 
+  const temporary = wcInEffectItems(teamName).filter((i) => !i.permanent).length;
+
+  const parts = [
+    `${decksize} cards in deck`,
+    `${coachesCount} coach${coachesCount === 1 ? '' : 'es'}`,
+    `${temporary} active temporary effect${temporary === 1 ? '' : 's'}`,
+  ];
+  for (const p of parts) {
+    const chip = document.createElement('span');
+    chip.className = 'event-footer-chip';
+    chip.textContent = p;
+    eventFooterEl.appendChild(chip);
+  }
+}
+
+function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal) {
+  if (!eventPhaseScreen) return { close: () => {} };
+  eventPhaseScreen.classList.remove('hidden');
+
+  const team = wcGetTeam(teamName);
+
+  eventKickerEl.innerHTML = '';
+  const kicker1 = document.createElement('span');
+  kicker1.className = 'event-kicker-main';
+  kicker1.textContent = 'Event';
+  const kicker2 = document.createElement('span');
+  kicker2.className = 'event-kicker-sub';
+  kicker2.textContent = `before ${wcNextStageLabel(teamName)}${eventIndex && eventTotal ? ` · ${eventIndex} of ${eventTotal}` : ''}`;
+  eventKickerEl.appendChild(kicker1);
+  eventKickerEl.appendChild(kicker2);
+
+  eventHeadingEl.textContent = event.title;
+  eventParagraphEl.textContent = event.description;
+
+  renderWcEventComingUp(teamName);
+
+  eventOptionsEl.innerHTML = '';
   const options = event.options(teamName);
   for (const opt of options) {
-    const btn = document.createElement('button');
-    btn.className = 'event-phase-option';
-    btn.innerHTML =
-      `<div class="event-option-label">${opt.label}</div>` +
-      (opt.description ? `<div class="event-option-desc">${opt.description}</div>` : '');
-    btn.addEventListener('click', () => {
+    const { gain, lose } = wcEventGainLose(opt);
+
+    const row = document.createElement('button');
+    row.className = 'event-option';
+    row.type = 'button';
+
+    const title = document.createElement('div');
+    title.className = 'event-option-title';
+    title.textContent = opt.label;
+    row.appendChild(title);
+
+    if (opt.description) {
+      const flavour = document.createElement('div');
+      flavour.className = 'event-option-flavour';
+      flavour.textContent = opt.description;
+      row.appendChild(flavour);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'event-option-grid';
+
+    const gainCell = document.createElement('div');
+    gainCell.className = 'event-cell event-cell-gain';
+    const gainTitle = document.createElement('div');
+    gainTitle.className = 'event-cell-title';
+    gainTitle.textContent = 'You gain';
+    gainCell.appendChild(gainTitle);
+    const gainBody = document.createElement('div');
+    gainBody.className = 'event-cell-body';
+    gainBody.textContent = gain || 'Nothing';
+    gainCell.appendChild(gainBody);
+
+    const loseCell = document.createElement('div');
+    loseCell.className = 'event-cell event-cell-lose';
+    const loseTitle = document.createElement('div');
+    loseTitle.className = 'event-cell-title';
+    loseTitle.textContent = 'You lose';
+    loseCell.appendChild(loseTitle);
+    const loseBody = document.createElement('div');
+    loseBody.className = 'event-cell-body';
+    loseBody.textContent = lose || 'Nothing';
+    loseCell.appendChild(loseBody);
+
+    grid.appendChild(gainCell);
+    grid.appendChild(loseCell);
+    row.appendChild(grid);
+
+    const take = document.createElement('span');
+    take.className = 'event-take';
+    take.textContent = 'Take';
+    row.appendChild(take);
+
+    row.addEventListener('click', () => {
       const hadCoach = !!(wcPendingCoaches && wcPendingCoaches[teamName]);
       const beforeCards = wcTrainingCards && wcTrainingCards[teamName]
         ? wcTrainingCards[teamName].slice() : [];
@@ -3121,9 +5055,7 @@ function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal
         removedCards = removedCards.filter((c) => c !== t.fromCard);
       }
 
-      optionsWrap.remove();
-      desc.remove();
-      eventTitle.remove();
+      eventPhaseScreen.classList.add('hidden');
 
       function afterRewards() {
         if (wcPendingDeckReshuffle) {
@@ -3166,31 +5098,30 @@ function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal
 
       showChangesThen();
     });
-    optionsWrap.appendChild(btn);
+
+    eventOptionsEl.appendChild(row);
   }
 
   if (options.length === 0) {
-    const skipBtn = document.createElement('button');
-    skipBtn.className = 'shot-modal-close';
-    skipBtn.textContent = 'Continue';
-    skipBtn.addEventListener('click', () => {
-      optionsWrap.remove();
-      desc.remove();
-      eventTitle.remove();
+    const skip = document.createElement('button');
+    skip.className = 'event-option';
+    skip.type = 'button';
+    const title = document.createElement('div');
+    title.className = 'event-option-title';
+    title.textContent = 'No options available';
+    skip.appendChild(title);
+    skip.addEventListener('click', () => {
+      eventPhaseScreen.classList.add('hidden');
       callback();
     });
-    optionsWrap.appendChild(skipBtn);
+    eventOptionsEl.appendChild(skip);
   }
 
-  content.appendChild(optionsWrap);
-  modal.appendChild(content);
-  wcAddTeamFlagBadge(modal, teamName);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  renderWcEventFooter(teamName);
 
   function close() {
     document.removeEventListener('keydown', onKey);
-    overlay.remove();
+    eventPhaseScreen.classList.add('hidden');
   }
   function onKey(e) {
     if (e.key === 'Escape') close();
@@ -3864,8 +5795,8 @@ function openWcSaveLoadModal() {
         const res = WcSave.load(s.name);
         if (res.ok) {
           close();
-          const setupOverlay = document.getElementById('wc-setup-overlay');
-          if (setupOverlay) setupOverlay.classList.add('hidden');
+          const setupScreen = document.getElementById('wc-setup-screen');
+          if (setupScreen) setupScreen.classList.add('hidden');
           showWorldCupScreen();
           renderWorldCupView();
           showToast(`Restored World Cup "${s.name}".`, 'info');

@@ -624,6 +624,11 @@ class GameController {
     if (shouldDraw) {
       this.drawCards(team, 1);
     }
+    // Quick Draw team effect: draw 2 extra cards when skipping
+    if (team.hasTeamEffect('drawOnSkip')) {
+      this.drawCards(team, 2);
+      logMatch(team.name, `${team.name} draws 2 extra cards with Quick Draw.`);
+    }
     const gained = shouldDraw ? (this._turnHandAdds[team.name] || []).slice() : [];
     this._turnHandAdds[team.name] = [];
 

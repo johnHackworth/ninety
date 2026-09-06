@@ -505,6 +505,13 @@ const TEAM_EFFECTS = {
     explanation: 'One of every 3 training candidates is a pack of 2 cards that work well together.',
     stats: {},
   },
+  drawOnSkip: {
+    char: '🎴',
+    turns: Infinity,
+    label: 'Quick Draw',
+    explanation: 'When you skip your turn, draw 2 extra cards.',
+    stats: {},
+  },
   highMobility: {
     char: '🏃',
     turns: Infinity,
