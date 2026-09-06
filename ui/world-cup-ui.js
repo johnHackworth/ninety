@@ -1093,6 +1093,8 @@ async function wcContinueStep() {
     wcExtraHalves = 0;
     wcEndingShown = false;
     wcShootout = null;
+    wcPendingTrainingMatch = start.match;
+    wcPendingTrainingPhases = null;
     showWorldCupScreen();
     renderWorldCupView();
   });
