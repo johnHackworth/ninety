@@ -298,20 +298,28 @@
       );
     }
 
-    // Opposition traits (from artifacts/coach)
-    const oppTraits = [];
+    // Opposition team effects (artifacts + coach effects)
+    const oppTeamEffects = [];
     for (const artifact of oppositionTeam.artifacts) {
       const spec = TEAM_ARTIFACTS[artifact];
       if (spec) {
-        oppTraits.push({ name: spec.label, effect: spec.description });
+        oppTeamEffects.push({ name: spec.label, effect: spec.description, type: 'artifact' });
       }
     }
-    // Add coach effect as trait
     for (const effect of oppositionTeam.teamEffects) {
       const spec = TEAM_EFFECTS[effect];
       if (spec) {
-        oppTraits.push({ name: spec.label, effect: spec.explanation });
+        oppTeamEffects.push({ name: spec.label, effect: spec.explanation, type: 'coach' });
       }
+    }
+
+    // Opposition player traits — individual strengths based on stats
+    const oppPlayerTraits = [];
+    for (const starName of oppositionTeam.starPlayers) {
+      const player = oppositionTeam.squad.find(p => p.name === starName);
+      if (!player) continue;
+      const traits = playerTraitsFromStats(player);
+      oppPlayerTraits.push({ name: player.name, traits });
     }
 
     // Danger men: opposition star players
@@ -341,7 +349,8 @@
       order,
       conditions,
       oppUnavailable,
-      oppTraits,
+      oppTeamEffects,
+      oppPlayerTraits,
       oppDangerMen,
       homeFlag: flagForTeam(homeTeam),
       awayFlag: flagForTeam(awayTeam),
@@ -366,6 +375,44 @@
     };
     // More specific roles based on stats
     return roles[pos] || 'Key player';
+  }
+
+  function playerTraitsFromStats(player) {
+    const statLabels = {
+      speed: 'Pace',
+      marking: 'Marking',
+      tackling: 'Tackling',
+      shooting: 'Finishing',
+      passing: 'Passing',
+      dribbling: 'Dribbling',
+      tacticalThinking: 'Vision',
+      heading: 'Heading',
+      goalkeeping: 'Goalkeeping',
+    };
+    const traits = [];
+    // Find top 3 stats for this player (excluding GK-specific for outfield)
+    const stats = [
+      { key: 'speed', label: 'Pace' },
+      { key: 'marking', label: 'Marking' },
+      { key: 'tackling', label: 'Tackling' },
+      { key: 'shooting', label: 'Finishing' },
+      { key: 'passing', label: 'Passing' },
+      { key: 'dribbling', label: 'Dribbling' },
+      { key: 'tacticalThinking', label: 'Vision' },
+      { key: 'heading', label: 'Heading' },
+      { key: 'goalkeeping', label: 'Goalkeeping' },
+    ];
+    // Sort by value descending
+    const sorted = stats
+      .map(s => ({ label: s.label, value: player[s.key] || 0 }))
+      .sort((a, b) => b.value - a.value);
+    // Take top 3 that are >= 7
+    for (const s of sorted) {
+      if (s.value >= 7 && traits.length < 3) {
+        traits.push(`${s.label} ${s.value}`);
+      }
+    }
+    return traits;
   }
 
   function threatTextForPlayer(player, homeTeam) {
@@ -763,16 +810,34 @@
       EL.oppNews.appendChild(div);
     }
 
-    // Traits
-    EL.oppTraits.innerHTML = '';
-    for (const trait of state.oppTraits) {
-      const div = document.createElement('div');
-      div.className = 'ts-trait-pill';
-      div.innerHTML = `
-        <div class="ts-trait-name">${trait.name}</div>
-        <div class="ts-trait-effect">${trait.effect}</div>
-      `;
-      EL.oppTraits.appendChild(div);
+    // Team Effects (artifacts + coach effects)
+    const teamEffectsEl = document.getElementById('ts-opp-team-effects');
+    if (teamEffectsEl) {
+      teamEffectsEl.innerHTML = '';
+      for (const effect of state.oppTeamEffects) {
+        const div = document.createElement('div');
+        div.className = `ts-team-effect-pill ${effect.type}`;
+        div.innerHTML = `
+          <div class="ts-team-effect-name">${effect.name}</div>
+          <div class="ts-team-effect-desc">${effect.effect}</div>
+        `;
+        teamEffectsEl.appendChild(div);
+      }
+    }
+
+    // Player Traits (individual strengths)
+    const playerTraitsEl = document.getElementById('ts-opp-player-traits');
+    if (playerTraitsEl) {
+      playerTraitsEl.innerHTML = '';
+      for (const pt of state.oppPlayerTraits) {
+        const div = document.createElement('div');
+        div.className = 'ts-player-trait-row';
+        div.innerHTML = `
+          <div class="ts-player-trait-name">${pt.name}</div>
+          <div class="ts-player-trait-list">${pt.traits.join(', ')}</div>
+        `;
+        playerTraitsEl.appendChild(div);
+      }
     }
 
     // Danger men
@@ -963,7 +1028,8 @@
     EL.oppName = document.getElementById('ts-opp-name');
     EL.oppFormation = document.getElementById('ts-opp-formation');
     EL.oppNews = document.getElementById('ts-opp-news');
-    EL.oppTraits = document.getElementById('ts-opp-traits');
+    EL.oppTeamEffects = document.getElementById('ts-opp-team-effects');
+    EL.oppPlayerTraits = document.getElementById('ts-opp-player-traits');
     EL.dangerList = document.getElementById('ts-danger-list');
 
     // Bind events
