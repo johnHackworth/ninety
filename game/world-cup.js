@@ -255,7 +255,18 @@ function matchWinner(m) {
   return null;
 }
 
+function resyncMatchesByLabel(state) {
+  state.matchesByLabel = state.matchesByLabel || {};
+  for (const r of state.rounds) {
+    for (const m of r.matches) {
+      state.matchesByLabel[m.label] = m;
+    }
+  }
+  return state.matchesByLabel;
+}
+
 function buildNextRound(state) {
+  resyncMatchesByLabel(state);
   const byLabel = (label) => state.matchesByLabel[label];
   const w = (label) => matchWinner(byLabel(label));
   const l = (label) => {

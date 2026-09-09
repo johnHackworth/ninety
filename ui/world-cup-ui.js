@@ -1352,6 +1352,7 @@ function wcPhaseTitle() {
 function renderWcTabs() {
   const map = [
     ['wc-tab-overview', 'overview'],
+    ['wc-tab-bracket', 'bracket'],
     ['wc-tab-groups', 'groups'],
     ['wc-tab-schedule', 'schedule'],
     ['wc-tab-top', 'top'],
@@ -1409,10 +1410,12 @@ function renderWorldCupView() {
       worldCupContentEl.appendChild(renderWcMyTeam());
     } else if (wcStatsView === 'deck') {
       worldCupContentEl.appendChild(renderWcDeckTab());
+    } else if (wcStatsView === 'bracket') {
+      worldCupContentEl.appendChild(renderWcBracketContent());
     } else if (worldCup.phase === 'groups') {
       worldCupContentEl.appendChild(renderWorldCupGroups());
     } else if (worldCup.rounds.length > 0) {
-      worldCupContentEl.appendChild(renderWorldCupBracket());
+      worldCupContentEl.appendChild(renderWcBracketContent());
     }
   }
 
@@ -2409,43 +2412,245 @@ function renderWorldCupGroups() {
   return wrap;
 }
 
-function renderWorldCupBracket() {
+// ---- Knockout bracket: top-down funnel ---------------------------
+// All rounds share one 16-slot grid (cards widen as rounds narrow) so every
+// parent pair sits exactly above its child. Display order follows the real
+// 73-104 schedule without crossing lines; rounds not built yet render as TBD
+// placeholders so the ladder stays whole. R16 folds to flags + score, the
+// Final is the heavy gold centerpiece, connector lines drop vertically.
+
+const WC_BRACKET_ROUNDS = [
+  { name: 'Round of 32', count: 16 },
+  { name: 'Round of 16', count: 8 },
+  { name: 'Quarter-finals', count: 4 },
+  { name: 'Semi-finals', count: 2 },
+  { name: 'Third-place match', count: 1 },
+  { name: 'Final', count: 1 },
+];
+
+const WC_BRACKET_DISPLAY = {
+  'Round of 32': [74, 77, 73, 75, 76, 78, 79, 80, 83, 84, 81, 82, 86, 88, 85, 87],
+  'Round of 16': [89, 90, 93, 94, 91, 92, 95, 96],
+  'Quarter-finals': [97, 98, 99, 100],
+  'Semi-finals': [101, 102],
+  'Third-place match': [103],
+  'Final': [104],
+};
+
+// label -> the next-round label it feeds (winner side). SF losers drop to
+// the Third-place match (103), handled separately when drawing.
+const WC_BRACKET_CHILD_OF = {
+  74: 89, 77: 89, 73: 90, 75: 90, 76: 91, 78: 91, 79: 92, 80: 92,
+  83: 93, 84: 93, 81: 94, 82: 94, 86: 95, 88: 95, 85: 96, 87: 96,
+  89: 97, 90: 97, 93: 98, 94: 98, 91: 99, 92: 99, 95: 100, 96: 100,
+  97: 101, 98: 101, 99: 102, 100: 102,
+  101: 104, 102: 104,
+};
+
+const WC_BRACKET_CLS = {
+  'Round of 32': 'r32',
+  'Round of 16': 'r16',
+  'Quarter-finals': 'qf',
+  'Semi-finals': 'sf',
+  'Third-place match': 'third',
+  'Final': 'final',
+};
+
+function renderWcBracketContent() {
+  if (worldCup.rounds.length === 0) {
+    const msg = document.createElement('div');
+    msg.className = 'wc-empty-bracket';
+    msg.textContent = 'Finish the group stage to unlock the knockout bracket.';
+    return msg;
+  }
   const wrap = document.createElement('div');
-  wrap.className = 'world-cup-bracket';
-
-  for (const round of worldCup.rounds) {
-    const col = document.createElement('div');
-    col.className = 'world-cup-round';
-
-    const title = document.createElement('div');
-    title.className = 'world-cup-round-title';
-    title.textContent = round.name;
-    col.appendChild(title);
-
-    for (const m of round.matches) {
-      col.appendChild(renderWcBracketMatch(m));
-    }
-    wrap.appendChild(col);
+  const bracket = renderWorldCupBracket();
+  wrap.appendChild(bracket);
+  drawWcBracketLines(bracket);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => drawWcBracketLines(bracket)).catch(() => {});
   }
   return wrap;
 }
 
-function renderWcBracketMatch(m) {
-  const card = document.createElement('div');
-  card.className = 'wc-match-card';
-  if (m.played) {
-    card.classList.add('played');
-    const homeWon = m.winner === m.home;
-    card.innerHTML =
-      `<div class="wc-card-team ${homeWon ? 'won' : ''}">${wcTeamName(m.home)} <span class="wc-card-score">${m.homeScore}${m.pen ? ` (${m.penHome})` : ''}</span></div>` +
-      `<div class="wc-card-team ${!homeWon ? 'won' : ''}">${wcTeamName(m.away)} <span class="wc-card-score">${m.awayScore}${m.pen ? ` (${m.penAway})` : ''}</span></div>`;
-  } else {
-    card.innerHTML =
-      `<div class="wc-card-team pending">${wcTeamName(m.home)}</div>` +
-      `<div class="wc-card-team pending">${wcTeamName(m.away)}</div>`;
+function renderWorldCupBracket() {
+  const wrap = document.createElement('div');
+  wrap.className = 'world-cup-bracket';
+
+  const matchByLabel = new Map();
+  for (const r of worldCup.rounds) {
+    for (const m of r.matches) matchByLabel.set(m.label, m);
   }
+
+  const humanTeams = new Set(TEAM_NAMES.filter((name) => wcControllerForTeam(name).type === 'human'));
+
+  // The single upcoming unplayed match that involves a human team (gold ring).
+  let nextHumanMatch = null;
+  for (const r of worldCup.rounds) {
+    for (const m of r.matches) {
+      if (m.played) continue;
+      if (wcHumanTeamOf(m.home, m.away)) {
+        nextHumanMatch = m;
+        break;
+      }
+    }
+    if (nextHumanMatch) break;
+  }
+
+  for (const def of WC_BRACKET_ROUNDS) {
+    const sec = document.createElement('section');
+    sec.className = 'world-cup-round ' + (WC_BRACKET_CLS[def.name] || '');
+
+    const title = document.createElement('div');
+    title.className = 'world-cup-round-title';
+    const num = document.createElement('span');
+    num.className = 'wc-round-num';
+    num.textContent = def.name === 'Third-place match' ? '3rd' : String(def.count);
+    title.appendChild(num);
+    title.appendChild(document.createTextNode(def.name));
+    sec.appendChild(title);
+
+    const row = document.createElement('div');
+    row.className = 'world-cup-round-row';
+    for (const label of WC_BRACKET_DISPLAY[def.name]) {
+      const m = matchByLabel.get(label) || { label, home: 'TBD', away: 'TBD', played: false };
+      row.appendChild(renderWcBracketMatch(m, humanTeams, nextHumanMatch));
+    }
+    sec.appendChild(row);
+    wrap.appendChild(sec);
+  }
+
+  if (worldCup.completed) {
+    const trophy = document.createElement('div');
+    trophy.className = 'world-cup-bracket-trophy';
+    trophy.innerHTML =
+      `<div class="wcb-trophy-ico">🏆</div>` +
+      `<div class="wcb-trophy-name">${wcTeamName(worldCup.champion || '')}<br>World Champion</div>` +
+      `<div class="wcb-trophy-sub">World Cup 2026 · winner of the Final</div>`;
+    wrap.appendChild(trophy);
+  }
+
+  return wrap;
+}
+
+function renderWcBracketMatch(m, humanTeams, nextHumanMatch) {
+  const card = document.createElement('div');
+  card.className = 'wc-match-card ' + (m.played ? 'played' : 'pending');
+  card.dataset.label = String(m.label);
+
+  const winner = m.played && m.winner ? m.winner
+    : m.played && m.homeScore > m.awayScore ? m.home
+    : m.played && m.awayScore > m.homeScore ? m.away : null;
+  if (winner) card.dataset.winner = winner;
+  card.classList.toggle('next', m === nextHumanMatch);
+
+  const teamRow = (side) => {
+    const name = side === 'home' ? m.home : m.away;
+    const row = document.createElement('div');
+    row.className = 'wc-card-team';
+    if (m.played && winner === name) row.classList.add('won');
+    if (name && name !== 'TBD') {
+      const flag = document.createElement('span');
+      flag.className = 'wc-card-flag';
+      flag.textContent = TEAM_FLAGS[name] || '🏳️';
+      row.appendChild(flag);
+      const nm = document.createElement('span');
+      nm.className = 'wc-card-name';
+      nm.textContent = name;
+      if (TEAMS && TEAMS[name] && TEAMS[name].level === 3) {
+        const star = document.createElement('span');
+        star.className = 'wc-boss-star';
+        star.textContent = '★';
+        nm.appendChild(star);
+      }
+      row.appendChild(nm);
+      if (humanTeams.has(name)) {
+        const you = document.createElement('span');
+        you.className = 'wc-team-you';
+        you.textContent = 'You';
+        row.appendChild(you);
+      }
+    } else {
+      const nm = document.createElement('span');
+      nm.className = 'wc-card-name tbd';
+      nm.textContent = 'TBD';
+      row.appendChild(nm);
+    }
+    if (m.played) {
+      const score = document.createElement('span');
+      score.className = 'wc-card-score';
+      const pen = m.pen && side === 'home' ? ` (${m.penHome})`
+        : m.pen && side === 'away' ? ` (${m.penAway})` : '';
+      score.textContent = String(side === 'home' ? m.homeScore : m.awayScore) + pen;
+      row.appendChild(score);
+    }
+    return row;
+  };
+
+  card.appendChild(teamRow('home'));
+  card.appendChild(teamRow('away'));
   return card;
 }
+
+function drawWcBracketLines(wrap) {
+  const wrapRect = wrap.getBoundingClientRect();
+  if (wrapRect.width === 0) return;
+
+  let svg = wrap.querySelector('.world-cup-bracket-lines');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'world-cup-bracket-lines');
+    svg.setAttribute('aria-hidden', 'true');
+    wrap.appendChild(svg);
+  }
+  svg.textContent = '';
+
+  const cards = {};
+  for (const card of wrap.querySelectorAll('.wc-match-card')) {
+    cards[Number(card.dataset.label)] = card;
+  }
+
+  const link = (fromLabel, toLabel, fromLoser) => {
+    const fromCard = cards[fromLabel];
+    const toCard = cards[toLabel];
+    if (!fromCard || !toCard) return;
+    const rows = fromCard.querySelectorAll('.wc-card-team');
+    const fEl = fromLoser
+      ? (Array.from(rows).find((el) => !el.classList.contains('won')) || rows[0])
+      : (Array.from(rows).find((el) => el.classList.contains('won')) || rows[0]);
+    if (!fEl) return;
+    const fr = fEl.getBoundingClientRect();
+    const tr = toCard.getBoundingClientRect();
+    const sx = fr.left + fr.width / 2 - wrapRect.left;
+    const sy = fr.bottom - wrapRect.top;
+    const tx = tr.left + tr.width / 2 - wrapRect.left;
+    const ty = tr.top - wrapRect.top;
+    if (ty - sy < 2) return;
+    const my = sy + (ty - sy) * 0.45;
+    const d = `M${sx.toFixed(1)},${sy.toFixed(1)} L${sx.toFixed(1)},${my.toFixed(1)} L${tx.toFixed(1)},${my.toFixed(1)} L${tx.toFixed(1)},${ty.toFixed(1)}`;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'rgba(255, 210, 77, 0.45)');
+    path.setAttribute('stroke-width', '1.6');
+    svg.appendChild(path);
+  };
+
+  for (const [fromLabel, toLabel] of Object.entries(WC_BRACKET_CHILD_OF)) {
+    link(Number(fromLabel), toLabel, false);
+  }
+  // Semi-final losers drop to the Third-place match.
+  link(101, 103, true);
+  link(102, 103, true);
+}
+
+window.addEventListener('resize', () => {
+  const svg = document.querySelector('.world-cup-bracket-lines');
+  if (!svg) return;
+  const wrap = svg.closest('.world-cup-bracket');
+  if (!wrap || !worldCupContentEl || worldCupContentEl.classList.contains('hidden')) return;
+  drawWcBracketLines(wrap);
+});
 
 function renderWcNextMatchCard(nxt) {
   const card = document.createElement('div');

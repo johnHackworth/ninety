@@ -1400,6 +1400,7 @@ document.getElementById('wc-continue').addEventListener('click', wcContinue);
 // wc-setup-start is now handled in world-cup-ui.js bindWcSetupEvents()
 for (const [id, view] of [
   ['wc-tab-overview', 'overview'],
+  ['wc-tab-bracket', 'bracket'],
   ['wc-tab-groups', 'groups'],
   ['wc-tab-schedule', 'schedule'],
   ['wc-tab-top', 'top'],
