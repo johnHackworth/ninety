@@ -150,7 +150,12 @@ class ShootAction extends Action {
   }
 
   play({ team, shooter, board, goalkeepingCard }) {
-    const result = resolveShot({ team, shooter, board, goalkeepingCard, shootingBonus: 2 });
+    let shootingBonus = 2;
+    if (shooter && shooter._backwardsPassBonus) {
+      shootingBonus += shooter._backwardsPassBonus;
+      shooter._backwardsPassBonus = 0;
+    }
+    const result = resolveShot({ team, shooter, board, goalkeepingCard, shootingBonus });
     if (
       result.success &&
       shooter &&

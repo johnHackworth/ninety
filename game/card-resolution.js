@@ -569,7 +569,7 @@ function playShoot(team, action) {
 function removeFromPitchAndSquad(team, player) {
   const el = tokenElForPlayer(player);
   if (el) el.remove();
-  const index = team.currentPlayers.indexOf(player);
+  const index = team.currentPlayers.findIndex((p) => (p.__original || p).name === player.name);
   if (index !== -1) team.currentPlayers.splice(index, 1);
 }
 

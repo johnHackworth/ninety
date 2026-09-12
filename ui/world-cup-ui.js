@@ -1165,11 +1165,12 @@ function wcStartShootout(m) {
 function wcShootoutKick() {
   const st = wcShootout;
   if (!st || st.done) return;
-  const teamName = st.kicking;
+  const isHome = st.kicking === 'home';
+  const teamName = isHome ? st.home : st.away;
   const team = TEAMS[teamName];
-  const oppName = teamName === 'home' ? st.away : st.home;
+  const oppName = isHome ? st.away : st.home;
   const opp = TEAMS[oppName];
-  const order = teamName === 'home' ? st.homeOrder : st.awayOrder;
+  const order = isHome ? st.homeOrder : st.awayOrder;
   const idx = (st.round - 1) % Math.max(1, order.length);
   const shooter = order[idx];
   if (!shooter) { wcShootoutEnd(st); return; }
@@ -1244,7 +1245,7 @@ function wcShootoutPromptHuman(st, shooter, shootAction) {
   btn.addEventListener('click', () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
-    wcShootoutShoot(TEAMS[st.kicking], shootAction, { ai: false });
+    wcShootoutShoot(TEAMS[st.kicking === 'home' ? st.home : st.away], shootAction, { ai: false });
   });
   content.appendChild(btn);
 
@@ -1256,7 +1257,7 @@ function wcShootoutPromptHuman(st, shooter, shootAction) {
     if (e.key === 'Escape' || e.key === 'Enter') {
       overlay.remove();
       document.removeEventListener('keydown', onKey);
-      wcShootoutShoot(TEAMS[st.kicking], shootAction, { ai: false });
+      wcShootoutShoot(TEAMS[st.kicking === 'home' ? st.home : st.away], shootAction, { ai: false });
     }
   }
   document.addEventListener('keydown', onKey);
@@ -1266,9 +1267,10 @@ function wcShootoutShoot(team, action, { ai = false } = {}) {
   const st = wcShootout;
   if (!st || st.done) return;
   const teamName = team.name;
-  const oppName = teamName === 'home' ? st.away : st.home;
+  const isHome = teamName === st.home;
+  const oppName = isHome ? st.away : st.home;
   const opp = TEAMS[oppName];
-  const order = teamName === 'home' ? st.homeOrder : st.awayOrder;
+  const order = isHome ? st.homeOrder : st.awayOrder;
   const shooter = order[(st.round - 1) % Math.max(1, order.length)];
   const keeperCard = opp.drawGoalkeepingCard();
 
@@ -1277,7 +1279,7 @@ function wcShootoutShoot(team, action, { ai = false } = {}) {
     team, shooter, board, goalkeepingCard: keeperCard, shootingBonus: 2,
   });
 
-  const trueSide = teamName === 'home' ? st.homeSide : st.awaySide;
+  const trueSide = isHome ? st.homeSide : st.awaySide;
   if (team.side !== trueSide) team.side = trueSide;
 
   game.inPlay[teamName] = (game.inPlay[teamName] || []).filter(c => c !== action);
@@ -1286,7 +1288,7 @@ function wcShootoutShoot(team, action, { ai = false } = {}) {
   let scored = false;
   if (result.success && result.scored) {
     scored = true;
-    st[teamName === 'home' ? 'homeScore' : 'awayScore'] += 1;
+    st[isHome ? 'homeScore' : 'awayScore'] += 1;
   }
 
   if (ai) {

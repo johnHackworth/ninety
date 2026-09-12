@@ -202,7 +202,7 @@ function applyOutPlayers() {
       }
       if (team.currentPlayers.includes(player)) {
         const slot = (team.formation || {})[player.name];
-        const index = team.currentPlayers.indexOf(player);
+        const index = team.currentPlayers.findIndex((p) => (p.__original || p).name === player.name);
         if (slot) delete team.formation[player.name];
         const repl =
           team.squad.find(
@@ -245,7 +245,10 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
     ball.el.remove();
     ball = null;
   }
-  for (const el of pitch.querySelectorAll('.player-token')) el.remove();
+  for (const el of pitch.querySelectorAll('.player-token')) {
+    if (el._token && typeof el._token.destroy === 'function') el._token.destroy();
+    el.remove();
+  }
   for (const el of document.querySelectorAll('.hand-panel, .rail-team, .side-bench, #scoreboard')) {
     el.innerHTML = '';
     delete el.dataset.ready;
@@ -410,7 +413,7 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
           const subs = TEAMS[teamName].availableSubstitutes();
           const replacement = subs.find((p) => p.position === player.position) || subs[0];
           if (replacement) {
-            const idx = TEAMS[teamName].currentPlayers.indexOf(player);
+            const idx = TEAMS[teamName].currentPlayers.findIndex((p) => (p.__original || p).name === player.name);
             const slot = TEAMS[teamName].formation[player.name];
             TEAMS[teamName].currentPlayers[idx] = replacement;
             if (slot) TEAMS[teamName].formation[replacement.name] = slot;

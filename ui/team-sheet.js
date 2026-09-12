@@ -814,6 +814,13 @@
     const teamEffectsEl = document.getElementById('ts-opp-team-effects');
     if (teamEffectsEl) {
       teamEffectsEl.innerHTML = '';
+      // Coach name header
+      if (oppositionTeam.coach) {
+        const coachHeader = document.createElement('div');
+        coachHeader.className = 'ts-section-title ts-coach-header';
+        coachHeader.textContent = `Coach: ${oppositionTeam.coach}`;
+        teamEffectsEl.appendChild(coachHeader);
+      }
       for (const effect of state.oppTeamEffects) {
         const div = document.createElement('div');
         div.className = `ts-team-effect-pill ${effect.type}`;
@@ -842,6 +849,11 @@
 
     // Danger men
     EL.dangerList.innerHTML = '';
+    // Star players section title
+    const dangerTitle = document.createElement('div');
+    dangerTitle.className = 'ts-section-title ts-danger-title';
+    dangerTitle.textContent = 'Star players';
+    EL.dangerList.appendChild(dangerTitle);
     for (const dm of state.oppDangerMen) {
       const colours = POS_COLOURS[dm.player.position];
       const div = document.createElement('div');

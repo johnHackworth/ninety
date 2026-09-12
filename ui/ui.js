@@ -201,6 +201,9 @@ function renderBench(teamName) {
   const team = TEAMS[teamName];
   const slot = benchSlots[teamName];
   if (!slot) return;
+  for (const el of slot.querySelectorAll('.player-token')) {
+    if (el._token && typeof el._token.destroy === 'function') el._token.destroy();
+  }
   slot.innerHTML = '';
 
   const bench = document.createElement('div');
@@ -615,15 +618,23 @@ function nameNeedsCompactFont(name) {
   return _nameMeasureCtx.measureText(text).width + text.length * 0.5 > 105;
 }
 
+const TOOLTIP_AUTO_HIDE_MS = 5000;
+
 function bindCardTooltip(card, tooltip) {
   tooltip.style.display = 'none';
   let hideTimer = null;
+  let autoHideTimer = null;
   let dismissedByClick = false;
+
+  const autoHide = () => {
+    tooltip.style.display = 'none';
+  };
 
   const show = () => {
     if (dismissedByClick) return;
     if (!card.isConnected) { tooltip.remove(); return; }
     clearTimeout(hideTimer);
+    clearTimeout(autoHideTimer);
     if (card.classList.contains('disabled') || card.classList.contains('face-down')) {
       tooltip.style.display = 'none';
       return;
@@ -631,6 +642,7 @@ function bindCardTooltip(card, tooltip) {
     const rect = card.getBoundingClientRect();
     if (!rect.width && !rect.height) return;
     tooltip.style.display = 'block';
+    autoHideTimer = setTimeout(autoHide, TOOLTIP_AUTO_HIDE_MS);
     tooltip.style.position = 'fixed';
     tooltip.style.left = '0';
     tooltip.style.top = '0';
@@ -647,6 +659,7 @@ function bindCardTooltip(card, tooltip) {
     tooltip.style.left = left + 'px';
   };
   const hide = () => {
+    clearTimeout(autoHideTimer);
     if (!card.isConnected) { tooltip.remove(); return; }
     hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
@@ -655,6 +668,7 @@ function bindCardTooltip(card, tooltip) {
   card.addEventListener('mouseleave', hide);
   card.addEventListener('click', () => { 
     dismissedByClick = true;
+    clearTimeout(autoHideTimer);
     tooltip.style.display = 'none';
     setTimeout(resetDismissed, 200);
   });
@@ -673,12 +687,19 @@ function bindTeamEffectTooltip(el, description, extraText, turns) {
   tooltip.textContent = content;
 
   let hideTimer = null;
+  let autoHideTimer = null;
+
+  const autoHide = () => {
+    tooltip.style.display = 'none';
+  };
 
   const show = () => {
     clearTimeout(hideTimer);
+    clearTimeout(autoHideTimer);
     const rect = el.getBoundingClientRect();
     if (!rect.width && !rect.height) return;
     tooltip.style.display = 'block';
+    autoHideTimer = setTimeout(autoHide, TOOLTIP_AUTO_HIDE_MS);
     tooltip.style.position = 'fixed';
     tooltip.style.left = '0';
     tooltip.style.top = '0';
@@ -692,6 +713,7 @@ function bindTeamEffectTooltip(el, description, extraText, turns) {
     tooltip.style.left = left + 'px';
   };
   const hide = () => {
+    clearTimeout(autoHideTimer);
     hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
   el.addEventListener('mouseenter', show);
@@ -1880,7 +1902,10 @@ function showHardTackleModal({ team, action, tackler, holder, result }) {
       const holderTokenEl = tokenElForPlayer(holder);
       const holderCellEl = holderTokenEl ? holderTokenEl.closest('.cell') : null;
       opponent.substitute(holder, selectedSub);
-      if (holderTokenEl) holderTokenEl.remove();
+      if (holderTokenEl) {
+        if (holderTokenEl._token && typeof holderTokenEl._token.destroy === 'function') holderTokenEl._token.destroy();
+        holderTokenEl.remove();
+      }
       if (holderCellEl) {
         new PlayerToken({
           player: selectedSub,

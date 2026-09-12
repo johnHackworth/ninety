@@ -8885,6 +8885,15 @@ body.screen-shake #board {
   margin-bottom: 4px;
 }
 
+.ts-coach-header {
+  font-family: 'Figtree', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffd24a;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
 .ts-team-effect-desc {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.75);
@@ -8962,6 +8971,17 @@ body.screen-shake #board {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.ts-danger-title {
+  font-family: 'Figtree', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffd24a;
+  margin-bottom: 8px;
+  padding-left: 2px;
+  border-left: 3px solid #ffd24a;
+  padding-left: 8px;
 }
 
 .ts-danger-card {

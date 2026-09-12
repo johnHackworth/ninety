@@ -55,9 +55,20 @@ class PlayerToken {
       el.appendChild(star);
     }
 
-    this.createTooltip();
-
     return el;
+  }
+
+  ensureTooltip() {
+    if (!this.tooltipEl) this.createTooltip();
+    return this.tooltipEl;
+  }
+
+  destroy() {
+    clearTimeout(this._tooltipAutoHideTimeout);
+    if (this.tooltipEl && this.tooltipEl.parentNode) {
+      this.tooltipEl.parentNode.removeChild(this.tooltipEl);
+    }
+    this.tooltipEl = null;
   }
 
   createTooltip() {
@@ -161,6 +172,7 @@ class PlayerToken {
   }
 
   renderEffects() {
+    if (!this.tooltipEl) return;
     let container = this.tooltipEl.querySelector('.player-tooltip-effects');
     if (this.player.effects.length === 0) {
       if (container) container.remove();
@@ -236,19 +248,26 @@ class PlayerToken {
   showTooltipInMatchLog() {
     const matchLog = document.getElementById('match-log');
     if (!matchLog) return;
+    clearTimeout(this._tooltipAutoHideTimeout);
+    this.ensureTooltip();
     this.tooltipEl.classList.add('in-match-log');
     this.tooltipEl.style.display = 'block';
     matchLog.dataset.originalContent = matchLog.innerHTML;
     matchLog.innerHTML = '';
     matchLog.appendChild(this.tooltipEl);
+    this._tooltipAutoHideTimeout = setTimeout(() => this.hideTooltipInMatchLog(), 5000);
   }
 
   hideTooltipInMatchLog() {
+    clearTimeout(this._tooltipAutoHideTimeout);
     const matchLog = document.getElementById('match-log');
     if (!matchLog) return;
+    if (!this.tooltipEl) return;
     this.tooltipEl.classList.remove('in-match-log');
     this.tooltipEl.style.display = 'none';
-    matchLog.innerHTML = matchLog.dataset.originalContent || '';
-    delete matchLog.dataset.originalContent;
+    if (matchLog.dataset.originalContent !== undefined) {
+      matchLog.innerHTML = matchLog.dataset.originalContent || '';
+      delete matchLog.dataset.originalContent;
+    }
   }
 }
