@@ -37,6 +37,7 @@ class Action {
   }
 
   static markerFollows(marker, player, team) {
+    if (marker.position === 'GK') return false;
     const markingStat = (team && team.hasTeamEffect && team.hasTeamEffect('triggerManMarking'))
       ? Math.max(marker.marking, marker.tackling)
       : marker.marking;

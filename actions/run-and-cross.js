@@ -4,7 +4,7 @@ class RunAndCrossAction extends Action {
     super({
       name: 'Run and cross!',
       description:
-        'From columns 4-6 in rows 0, 1 or 6, your ball carrier runs two cells forward and crosses when no teammate is in the next two cells in their row and they are faster than their marker (or unmarked). Pick an attacker in the box or the central antepenultimate cells; they shoot with their heading.',
+        'In the opposition half, from rows 0, 1 or 6, your ball carrier runs two cells forward and crosses when no teammate is in the next two cells in their row and they are faster than their marker (or unmarked). Pick an attacker in the box or the central antepenultimate cells; they shoot with their heading.',
       cost: [3],
       category: 'offense',
     });
@@ -15,8 +15,9 @@ class RunAndCrossAction extends Action {
     const opponent = board.getOpponent(team);
     const attackingRight = team.side === 'left';
 
-    if (ballCell.x < 4 || ballCell.x > 6) {
-      return { success: false, reason: 'the ball must be in columns 4, 5 or 6' };
+    const inOppositionHalf = attackingRight ? ballCell.x >= 5 : ballCell.x <= 3;
+    if (!inOppositionHalf) {
+      return { success: false, reason: 'the ball must be in the opposition half' };
     }
     if (!(ballCell.y === 0 || ballCell.y === 1 || ballCell.y === 6)) {
       return { success: false, reason: 'the ball must be in rows 0, 1 or 6' };

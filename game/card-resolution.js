@@ -1395,12 +1395,22 @@ function resolveYellowCard(target) {
     return;
   }
 
+  const targetTeam = board.getOpponent(team);
+  const card = game.refereeCard(target);
   target.addEffect('scaredToTackle', Infinity);
-  game.recordEvent({ type: 'yellowCard', team: team.name, player: target.name });
+  game.recordEvent({ type: card === 'red' ? 'red' : 'yellow', team: targetTeam.name, player: target.name });
   logMatch(
     team.name,
-    `Yellow card! ${target.name} is booked — their next tackle attempt will automatically fail.`
+    card === 'red'
+      ? `RED CARD for ${target.name}! A second yellow — sent off.`
+      : `Yellow card! ${target.name} is booked — their next tackle attempt will automatically fail.`,
+    'card'
   );
+  humanNotice(card === 'red' ? 'RED CARD!' : 'YELLOW CARD');
+  if (card === 'red') {
+    removeFromPitchAndSquad(targetTeam, target);
+    if (target === targetTeam.currentGoalkeeper) onTeamLosesGoalkeeper(targetTeam, target);
+  }
 
   const playResult = game.playAction(team, action);
   if (!playResult.success) logAlert(playResult.reason);

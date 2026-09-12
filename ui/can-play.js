@@ -181,9 +181,12 @@ function canPlayAction(team, action) {
     if (winger.team !== team.name) return false;
     const c = getPlayerCell(winger);
     if (!c) return false;
-    if (c.x < 4 || c.x > 6) return false;
-    if (!(c.y === 0 || c.y === 1 || c.y === 6)) return false;
+    const ballCell = board.ballCell();
+    if (!ballCell || ballCell.x !== c.x || ballCell.y !== c.y) return false;
     const attackingRight = team.side === 'left';
+    const inOppositionHalf = attackingRight ? c.x >= 5 : c.x <= 3;
+    if (!inOppositionHalf) return false;
+    if (!(c.y === 0 || c.y === 1 || c.y === 6)) return false;
     const inc = attackingRight ? 1 : -1;
     for (let i = 1; i <= 2; i++) {
       const x = c.x + inc * i;
@@ -429,6 +432,7 @@ function canPlayAction(team, action) {
     if (winger.team !== team.name) return false;
     const c = getPlayerCell(winger);
     if (!c) return false;
+    if (board.getPlayersAt(c.x, c.y).some((p) => p.team !== team.name)) return false;
     const attackingRight = team.side === 'left';
     const inc = attackingRight ? 1 : -1;
     const destX = c.x + inc;
@@ -1016,6 +1020,21 @@ function canPlayActionReason(team, action) {
 
   if (action instanceof RunAndCrossFlankAction) {
     if (!hasPossession) return 'Your team needs the ball';
+    const h = holderEl ? holderEl._token.player : null;
+    const c = h ? getPlayerCell(h) : null;
+    if (c && board.getPlayersAt(c.x, c.y).some((p) => p.team !== team.name)) {
+      return 'Ball carrier must be unmarked';
+    }
+  }
+
+  if (action instanceof RunAndCrossAction) {
+    if (!hasPossession) return 'Your team needs the ball';
+    const h = holderEl ? holderEl._token.player : null;
+    const c = h ? getPlayerCell(h) : null;
+    const attackingRight = team.side === 'left';
+    if (c && (attackingRight ? c.x < 5 : c.x > 3)) {
+      return 'Ball carrier must be in the opposition half';
+    }
   }
 
   if (action instanceof DribbleAndCrossAction) {
