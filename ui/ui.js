@@ -2323,7 +2323,13 @@ function showMatchEffectAnimation(effect) {
   }, 3000);
 }
 
+let perfRenderTick = 0;
+
 function renderGame() {
+  perfRenderTick += 1;
+  if (perfRenderTick % 30 === 1 && window.Perf && typeof window.Perf.reportCounts === 'function') {
+    window.Perf.reportCounts('render#' + perfRenderTick);
+  }
   if (simulationMode) return;
   if (!panelSlots || !document.getElementById('pitch')) return;
 

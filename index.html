@@ -848,6 +848,10 @@
   <script src="ui/click-handlers.js"></script>
   <script src="ui/team-sheet.js"></script>
   <script src="ui/training-mode.js"></script>
+  <script src="game/perf.js"></script>
   <script src="app.js"></script>
+  <script>
+    if (window.Perf) { try { window.Perf.wire(); } catch (e) { console.warn('[perf] wire failed', e); } }
+  </script>
 </body>
 </html>
