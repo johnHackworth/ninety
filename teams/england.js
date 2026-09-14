@@ -18,10 +18,9 @@ class England extends AbstractTeam {
       name: 'England',
       level: 3,
       starPlayers: ['Harry Kane', 'Jude Bellingham', 'Marcus Rashford'],
-      startingDeck: "aggressive",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, ouch: 1, 'coming-home': 1, 'header-finish': 1 },
       coach: 'Thomas Tuchel',
-      artifacts: ["clinicalFinisher"],
       primaryColor: '#ffffff',
       reserveColor: '#c8102e',
       shortsColor: '#002654',
@@ -58,5 +57,3 @@ class England extends AbstractTeam {
     });
   }
 }
-
-module.exports = England;

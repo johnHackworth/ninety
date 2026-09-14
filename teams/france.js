@@ -18,10 +18,10 @@ class France extends AbstractTeam {
       name: 'France',
       level: 3,
       starPlayers: ['Kylian Mbappé', 'Adrien Rabiot', 'Ousmane Dembélé', 'Lucas Hernandez', 'Aurélien Tchouaméni'],
-      startingDeck: "balanced",
-      extraActions: {"wing-play":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, "touch-of-magic": 2, 'growing-menace': 1 },
       coach: 'Didier Deschamps',
-      artifacts: ["clinicalFinisher"],
+      artifacts: ["turboLegs"],
       primaryColor: '#002654',
       reserveColor: '#ffffff',
       shortsColor: '#002654',
@@ -58,5 +58,3 @@ class France extends AbstractTeam {
     });
   }
 }
-
-module.exports = France;

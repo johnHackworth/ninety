@@ -18,10 +18,9 @@ class Canada extends AbstractTeam {
       name: 'Canada',
       level: 1,
       starPlayers: ['Jonathan David', 'Cyle Larin', 'Tajon Buchanan', 'Jonathan Osorio'],
-      startingDeck: "defensive",
-      extraActions: {"wing-play":1},
+      startingDeck: "attacking",
       coach: 'Jesse Marsch',
-      artifacts: ["setPieceSpecialist"],
+      artifacts: ["turboLegs"],
       primaryColor: '#ff0000',
       reserveColor: '#ffffff',
       shortsColor: '#ff0000',
@@ -58,5 +57,3 @@ class Canada extends AbstractTeam {
     });
   }
 }
-
-module.exports = Canada;

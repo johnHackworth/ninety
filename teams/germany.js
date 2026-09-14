@@ -18,10 +18,10 @@ class Germany extends AbstractTeam {
       name: 'Germany',
       level: 3,
       starPlayers: ['Leroy Sané', 'Joshua Kimmich', 'Kai Havertz', 'Leon Goretzka', 'Antonio Rüdiger'],
-      startingDeck: "possession",
-      extraActions: {"total-football":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, 'german-efficiency': 1, ouch: 1, 'peak-fitness': 1 },
       coach: 'Julian Nagelsmann',
-      artifacts: ["turboLegs"],
+      artifacts: ["midfieldControl"],
       primaryColor: '#000000',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Germany extends AbstractTeam {
     });
   }
 }
-
-module.exports = Germany;

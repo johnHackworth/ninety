@@ -18,10 +18,10 @@ class Haiti extends AbstractTeam {
       name: 'Haiti',
       level: 1,
       starPlayers: ['Duckens Nazon', 'Frantzdy Pierrot', 'Derrick Etienne Jr.', 'Louicius Deedson'],
-      startingDeck: "counter",
-      extraActions: {"park-the-bus":1},
+      startingDeck: "defensive",
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Sébastien Migné',
-      artifacts: ["clinicalFinisher"],
+      artifacts: ["minnowWill"],
       primaryColor: '#00209f',
       reserveColor: '#d21034',
       shortsColor: '#00209f',
@@ -58,5 +58,3 @@ class Haiti extends AbstractTeam {
     });
   }
 }
-
-module.exports = Haiti;

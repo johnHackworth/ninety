@@ -18,10 +18,10 @@ class Mexico extends AbstractTeam {
       name: 'Mexico',
       level: 3,
       starPlayers: ['Raúl Jiménez', 'Orbelín Pineda', 'Jesús Gallardo', 'Edson Álvarez'],
-      startingDeck: "aggressive",
-      extraActions: {"teranga-roar":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1 },
       coach: 'Javier Aguirre',
-      artifacts: ["turboLegs"],
+      artifacts: ["tikiTakaBoots"],
       primaryColor: '#006847',
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
@@ -58,5 +58,3 @@ class Mexico extends AbstractTeam {
     });
   }
 }
-
-module.exports = Mexico;

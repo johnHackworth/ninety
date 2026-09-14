@@ -18,10 +18,9 @@ class SaudiArabia extends AbstractTeam {
       name: 'Saudi Arabia',
       level: 1,
       starPlayers: ['Musab Al-Juwayr', 'Saleh Al-Shehri', 'Firas Al-Buraikan', 'Abdullah Al-Hamdan', 'Salem Al-Dawsari'],
-      startingDeck: "direct",
+      startingDeck: "counter",
       extraActions: {"teranga-roar":1},
       coach: 'Georgios Donis',
-      artifacts: ["turboLegs"],
       primaryColor: '#006c35',
       reserveColor: '#ffffff',
       shortsColor: '#006c35',
@@ -58,5 +57,3 @@ class SaudiArabia extends AbstractTeam {
     });
   }
 }
-
-module.exports = SaudiArabia;

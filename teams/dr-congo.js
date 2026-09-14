@@ -18,10 +18,10 @@ class DRCongo extends AbstractTeam {
       name: 'DR Congo',
       level: 1,
       starPlayers: ['Chancel Mbemba', 'Meschak Elia', 'Samuel Moutoussamy', 'Yoane Wissa'],
-      startingDeck: "balanced",
+      startingDeck: "counter",
       extraActions: {"teranga-roar":1},
       coach: 'Sébastien Desabre',
-      artifacts: ["ironWall"],
+      artifacts: ["turboLegs"],
       primaryColor: '#00a33c',
       reserveColor: '#ffce00',
       shortsColor: '#00a33c',
@@ -58,5 +58,3 @@ class DRCongo extends AbstractTeam {
     });
   }
 }
-
-module.exports = DRCongo;

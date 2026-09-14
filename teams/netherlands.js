@@ -18,10 +18,10 @@ class Netherlands extends AbstractTeam {
       name: 'Netherlands',
       level: 3,
       starPlayers: ['Memphis Depay', 'Wout Weghorst', 'Donyell Malen', 'Denzel Dumfries'],
-      startingDeck: "defensive",
-      extraActions: {"wing-play":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, ouch: 1, 'total-football': 1, 'the-script': 1 },
       coach: 'Ronald Koeman',
-      artifacts: ["clinicalFinisher"],
+      artifacts: ["midfieldControl"],
       primaryColor: '#f58021',
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
@@ -58,5 +58,3 @@ class Netherlands extends AbstractTeam {
     });
   }
 }
-
-module.exports = Netherlands;

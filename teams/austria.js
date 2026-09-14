@@ -18,10 +18,10 @@ class Austria extends AbstractTeam {
       name: 'Austria',
       level: 1,
       starPlayers: ['Marcel Sabitzer', 'Marko Arnautović', 'David Alaba', 'Michael Gregoritsch', 'Xaver Schlager'],
-      startingDeck: "tactical",
-      extraActions: {"teranga-roar":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, 'switch-gears': 1 },
       coach: 'Ralf Rangnick',
-      artifacts: ["midfieldMaestro"],
+      artifacts: ["pressMachine"],
       primaryColor: '#ed1c24',
       reserveColor: '#ffffff',
       shortsColor: '#ed1c24',
@@ -58,5 +58,3 @@ class Austria extends AbstractTeam {
     });
   }
 }
-
-module.exports = Austria;

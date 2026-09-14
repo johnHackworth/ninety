@@ -18,10 +18,10 @@ class CzechRepublic extends AbstractTeam {
       name: 'Czech Republic',
       level: 1,
       starPlayers: ['Patrik Schick', 'Tomáš Souček', 'Vladimír Coufal', 'Mojmír Chytil', 'Tomáš Holeš'],
-      startingDeck: "pressing",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "technical",
+      extraActions: { 'header-finish': 1, 'knockdown-finish': 1 },
       coach: 'Miroslav Koubek',
-      artifacts: ["aerialThreat"],
+      artifacts: ["aerialKings"],
       primaryColor: '#d7141a',
       reserveColor: '#11457e',
       shortsColor: '#11457e',
@@ -58,5 +58,3 @@ class CzechRepublic extends AbstractTeam {
     });
   }
 }
-
-module.exports = CzechRepublic;

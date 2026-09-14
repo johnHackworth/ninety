@@ -19,9 +19,9 @@ class Switzerland extends AbstractTeam {
       level: 2,
       starPlayers: ['Granit Xhaka', 'Breel Embolo', 'Ricardo Rodriguez'],
       startingDeck: "defensive",
-      extraActions: {"tiki-taka":1},
+      extraActions: { eureka: 1, 'switch-gears': 1 },
       coach: 'Murat Yakin',
-      artifacts: ["setPieceSpecialist"],
+      artifacts: ["graniteWall"],
       primaryColor: '#d52b1e',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Switzerland extends AbstractTeam {
     });
   }
 }
-
-module.exports = Switzerland;

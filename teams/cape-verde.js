@@ -19,9 +19,9 @@ class CapeVerde extends AbstractTeam {
       level: 1,
       starPlayers: ['Ryan Mendes', 'Pico', 'Willy Semedo', 'Jamiro Monteiro', 'Gilson Benchimol'],
       startingDeck: "defensive",
-      extraActions: {"tiki-taka":1},
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Bubista',
-      artifacts: ["goldenGlove"],
+      artifacts: ["minnowWill"],
       primaryColor: '#003893',
       reserveColor: '#ffffff',
       shortsColor: '#003893',
@@ -58,5 +58,3 @@ class CapeVerde extends AbstractTeam {
     });
   }
 }
-
-module.exports = CapeVerde;

@@ -18,10 +18,10 @@ class Uruguay extends AbstractTeam {
       name: 'Uruguay',
       level: 2,
       starPlayers: ['Federico Valverde', 'Rodrigo Bentancur', 'Giorgian de Arrascaeta'],
-      startingDeck: "counter",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "defensive",
+      extraActions: { "dirty-tricks": 2, eureka: 1, ouch: 1, 'garra-charrua': 1, 'no-pain-no-gain': 1 },
       coach: 'Marcelo Bielsa',
-      artifacts: ["ironWall"],
+      artifacts: ["graniteWall", "pressMachine"],
       primaryColor: '#004b87',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Uruguay extends AbstractTeam {
     });
   }
 }
-
-module.exports = Uruguay;

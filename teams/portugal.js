@@ -18,10 +18,10 @@ class Portugal extends AbstractTeam {
       name: 'Portugal',
       level: 3,
       starPlayers: ['Cristiano Ronaldo', 'Bruno Fernandes', 'João Félix'],
-      startingDeck: "direct",
-      extraActions: {"total-football":1},
+      startingDeck: "technical",
+      extraActions: { "dirty-tricks": 1, eureka: 1, "touch-of-magic": 1, ouch: 1, siiiiu: 1 },
       coach: 'Roberto Martínez',
-      artifacts: ["turboLegs"],
+      artifacts: ["tacticalMindset"],
       primaryColor: '#c8102e',
       reserveColor: '#006600',
       shortsColor: '#006600',
@@ -58,5 +58,3 @@ class Portugal extends AbstractTeam {
     });
   }
 }
-
-module.exports = Portugal;

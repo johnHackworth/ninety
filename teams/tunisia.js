@@ -18,10 +18,9 @@ class Tunisia extends AbstractTeam {
       name: 'Tunisia',
       level: 1,
       starPlayers: ['Anis Ben Slimane', 'Ellyes Skhiri', 'Montassar Talbi'],
-      startingDeck: "possession",
+      startingDeck: "defensive",
       extraActions: {"teranga-roar":1},
       coach: 'Sabri Lamouchi',
-      artifacts: ["turboLegs"],
       primaryColor: '#e70013',
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
@@ -58,5 +57,3 @@ class Tunisia extends AbstractTeam {
     });
   }
 }
-
-module.exports = Tunisia;

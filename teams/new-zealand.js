@@ -18,10 +18,10 @@ class NewZealand extends AbstractTeam {
       name: 'New Zealand',
       level: 1,
       starPlayers: ['Chris Wood', 'Tyler Bindon', 'Elijah Just'],
-      startingDeck: "tactical",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "defensive",
+      extraActions: { 'header-finish': 1, 'knockdown-finish': 1 },
       coach: 'Darren Bazeley',
-      artifacts: ["goldenGlove"],
+      artifacts: ["aerialKings"],
       primaryColor: '#000000',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class NewZealand extends AbstractTeam {
     });
   }
 }
-
-module.exports = NewZealand;

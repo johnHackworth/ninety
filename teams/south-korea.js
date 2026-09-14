@@ -18,10 +18,9 @@ class SouthKorea extends AbstractTeam {
       name: 'South Korea',
       level: 1,
       starPlayers: ['Son Heung-min', 'Hwang Hee-chan', 'Lee Jae-sung'],
-      startingDeck: "defensive",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "counter",
+      extraActions: { eureka: 1 },
       coach: 'Hong Myung-bo',
-      artifacts: ["playmaker"],
       primaryColor: '#c60c30',
       reserveColor: '#003478',
       shortsColor: '#003478',
@@ -58,5 +57,3 @@ class SouthKorea extends AbstractTeam {
     });
   }
 }
-
-module.exports = SouthKorea;

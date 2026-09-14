@@ -18,10 +18,10 @@ class Curaao extends AbstractTeam {
       name: 'Curaçao',
       level: 1,
       starPlayers: ['Juninho Bacuna', 'Livano Comenencia', 'Leandro Bacuna'],
-      startingDeck: "pressing",
-      extraActions: {"long-ball":1},
+      startingDeck: "defensive",
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Dick Advocaat',
-      artifacts: ["turboLegs"],
+      artifacts: ["minnowWill"],
       primaryColor: '#f8e624',
       reserveColor: '#0033a0',
       shortsColor: '#0033a0',
@@ -58,5 +58,3 @@ class Curaao extends AbstractTeam {
     });
   }
 }
-
-module.exports = Curaao;

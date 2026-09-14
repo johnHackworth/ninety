@@ -19,9 +19,9 @@ class Iraq extends AbstractTeam {
       level: 1,
       starPlayers: ['Aymen Hussein', 'Mohanad Ali', 'Ibrahim Bayesh', 'Youssef Amyn', 'Ali Jasim'],
       startingDeck: "defensive",
-      extraActions: {"eureka":1},
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Graham Arnold',
-      artifacts: ["setPieceSpecialist"],
+      artifacts: ["minnowWill"],
       primaryColor: '#c8102e',
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
@@ -58,5 +58,3 @@ class Iraq extends AbstractTeam {
     });
   }
 }
-
-module.exports = Iraq;

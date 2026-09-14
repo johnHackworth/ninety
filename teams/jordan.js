@@ -18,10 +18,10 @@ class Jordan extends AbstractTeam {
       name: 'Jordan',
       level: 1,
       starPlayers: ['Ali Olwan', 'Musa Al-Taamari', 'Rajaei Ayed', 'Ibrahim Sadeh', 'Noor Al-Rawabdeh'],
-      startingDeck: "aggressive",
-      extraActions: {"tiki-taka":1},
+      startingDeck: "defensive",
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Jamal Sellami',
-      artifacts: ["aerialThreat"],
+      artifacts: ["minnowWill"],
       primaryColor: '#ce1126',
       reserveColor: '#000000',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Jordan extends AbstractTeam {
     });
   }
 }
-
-module.exports = Jordan;

@@ -18,7 +18,7 @@ class Ghana extends AbstractTeam {
       name: 'Ghana',
       level: 1,
       starPlayers: ['Jordan Ayew', 'Thomas Partey', 'Abdul Rahman Baba'],
-      startingDeck: "balanced",
+      startingDeck: "counter",
       extraActions: {"total-football":1},
       coach: 'Carlos Queiroz',
       artifacts: ["turboLegs"],
@@ -58,5 +58,3 @@ class Ghana extends AbstractTeam {
     });
   }
 }
-
-module.exports = Ghana;

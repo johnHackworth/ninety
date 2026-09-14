@@ -18,10 +18,10 @@ class Egypt extends AbstractTeam {
       name: 'Egypt',
       level: 1,
       starPlayers: ['Mohamed Salah', 'Trézéguet', 'Omar Marmoush'],
-      startingDeck: "tactical",
-      extraActions: {"park-the-bus":1},
+      startingDeck: "counter",
+      extraActions: { ouch: 1 },
       coach: 'Hossam Hassan',
-      artifacts: ["paceBurner"],
+      artifacts: ["turboLegs"],
       primaryColor: '#e70013',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Egypt extends AbstractTeam {
     });
   }
 }
-
-module.exports = Egypt;

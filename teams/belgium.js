@@ -18,10 +18,10 @@ class Belgium extends AbstractTeam {
       name: 'Belgium',
       level: 3,
       starPlayers: ['Romelu Lukaku', 'Kevin De Bruyne', 'Youri Tielemans'],
-      startingDeck: "balanced",
-      extraActions: {"ouch":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1 },
       coach: 'Rudi Garcia',
-      artifacts: ["aerialThreat"],
+      artifacts: ["midfieldControl"],
       primaryColor: '#fdbf00',
       reserveColor: '#000000',
       shortsColor: '#000000',
@@ -58,5 +58,3 @@ class Belgium extends AbstractTeam {
     });
   }
 }
-
-module.exports = Belgium;

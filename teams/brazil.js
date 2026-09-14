@@ -18,10 +18,10 @@ class Brazil extends AbstractTeam {
       name: 'Brazil',
       level: 3,
       starPlayers: ['Neymar', 'Lucas Paquetá', 'Marquinhos', 'Vinícius Júnior', 'Bruno Guimarães'],
-      startingDeck: "balanced",
-      extraActions: {"park-the-bus":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, 'joga-bonito': 2, ouch: 1, 'growing-menace': 1 },
       coach: 'Carlo Ancelotti',
-      artifacts: ["turboLegs"],
+      artifacts: ["tikiTakaBoots"],
       primaryColor: '#009b3a',
       reserveColor: '#ffdf00',
       shortsColor: '#002776',
@@ -58,5 +58,3 @@ class Brazil extends AbstractTeam {
     });
   }
 }
-
-module.exports = Brazil;

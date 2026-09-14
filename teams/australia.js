@@ -18,10 +18,10 @@ class Australia extends AbstractTeam {
       name: 'Australia',
       level: 1,
       starPlayers: ['Jackson Irvine', 'Mathew Leckie', 'Miloš Degenek'],
-      startingDeck: "balanced",
-      extraActions: {"total-football":1},
+      startingDeck: "defensive",
+      extraActions: { eureka: 1 },
       coach: 'Tony Popovic',
-      artifacts: ["goldenGlove"],
+      artifacts: ["pressMachine"],
       primaryColor: '#ffcd00',
       reserveColor: '#004b87',
       shortsColor: '#004b87',
@@ -58,5 +58,3 @@ class Australia extends AbstractTeam {
     });
   }
 }
-
-module.exports = Australia;

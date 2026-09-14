@@ -18,10 +18,9 @@ class Paraguay extends AbstractTeam {
       name: 'Paraguay',
       level: 1,
       starPlayers: ['Miguel Almirón', 'Gustavo Gómez', 'Julio Enciso'],
-      startingDeck: "balanced",
+      startingDeck: "defensive",
       extraActions: {"ouch":1},
       coach: 'Gustavo Alfaro',
-      artifacts: ["paceBurner"],
       primaryColor: '#ce1126',
       reserveColor: '#ffffff',
       shortsColor: '#003087',
@@ -58,5 +57,3 @@ class Paraguay extends AbstractTeam {
     });
   }
 }
-
-module.exports = Paraguay;

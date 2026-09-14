@@ -18,10 +18,10 @@ class Iran extends AbstractTeam {
       name: 'Iran',
       level: 1,
       starPlayers: ['Mehdi Taremi', 'Alireza Jahanbakhsh', 'Saeid Ezatolahi', 'Mohammad Mohebi'],
-      startingDeck: "balanced",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "defensive",
+      extraActions: { eureka: 1, ouch: 1, 'fortress-mentality': 1 },
       coach: 'Amir Ghalenoei',
-      artifacts: ["playmaker"],
+      artifacts: ["graniteWall"],
       primaryColor: '#da291c',
       reserveColor: '#ffffff',
       shortsColor: '#2354a2',
@@ -58,5 +58,3 @@ class Iran extends AbstractTeam {
     });
   }
 }
-
-module.exports = Iran;

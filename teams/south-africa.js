@@ -18,10 +18,8 @@ class SouthAfrica extends AbstractTeam {
       name: 'South Africa',
       level: 1,
       starPlayers: ['Teboho Mokoena', 'Lyle Foster', 'Aubrey Modiba', 'Oswin Appollis', 'Themba Zwane'],
-      startingDeck: "counter",
-      extraActions: {"wing-play":1},
+      startingDeck: "defensive",
       coach: 'Hugo Broos',
-      artifacts: ["paceBurner"],
       primaryColor: '#007749',
       reserveColor: '#ffb612',
       shortsColor: '#000000',
@@ -58,5 +56,3 @@ class SouthAfrica extends AbstractTeam {
     });
   }
 }
-
-module.exports = SouthAfrica;

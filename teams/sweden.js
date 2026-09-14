@@ -18,10 +18,9 @@ class Sweden extends AbstractTeam {
       name: 'Sweden',
       level: 1,
       starPlayers: ['Alexander Isak', 'Viktor Gyökeres', 'Yasin Ayari', 'Ken Sema'],
-      startingDeck: "direct",
-      extraActions: {"total-football":1},
+      startingDeck: "attacking",
+      extraActions: { 'header-finish': 1 },
       coach: 'Graham Potter',
-      artifacts: ["engine"],
       primaryColor: '#006aa7',
       reserveColor: '#febd17',
       shortsColor: '#006aa7',
@@ -58,5 +57,3 @@ class Sweden extends AbstractTeam {
     });
   }
 }
-
-module.exports = Sweden;

@@ -19,9 +19,8 @@ class Argentina extends AbstractTeam {
       level: 3,
       starPlayers: ['Lionel Messi', 'Lautaro Martínez', 'Rodrigo De Paul', 'Nicolás González'],
       startingDeck: "defensive",
-      extraActions: {"ouch":1},
+      extraActions: { "dirty-tricks": 2, "argento-pride": 1, eureka: 1, "touch-of-magic": 1 },
       coach: 'Lionel Scaloni',
-      artifacts: ["playmaker"],
       primaryColor: '#75aadb',
       reserveColor: '#ffffff',
       shortsColor: '#000000',
@@ -58,5 +57,3 @@ class Argentina extends AbstractTeam {
     });
   }
 }
-
-module.exports = Argentina;

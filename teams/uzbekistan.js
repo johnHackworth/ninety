@@ -18,10 +18,9 @@ class Uzbekistan extends AbstractTeam {
       name: 'Uzbekistan',
       level: 1,
       starPlayers: ['Eldor Shomurodov', 'Igor Sergeev', 'Abbosbek Fayzullaev', 'Odiljon Hamrobekov', 'Jamshid Iskanderov'],
-      startingDeck: "balanced",
+      startingDeck: "counter",
       extraActions: {"tiki-taka":1},
       coach: 'Fabio Cannavaro',
-      artifacts: ["paceBurner"],
       primaryColor: '#0066b2',
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
@@ -58,5 +57,3 @@ class Uzbekistan extends AbstractTeam {
     });
   }
 }
-
-module.exports = Uzbekistan;

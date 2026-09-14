@@ -18,10 +18,9 @@ class Ecuador extends AbstractTeam {
       name: 'Ecuador',
       level: 1,
       starPlayers: ['Enner Valencia', 'Kendry Páez', 'Moisés Caicedo', 'Alan Franco'],
-      startingDeck: "tactical",
-      extraActions: {"long-ball":1},
+      startingDeck: "defensive",
+      extraActions: { eureka: 1 },
       coach: 'Sebastián Beccacece',
-      artifacts: ["paceBurner"],
       primaryColor: '#ffcc00',
       reserveColor: '#005baa',
       shortsColor: '#005baa',
@@ -58,5 +57,3 @@ class Ecuador extends AbstractTeam {
     });
   }
 }
-
-module.exports = Ecuador;

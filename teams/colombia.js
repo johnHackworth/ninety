@@ -18,10 +18,10 @@ class Colombia extends AbstractTeam {
       name: 'Colombia',
       level: 2,
       starPlayers: ['James Rodríguez', 'Luis Díaz', 'Yerry Mina'],
-      startingDeck: "aggressive",
-      extraActions: {"eureka":1},
+      startingDeck: "technical",
+      extraActions: { eureka: 1, ouch: 1, 'ghost-run': 1 },
       coach: 'Néstor Lorenzo',
-      artifacts: ["midfieldMaestro"],
+      artifacts: ["tikiTakaBoots"],
       primaryColor: '#ffcd00',
       reserveColor: '#003893',
       shortsColor: '#003893',
@@ -58,5 +58,3 @@ class Colombia extends AbstractTeam {
     });
   }
 }
-
-module.exports = Colombia;

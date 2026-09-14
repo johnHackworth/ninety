@@ -18,10 +18,10 @@ class Japan extends AbstractTeam {
       name: 'Japan',
       level: 2,
       starPlayers: ['Ao Tanaka', 'Ayase Ueda', 'Ritsu Dōan', 'Takefusa Kubo', 'Junya Itō'],
-      startingDeck: "counter",
-      extraActions: {"teranga-roar":1},
+      startingDeck: "technical",
+      extraActions: { eureka: 1, 'video-session': 1, 'the-script': 1 },
       coach: 'Hajime Moriyasu',
-      artifacts: ["playmaker"],
+      artifacts: ["tacticalMindset"],
       primaryColor: '#bc002d',
       reserveColor: '#ffffff',
       shortsColor: '#bc002d',
@@ -58,5 +58,3 @@ class Japan extends AbstractTeam {
     });
   }
 }
-
-module.exports = Japan;

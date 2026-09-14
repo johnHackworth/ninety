@@ -18,10 +18,10 @@ class Qatar extends AbstractTeam {
       name: 'Qatar',
       level: 1,
       starPlayers: ['Almoez Ali', 'Akram Afif', 'Hassan Al-Haydos', 'Mohammed Muntari'],
-      startingDeck: "aggressive",
-      extraActions: {"eureka":1},
+      startingDeck: "defensive",
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Julen Lopetegui',
-      artifacts: ["setPieceSpecialist"],
+      artifacts: ["minnowWill"],
       primaryColor: '#8a1538',
       reserveColor: '#ffffff',
       shortsColor: '#8a1538',
@@ -58,5 +58,3 @@ class Qatar extends AbstractTeam {
     });
   }
 }
-
-module.exports = Qatar;

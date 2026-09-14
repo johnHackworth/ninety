@@ -18,10 +18,10 @@ class BosniaandHerzegovina extends AbstractTeam {
       name: 'Bosnia and Herzegovina',
       level: 1,
       starPlayers: ['Edin Džeko', 'Esmir Bajraktarević', 'Ermedin Demirović'],
-      startingDeck: "defensive",
-      extraActions: {"tiki-taka":1},
+      startingDeck: "counter",
+      extraActions: { 'header-finish': 1, 'knockdown-finish': 1, 'no-pain-no-gain': 1 },
       coach: 'Sergej Barbarez',
-      artifacts: ["playmaker"],
+      artifacts: ["aerialKings"],
       primaryColor: '#002395',
       reserveColor: '#ffcc00',
       shortsColor: '#002395',
@@ -58,5 +58,3 @@ class BosniaandHerzegovina extends AbstractTeam {
     });
   }
 }
-
-module.exports = BosniaandHerzegovina;

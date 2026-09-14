@@ -18,10 +18,10 @@ class Senegal extends AbstractTeam {
       name: 'Senegal',
       level: 2,
       starPlayers: ['Sadio Mané', 'Ismaïla Sarr', 'Lamine Camara'],
-      startingDeck: "tactical",
-      extraActions: {"long-ball":1},
+      startingDeck: "counter",
+      extraActions: { eureka: 1, ouch: 1, 'teranga-roar': 1 },
       coach: 'Pape Thiaw',
-      artifacts: ["aerialThreat"],
+      artifacts: ["turboLegs"],
       primaryColor: '#00853f',
       reserveColor: '#fefefe',
       shortsColor: '#00853f',
@@ -58,5 +58,3 @@ class Senegal extends AbstractTeam {
     });
   }
 }
-
-module.exports = Senegal;

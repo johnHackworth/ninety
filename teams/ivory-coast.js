@@ -18,10 +18,9 @@ class IvoryCoast extends AbstractTeam {
       name: 'Ivory Coast',
       level: 1,
       starPlayers: ['Franck Kessié', 'Oumar Diakité', 'Nicolas Pépé'],
-      startingDeck: "direct",
-      extraActions: {"tiki-taka":1},
+      startingDeck: "counter",
+      extraActions: { ouch: 1 },
       coach: 'Emerse Faé',
-      artifacts: ["goldenGlove"],
       primaryColor: '#f77f00',
       reserveColor: '#ffffff',
       shortsColor: '#009e60',
@@ -58,5 +57,3 @@ class IvoryCoast extends AbstractTeam {
     });
   }
 }
-
-module.exports = IvoryCoast;

@@ -18,10 +18,10 @@ class Panama extends AbstractTeam {
       name: 'Panama',
       level: 1,
       starPlayers: ['Yoel Bárcenas', 'César Yanis', 'Adalberto Carrasquilla', 'José Fajardo'],
-      startingDeck: "balanced",
-      extraActions: {"teranga-roar":1},
+      startingDeck: "counter",
+      extraActions: { 'underdog-bite': 1 },
       coach: 'Thomas Christiansen',
-      artifacts: ["engine"],
+      artifacts: ["minnowWill"],
       primaryColor: '#ce1126',
       reserveColor: '#002d62',
       shortsColor: '#002d62',
@@ -58,5 +58,3 @@ class Panama extends AbstractTeam {
     });
   }
 }
-
-module.exports = Panama;

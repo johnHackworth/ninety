@@ -18,10 +18,10 @@ class Spain extends AbstractTeam {
       name: 'Spain',
       level: 3,
       starPlayers: ['Ferran Torres', 'Mikel Oyarzabal', 'Gavi', 'Dani Olmo', 'Mikel Merino'],
-      startingDeck: "balanced",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "technical",
+      extraActions: { 'tiki-taka': 1, eureka: 1, ouch: 1, 'ghost-run': 1 },
       coach: 'Luis de la Fuente',
-      artifacts: ["playmaker"],
+      artifacts: ["tacticalMindset"],
       primaryColor: '#aa151b',
       reserveColor: '#f1bf00',
       shortsColor: '#0047ab',
@@ -58,5 +58,3 @@ class Spain extends AbstractTeam {
     });
   }
 }
-
-module.exports = Spain;

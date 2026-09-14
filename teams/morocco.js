@@ -18,10 +18,10 @@ class Morocco extends AbstractTeam {
       name: 'Morocco',
       level: 3,
       starPlayers: ['Ayoub El Kaabi', 'Bilal El Khannouss', 'Sofyan Amrabat'],
-      startingDeck: "direct",
-      extraActions: {"ouch":1},
+      startingDeck: "counter",
+      extraActions: { eureka: 1, 'atlas-wall': 1, 'fortress-mentality': 1 },
       coach: 'Mohamed Ouahbi',
-      artifacts: ["goldenGlove"],
+      artifacts: ["graniteWall"],
       primaryColor: '#c1272d',
       reserveColor: '#006233',
       shortsColor: '#006233',
@@ -58,5 +58,3 @@ class Morocco extends AbstractTeam {
     });
   }
 }
-
-module.exports = Morocco;

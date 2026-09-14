@@ -18,10 +18,9 @@ class Norway extends AbstractTeam {
       name: 'Norway',
       level: 2,
       starPlayers: ['Erling Haaland', 'Alexander Sørloth', 'Oscar Bobb'],
-      startingDeck: "pressing",
-      extraActions: {"wing-play":1},
+      startingDeck: "attacking",
+      extraActions: { eureka: 1, "touch-of-magic": 1, 'nordic-hammer': 1, 'growing-menace': 1 },
       coach: 'Ståle Solbakken',
-      artifacts: ["engine"],
       primaryColor: '#ef2b2d',
       reserveColor: '#ffffff',
       shortsColor: '#00285e',
@@ -58,5 +57,3 @@ class Norway extends AbstractTeam {
     });
   }
 }
-
-module.exports = Norway;

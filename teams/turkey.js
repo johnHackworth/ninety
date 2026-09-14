@@ -18,10 +18,10 @@ class Turkey extends AbstractTeam {
       name: 'Turkey',
       level: 1,
       starPlayers: ['Hakan Çalhanoğlu', 'Kerem Aktürkoğlu', 'Kaan Ayhan', 'Arda Güler'],
-      startingDeck: "possession",
-      extraActions: {"catenaccio":1},
+      startingDeck: "attacking",
+      extraActions: { 'do-or-die': 1 },
       coach: 'Vincenzo Montella',
-      artifacts: ["playmaker"],
+      artifacts: ["tikiTakaBoots"],
       primaryColor: '#e30a17',
       reserveColor: '#ffffff',
       shortsColor: '#e30a17',
@@ -58,5 +58,3 @@ class Turkey extends AbstractTeam {
     });
   }
 }
-
-module.exports = Turkey;

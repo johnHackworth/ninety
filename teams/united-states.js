@@ -18,10 +18,10 @@ class UnitedStates extends AbstractTeam {
       name: 'United States',
       level: 2,
       starPlayers: ['Christian Pulisic', 'Weston McKennie', 'Cristian Roldan', 'Tyler Adams'],
-      startingDeck: "aggressive",
-      extraActions: {"wing-play":1},
+      startingDeck: "counter",
+      extraActions: { eureka: 1, 'peak-fitness': 1 },
       coach: 'Mauricio Pochettino',
-      artifacts: ["playmaker"],
+      artifacts: ["pressMachine"],
       primaryColor: '#002868',
       reserveColor: '#ffffff',
       shortsColor: '#bf0a30',
@@ -58,5 +58,3 @@ class UnitedStates extends AbstractTeam {
     });
   }
 }
-
-module.exports = UnitedStates;

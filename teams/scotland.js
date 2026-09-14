@@ -18,10 +18,9 @@ class Scotland extends AbstractTeam {
       name: 'Scotland',
       level: 1,
       starPlayers: ['John McGinn', 'Scott McTominay', 'Ché Adams', 'Lyndon Dykes'],
-      startingDeck: "counter",
-      extraActions: {"wing-play":1},
+      startingDeck: "defensive",
       coach: 'Steve Clarke',
-      artifacts: ["ironWall"],
+      artifacts: ["graniteWall"],
       primaryColor: '#0065bd',
       reserveColor: '#ffffff',
       shortsColor: '#0065bd',
@@ -58,5 +57,3 @@ class Scotland extends AbstractTeam {
     });
   }
 }
-
-module.exports = Scotland;

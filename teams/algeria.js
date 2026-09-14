@@ -18,10 +18,8 @@ class Algeria extends AbstractTeam {
       name: 'Algeria',
       level: 1,
       starPlayers: ['Riyad Mahrez', 'Ramy Bensebaini', 'Mohamed Amoura', 'Nabil Bentaleb'],
-      startingDeck: "balanced",
-      extraActions: {"gegenpressing":1},
+      startingDeck: "counter",
       coach: 'Vladimir Petković',
-      artifacts: ["turboLegs"],
       primaryColor: '#006233',
       reserveColor: '#ffffff',
       shortsColor: '#006233',
@@ -58,5 +56,3 @@ class Algeria extends AbstractTeam {
     });
   }
 }
-
-module.exports = Algeria;

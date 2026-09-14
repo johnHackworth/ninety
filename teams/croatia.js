@@ -18,10 +18,10 @@ class Croatia extends AbstractTeam {
       name: 'Croatia',
       level: 2,
       starPlayers: ['Andrej Kramarić', 'Ivan Perišić', 'Luka Modrić'],
-      startingDeck: "defensive",
-      extraActions: {"ouch":1},
+      startingDeck: "technical",
+      extraActions: { eureka: 1, 'do-or-die': 1 },
       coach: 'Zlatko Dalić',
-      artifacts: ["clinicalFinisher"],
+      artifacts: ["tacticalMindset"],
       primaryColor: '#ff0000',
       reserveColor: '#000000',
       shortsColor: '#ffffff',
@@ -58,5 +58,3 @@ class Croatia extends AbstractTeam {
     });
   }
 }
-
-module.exports = Croatia;
