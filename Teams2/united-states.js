@@ -1,0 +1,62 @@
+class UnitedStates extends AbstractTeam {
+  static formation = {
+    'Matt Turner': [0, 3],
+    'Sergiño Dest': [2, 0],
+    'Chris Richards': [2, 2],
+    'Antonee Robinson': [2, 4],
+    'Auston Trusty': [2, 6],
+    'Tyler Adams': [4, 0],
+    'Giovanni Reyna': [4, 2],
+    'Weston McKennie': [4, 4],
+    'Sebastian Berhalter': [4, 6],
+    'Ricardo Pepi': [6, 2],
+    'Christian Pulisic': [6, 4],
+  };
+
+  constructor() {
+    super({
+      name: 'United States',
+      level: 2,
+      starPlayers: ['Christian Pulisic', 'Weston McKennie', 'Cristian Roldan', 'Tyler Adams'],
+      startingDeck: "aggressive",
+      extraActions: {"wing-play":1},
+      coach: 'Mauricio Pochettino',
+      artifacts: ["playmaker"],
+      primaryColor: '#002868',
+      reserveColor: '#ffffff',
+      shortsColor: '#bf0a30',
+      awayShortsColor: '#002868',
+      startingXI: ['Matt Turner', 'Sergiño Dest', 'Chris Richards', 'Antonee Robinson', 'Auston Trusty', 'Tyler Adams', 'Giovanni Reyna', 'Weston McKennie', 'Sebastian Berhalter', 'Ricardo Pepi', 'Christian Pulisic'],
+      squad: [
+        ['Matt Turner', 31, 'GK', 'United States', 4, 10, 5, 2, 8, 3, 10, 9, 10],
+        ['Sergiño Dest', 25, 'DF', 'United States', 10, 10, 10, 3, 7, 9, 9, 10, 2],
+        ['Chris Richards', 26, 'DF', 'United States', 7, 10, 8, 4, 9, 10, 9, 10, 1],
+        ['Tyler Adams', 27, 'MF', 'United States', 10, 7, 10, 7, 10, 10, 10, 8, 2],
+        ['Antonee Robinson', 28, 'DF', 'United States', 9, 10, 10, 3, 10, 9, 9, 8, 3],
+        ['Auston Trusty', 27, 'DF', 'United States', 6, 8, 10, 2, 5, 4, 5, 9, 2],
+        ['Giovanni Reyna', 23, 'MF', 'United States', 9, 6, 6, 7, 10, 10, 10, 9, 1],
+        ['Weston McKennie', 27, 'MF', 'United States', 10, 8, 9, 10, 10, 10, 8, 6, 2],
+        ['Ricardo Pepi', 23, 'FW', 'United States', 10, 3, 6, 10, 10, 10, 9, 10, 2],
+        ['Christian Pulisic', 27, 'FW', 'United States', 10, 4, 8, 10, 7, 10, 10, 10, 1],
+        ['Brenden Aaronson', 25, 'FW', 'United States', 10, 2, 7, 10, 10, 10, 10, 10, 1],
+        ['Miles Robinson', 29, 'DF', 'United States', 10, 10, 10, 6, 10, 7, 9, 10, 1],
+        ['Tim Ream', 38, 'DF', 'United States', 9, 10, 8, 3, 7, 6, 6, 7, 1],
+        ['Sebastian Berhalter', 25, 'MF', 'United States', 10, 7, 9, 8, 9, 9, 8, 4, 2],
+        ['Cristian Roldan', 31, 'MF', 'United States', 10, 6, 7, 10, 10, 10, 10, 10, 3],
+        ['Alex Freeman', 21, 'DF', 'United States', 9, 8, 10, 4, 10, 9, 6, 10, 1],
+        ['Malik Tillman', 24, 'MF', 'United States', 10, 7, 10, 8, 10, 8, 10, 8, 2],
+        ['Max Arfsten', 25, 'DF', 'United States', 5, 10, 8, 5, 10, 6, 7, 7, 2],
+        ['Haji Wright', 28, 'FW', 'United States', 10, 4, 4, 10, 10, 10, 8, 6, 1],
+        ['Folarin Balogun', 24, 'FW', 'United States', 10, 5, 7, 10, 10, 10, 10, 9, 1],
+        ['Timothy Weah', 26, 'FW', 'United States', 10, 3, 3, 10, 10, 10, 10, 10, 1],
+        ['Mark McKenzie', 27, 'DF', 'United States', 10, 9, 10, 3, 8, 9, 8, 8, 1],
+        ['Joe Scally', 23, 'DF', 'United States', 5, 8, 10, 4, 7, 8, 10, 9, 2],
+        ['Matt Freese', 27, 'GK', 'United States', 6, 9, 2, 1, 5, 4, 8, 6, 9],
+        ['Chris Brady', 22, 'GK', 'United States', 4, 6, 4, 1, 7, 1, 7, 8, 10],
+        ['Alejandro Zendejas', 28, 'FW', 'United States', 10, 4, 5, 8, 8, 7, 8, 8, 1]
+      ],
+    });
+  }
+}
+
+module.exports = UnitedStates;

@@ -1,0 +1,62 @@
+class Jordan extends AbstractTeam {
+  static formation = {
+    'Yazeed Abulaila': [0, 3],
+    'Mohammad Abu Hashish': [2, 0],
+    'Abdallah Nasib': [2, 2],
+    'Husam Abu Dahab': [2, 4],
+    'Yazan Al-Arab': [2, 6],
+    'Amer Jamous': [4, 0],
+    'Noor Al-Rawabdeh': [4, 2],
+    'Rajaei Ayed': [4, 4],
+    'Ibrahim Sadeh': [4, 6],
+    'Mohammad Abu Zrayq': [6, 2],
+    'Ali Olwan': [6, 4],
+  };
+
+  constructor() {
+    super({
+      name: 'Jordan',
+      level: 1,
+      starPlayers: ['Ali Olwan', 'Musa Al-Taamari', 'Rajaei Ayed', 'Ibrahim Sadeh', 'Noor Al-Rawabdeh'],
+      startingDeck: "aggressive",
+      extraActions: {"tiki-taka":1},
+      coach: 'Jamal Sellami',
+      artifacts: ["aerialThreat"],
+      primaryColor: '#ce1126',
+      reserveColor: '#000000',
+      shortsColor: '#000000',
+      awayShortsColor: '#ffffff',
+      startingXI: ['Yazeed Abulaila', 'Mohammad Abu Hashish', 'Abdallah Nasib', 'Husam Abu Dahab', 'Yazan Al-Arab', 'Amer Jamous', 'Noor Al-Rawabdeh', 'Rajaei Ayed', 'Ibrahim Sadeh', 'Mohammad Abu Zrayq', 'Ali Olwan'],
+      squad: [
+        ['Yazeed Abulaila', 33, 'GK', 'Jordan', 7, 10, 4, 2, 10, 3, 8, 5, 10],
+        ['Mohammad Abu Hashish', 31, 'DF', 'Jordan', 8, 10, 10, 4, 10, 5, 10, 10, 1],
+        ['Abdallah Nasib', 32, 'DF', 'Jordan', 10, 10, 8, 5, 7, 10, 10, 9, 2],
+        ['Husam Abu Dahab', 26, 'DF', 'Jordan', 6, 10, 10, 3, 8, 4, 5, 7, 1],
+        ['Yazan Al-Arab', 30, 'DF', 'Jordan', 7, 10, 10, 5, 10, 6, 10, 10, 2],
+        ['Amer Jamous', 23, 'MF', 'Jordan', 10, 7, 9, 9, 8, 9, 9, 5, 2],
+        ['Mohammad Abu Zrayq', 28, 'FW', 'Jordan', 10, 5, 6, 10, 7, 10, 10, 9, 1],
+        ['Noor Al-Rawabdeh', 29, 'MF', 'Jordan', 10, 9, 8, 7, 10, 10, 9, 10, 2],
+        ['Ali Olwan', 26, 'FW', 'Jordan', 10, 6, 8, 10, 10, 10, 10, 8, 1],
+        ['Musa Al-Taamari', 29, 'FW', 'Jordan', 10, 2, 4, 10, 10, 10, 10, 10, 1],
+        ['Odeh Al-Fakhouri', 20, 'FW', 'Jordan', 8, 3, 4, 10, 9, 8, 8, 8, 1],
+        ['Nour Bani Attiah', 33, 'GK', 'Jordan', 5, 7, 2, 1, 7, 2, 6, 4, 8],
+        ['Mahmoud Al-Mardi', 32, 'FW', 'Jordan', 10, 2, 7, 10, 9, 10, 10, 10, 1],
+        ['Rajaei Ayed', 32, 'MF', 'Jordan', 9, 10, 10, 7, 10, 10, 10, 9, 2],
+        ['Ibrahim Sadeh', 26, 'MF', 'Jordan', 10, 10, 10, 8, 9, 10, 10, 9, 1],
+        ['Mo Abualnadi', 25, 'DF', 'Jordan', 8, 7, 7, 3, 7, 4, 7, 7, 2],
+        ['Salim Obaid', 34, 'DF', 'Jordan', 6, 8, 9, 4, 7, 7, 5, 6, 1],
+        ['Mohammad Taha', 20, 'MF', 'Jordan', 8, 6, 9, 4, 10, 6, 6, 7, 2],
+        ['Saed Al-Rosan', 29, 'DF', 'Jordan', 5, 9, 8, 4, 8, 7, 7, 9, 2],
+        ['Mohannad Abu Taha', 23, 'MF', 'Jordan', 8, 6, 10, 7, 8, 9, 10, 6, 2],
+        ['Nizar Al-Rashdan', 27, 'MF', 'Jordan', 10, 6, 8, 10, 10, 10, 10, 7, 1],
+        ['Abdallah Al-Fakhouri', 26, 'GK', 'Jordan', 4, 9, 4, 1, 5, 3, 8, 8, 9],
+        ['Ihsan Haddad', 32, 'DF', 'Jordan', 10, 10, 8, 4, 10, 10, 8, 10, 1],
+        ['Ali Azaizeh', 22, 'FW', 'Jordan', 9, 3, 4, 9, 8, 9, 7, 5, 1],
+        ['Mohammad Al-Dawoud', 34, 'MF', 'Jordan', 9, 6, 7, 6, 8, 8, 8, 5, 2],
+        ['Anas Badawi', 28, 'DF', 'Jordan', 8, 9, 7, 2, 6, 7, 8, 7, 1]
+      ],
+    });
+  }
+}
+
+module.exports = Jordan;

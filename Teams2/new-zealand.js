@@ -1,0 +1,62 @@
+class NewZealand extends AbstractTeam {
+  static formation = {
+    'Max Crocombe': [0, 3],
+    'Tim Payne': [2, 0],
+    'Francis de Vries': [2, 2],
+    'Tyler Bindon': [2, 4],
+    'Michael Boxall': [2, 6],
+    'Joe Bell': [4, 0],
+    'Marko Stamenić': [4, 2],
+    'Sarpreet Singh': [4, 4],
+    'Elijah Just': [4, 6],
+    'Logan Rogerson': [6, 2],
+    'Chris Wood': [6, 4],
+  };
+
+  constructor() {
+    super({
+      name: 'New Zealand',
+      level: 1,
+      starPlayers: ['Chris Wood', 'Tyler Bindon', 'Elijah Just'],
+      startingDeck: "tactical",
+      extraActions: {"gegenpressing":1},
+      coach: 'Darren Bazeley',
+      artifacts: ["goldenGlove"],
+      primaryColor: '#000000',
+      reserveColor: '#ffffff',
+      shortsColor: '#000000',
+      awayShortsColor: '#ffffff',
+      startingXI: ['Max Crocombe', 'Tim Payne', 'Francis de Vries', 'Tyler Bindon', 'Michael Boxall', 'Joe Bell', 'Marko Stamenić', 'Sarpreet Singh', 'Elijah Just', 'Logan Rogerson', 'Chris Wood'],
+      squad: [
+        ['Max Crocombe', 32, 'GK', 'New Zealand', 3, 10, 4, 2, 8, 2, 7, 9, 10],
+        ['Tim Payne', 32, 'DF', 'New Zealand', 10, 10, 8, 5, 8, 6, 10, 8, 2],
+        ['Francis de Vries', 31, 'DF', 'New Zealand', 7, 8, 10, 1, 8, 7, 10, 10, 2],
+        ['Tyler Bindon', 21, 'DF', 'New Zealand', 8, 10, 10, 5, 10, 10, 9, 10, 3],
+        ['Michael Boxall', 37, 'DF', 'New Zealand', 6, 9, 10, 5, 10, 7, 8, 10, 1],
+        ['Joe Bell', 27, 'MF', 'New Zealand', 10, 5, 7, 6, 10, 7, 7, 5, 2],
+        ['Logan Rogerson', 28, 'FW', 'New Zealand', 10, 4, 5, 8, 8, 7, 6, 10, 1],
+        ['Marko Stamenić', 24, 'MF', 'New Zealand', 10, 8, 7, 5, 10, 10, 8, 5, 2],
+        ['Chris Wood', 34, 'FW', 'New Zealand', 10, 6, 6, 10, 8, 10, 7, 9, 1],
+        ['Sarpreet Singh', 27, 'MF', 'New Zealand', 10, 5, 6, 4, 9, 10, 10, 9, 1],
+        ['Elijah Just', 26, 'MF', 'New Zealand', 10, 10, 9, 9, 10, 8, 10, 8, 3],
+        ['Alex Paulsen', 23, 'GK', 'New Zealand', 4, 7, 2, 1, 5, 3, 8, 3, 9],
+        ['Liberato Cacace', 25, 'DF', 'New Zealand', 9, 10, 10, 3, 10, 6, 10, 10, 1],
+        ['Alex Rufer', 29, 'MF', 'New Zealand', 10, 8, 8, 7, 10, 9, 10, 8, 2],
+        ['Nando Pijnaker', 27, 'DF', 'New Zealand', 7, 10, 9, 3, 10, 9, 8, 10, 1],
+        ['Finn Surman', 22, 'DF', 'New Zealand', 8, 10, 8, 5, 8, 6, 9, 10, 1],
+        ['Kosta Barbarouses', 36, 'FW', 'New Zealand', 10, 4, 5, 10, 7, 10, 8, 10, 1],
+        ['Ben Waine', 25, 'FW', 'New Zealand', 10, 2, 4, 10, 10, 10, 10, 10, 1],
+        ['Ben Old', 23, 'MF', 'New Zealand', 7, 7, 9, 5, 9, 9, 10, 8, 3],
+        ['Callum McCowatt', 27, 'MF', 'New Zealand', 7, 8, 9, 7, 9, 8, 8, 7, 2],
+        ['Jesse Randall', 23, 'FW', 'New Zealand', 8, 3, 2, 9, 5, 7, 5, 8, 1],
+        ['Michael Woud', 27, 'GK', 'New Zealand', 5, 8, 1, 2, 6, 3, 6, 6, 10],
+        ['Ryan Thomas', 31, 'MF', 'New Zealand', 9, 7, 10, 7, 10, 7, 9, 8, 2],
+        ['Callan Elliot', 26, 'DF', 'New Zealand', 5, 10, 9, 3, 5, 7, 8, 10, 1],
+        ['Lachlan Bayliss', 23, 'MF', 'New Zealand', 6, 7, 7, 5, 7, 7, 9, 5, 1],
+        ['Tommy Smith', 36, 'DF', 'New Zealand', 9, 10, 10, 1, 6, 4, 10, 9, 1]
+      ],
+    });
+  }
+}
+
+module.exports = NewZealand;

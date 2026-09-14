@@ -1,0 +1,62 @@
+class Egypt extends AbstractTeam {
+  static formation = {
+    'Mohamed El Shenawy': [0, 3],
+    'Yasser Ibrahim': [2, 0],
+    'Mohamed Hany': [2, 2],
+    'Hossam Abdelmaguid': [2, 4],
+    'Ramy Rabia': [2, 6],
+    'Emam Ashour': [4, 0],
+    'Mostafa Ziko': [4, 2],
+    'Hamdy Fathy': [4, 4],
+    'Mohanad Lasheen': [4, 6],
+    'Trézéguet': [6, 2],
+    'Hamza Abdelkarim': [6, 4],
+  };
+
+  constructor() {
+    super({
+      name: 'Egypt',
+      level: 1,
+      starPlayers: ['Mohamed Salah', 'Trézéguet', 'Omar Marmoush'],
+      startingDeck: "tactical",
+      extraActions: {"park-the-bus":1},
+      coach: 'Hossam Hassan',
+      artifacts: ["paceBurner"],
+      primaryColor: '#e70013',
+      reserveColor: '#ffffff',
+      shortsColor: '#000000',
+      awayShortsColor: '#ffffff',
+      startingXI: ['Mohamed El Shenawy', 'Yasser Ibrahim', 'Mohamed Hany', 'Hossam Abdelmaguid', 'Ramy Rabia', 'Emam Ashour', 'Mostafa Ziko', 'Hamdy Fathy', 'Mohanad Lasheen', 'Trézéguet', 'Hamza Abdelkarim'],
+      squad: [
+        ['Mohamed El Shenawy', 37, 'GK', 'Egypt', 5, 8, 5, 1, 8, 5, 10, 9, 10],
+        ['Yasser Ibrahim', 33, 'DF', 'Egypt', 7, 9, 7, 4, 7, 7, 5, 7, 1],
+        ['Mohamed Hany', 30, 'DF', 'Egypt', 8, 9, 10, 6, 9, 5, 7, 10, 2],
+        ['Hossam Abdelmaguid', 25, 'DF', 'Egypt', 6, 8, 10, 3, 5, 7, 8, 8, 1],
+        ['Ramy Rabia', 33, 'DF', 'Egypt', 9, 10, 10, 5, 8, 7, 7, 9, 1],
+        ['Mohamed Abdelmonem', 27, 'DF', 'Egypt', 10, 10, 10, 5, 8, 7, 7, 10, 1],
+        ['Trézéguet', 31, 'FW', 'Egypt', 10, 2, 4, 10, 10, 10, 10, 10, 1],
+        ['Emam Ashour', 28, 'MF', 'Egypt', 10, 4, 8, 6, 9, 9, 9, 5, 2],
+        ['Hamza Abdelkarim', 18, 'FW', 'Egypt', 10, 2, 5, 9, 5, 9, 5, 7, 1],
+        ['Mohamed Salah', 33, 'FW', 'Egypt', 10, 2, 4, 10, 10, 10, 9, 10, 1],
+        ['Mostafa Ziko', 29, 'MF', 'Egypt', 9, 6, 6, 4, 9, 6, 9, 5, 1],
+        ['Haissem Hassan', 24, 'FW', 'Egypt', 8, 2, 5, 9, 5, 7, 6, 8, 1],
+        ['Ahmed Fatouh', 28, 'DF', 'Egypt', 9, 10, 10, 3, 7, 8, 10, 10, 3],
+        ['Hamdy Fathy', 31, 'MF', 'Egypt', 8, 7, 7, 7, 9, 10, 10, 7, 1],
+        ['Karim Hafez', 30, 'DF', 'Egypt', 5, 7, 9, 3, 9, 5, 5, 9, 1],
+        ['El Mahdy Soliman', 39, 'GK', 'Egypt', 3, 5, 3, 1, 7, 1, 5, 4, 8],
+        ['Mohanad Lasheen', 30, 'MF', 'Egypt', 10, 7, 10, 8, 10, 10, 7, 7, 2],
+        ['Nabil Emad', 30, 'MF', 'Egypt', 7, 6, 5, 4, 8, 9, 7, 6, 1],
+        ['Marwan Attia', 27, 'MF', 'Egypt', 10, 6, 10, 6, 10, 8, 10, 6, 1],
+        ['Ibrahim Adel', 25, 'FW', 'Egypt', 10, 2, 4, 8, 6, 10, 7, 7, 1],
+        ['Mahmoud Saber', 24, 'MF', 'Egypt', 10, 7, 6, 7, 10, 10, 6, 7, 1],
+        ['Omar Marmoush', 27, 'FW', 'Egypt', 10, 3, 6, 10, 10, 10, 8, 10, 1],
+        ['Mostafa Shobeir', 26, 'GK', 'Egypt', 3, 6, 2, 1, 7, 2, 9, 4, 9],
+        ['Tarek Alaa', 24, 'DF', 'Egypt', 7, 7, 8, 3, 7, 7, 4, 6, 1],
+        ['Zizo', 30, 'FW', 'Egypt', 10, 4, 4, 10, 9, 10, 10, 7, 1],
+        ['Mohamed Alaa', 27, 'GK', 'Egypt', 4, 5, 2, 1, 5, 4, 6, 4, 8]
+      ],
+    });
+  }
+}
+
+module.exports = Egypt;
