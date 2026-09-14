@@ -28,32 +28,32 @@ class DRCongo extends AbstractTeam {
       awayShortsColor: '#ffce00',
       startingXI: ['Lionel Mpasi', 'Aaron Wan-Bissaka', 'Steve Kapuadi', 'Axel Tuanzebe', 'Dylan Batubinsika', 'Ngal\'ayel Mukau', 'Nathanaël Mbuku', 'Samuel Moutoussamy', 'Théo Bongonda', 'Brian Cipenga', 'Gaël Kakuta'],
       squad: [
-        ['Lionel Mpasi', 31, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Aaron Wan-Bissaka', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Steve Kapuadi', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Axel Tuanzebe', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Dylan Batubinsika', 30, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ngal\\\'ayel Mukau', 21, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Nathanaël Mbuku', 24, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Samuel Moutoussamy', 29, 'MF', 'DR Congo', 8, 9, 10, 9, 8, 8, 8, 5, 1]
-        ['Brian Cipenga', 28, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Théo Bongonda', 30, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Gaël Kakuta', 34, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Joris Kayembe', 31, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Meschak Elia', 28, 'FW', 'DR Congo', 8, 2, 4, 8, 10, 8, 9, 9, 1]
-        ['Noah Sadiki', 21, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Aaron Tshibola', 31, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Timothy Fayulu', 26, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Cédric Bakambu', 35, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Charles Pickel', 29, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Fiston Mayele', 31, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Yoane Wissa', 29, 'FW', 'DR Congo', 8, 4, 7, 8, 10, 9, 7, 9, 1]
-        ['Matthieu Epolo', 21, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Chancel Mbemba', 31, 'DF', 'DR Congo', 9, 8, 9, 4, 10, 7, 8, 8, 3]
-        ['Simon Banza', 29, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Gédéon Kalulu', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Edo Kayembe', 28, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Arthur Masuaku', 32, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Lionel Mpasi', 31, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Aaron Wan-Bissaka', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Steve Kapuadi', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Axel Tuanzebe', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Dylan Batubinsika', 30, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ngal\\\'ayel Mukau', 21, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Nathanaël Mbuku', 24, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Samuel Moutoussamy', 29, 'MF', 'DR Congo', 8, 9, 10, 9, 8, 8, 8, 5, 1],
+        ['Brian Cipenga', 28, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Théo Bongonda', 30, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Gaël Kakuta', 34, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Joris Kayembe', 31, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Meschak Elia', 28, 'FW', 'DR Congo', 8, 2, 4, 8, 10, 8, 9, 9, 1],
+        ['Noah Sadiki', 21, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Aaron Tshibola', 31, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Timothy Fayulu', 26, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Cédric Bakambu', 35, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Charles Pickel', 29, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Fiston Mayele', 31, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Yoane Wissa', 29, 'FW', 'DR Congo', 8, 4, 7, 8, 10, 9, 7, 9, 1],
+        ['Matthieu Epolo', 21, 'GK', 'DR Congo', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Chancel Mbemba', 31, 'DF', 'DR Congo', 9, 8, 9, 4, 10, 7, 8, 8, 3],
+        ['Simon Banza', 29, 'FW', 'DR Congo', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Gédéon Kalulu', 28, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Edo Kayembe', 28, 'MF', 'DR Congo', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Arthur Masuaku', 32, 'DF', 'DR Congo', 5, 6, 6, 3, 3, 2, 5, 6, 1],
       ],
     });
   }

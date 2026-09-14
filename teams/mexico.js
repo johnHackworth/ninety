@@ -28,32 +28,32 @@ class Mexico extends AbstractTeam {
       awayShortsColor: '#000000',
       startingXI: ['Raúl Rangel', 'Jorge Sánchez', 'César Montes', 'Edson Álvarez', 'Johan Vásquez', 'Érik Lira', 'Luis Romo', 'Álvaro Fidalgo', 'Orbelín Pineda', 'Raúl Jiménez', 'Alexis Vega'],
       squad: [
-        ['Raúl Rangel', 26, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Jorge Sánchez', 28, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['César Montes', 29, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Edson Álvarez', 28, 'DF', 'Mexico', 9, 8, 8, 4, 8, 7, 9, 10, 2]
-        ['Johan Vásquez', 27, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Érik Lira', 26, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Luis Romo', 31, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Álvaro Fidalgo', 29, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Raúl Jiménez', 35, 'FW', 'Mexico', 8, 4, 5, 8, 10, 9, 8, 9, 1]
-        ['Alexis Vega', 28, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Santiago Giménez', 25, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Carlos Acevedo', 30, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Guillermo Ochoa', 40, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Armando González', 23, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Israel Reyes', 26, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Julián Quiñones', 29, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Orbelín Pineda', 30, 'MF', 'Mexico', 9, 7, 8, 10, 8, 9, 8, 7, 2]
-        ['Obed Vargas', 20, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Gilberto Mora', 17, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Mateo Chávez', 22, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['César Huerta', 25, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Guillermo Martínez', 31, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Jesús Gallardo', 31, 'DF', 'Mexico', 8, 8, 8, 3, 10, 6, 9, 9, 1]
-        ['Luis Chávez', 30, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Roberto Alvarado', 27, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Brian Gutiérrez', 22, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Raúl Rangel', 26, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Jorge Sánchez', 28, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['César Montes', 29, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Edson Álvarez', 28, 'DF', 'Mexico', 9, 8, 8, 4, 8, 7, 9, 10, 2],
+        ['Johan Vásquez', 27, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Érik Lira', 26, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Luis Romo', 31, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Álvaro Fidalgo', 29, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Raúl Jiménez', 35, 'FW', 'Mexico', 8, 4, 5, 8, 10, 9, 8, 9, 1],
+        ['Alexis Vega', 28, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Santiago Giménez', 25, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Carlos Acevedo', 30, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Guillermo Ochoa', 40, 'GK', 'Mexico', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Armando González', 23, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Israel Reyes', 26, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Julián Quiñones', 29, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Orbelín Pineda', 30, 'MF', 'Mexico', 9, 7, 8, 10, 8, 9, 8, 7, 2],
+        ['Obed Vargas', 20, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Gilberto Mora', 17, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Mateo Chávez', 22, 'DF', 'Mexico', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['César Huerta', 25, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Guillermo Martínez', 31, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Jesús Gallardo', 31, 'DF', 'Mexico', 8, 8, 8, 3, 10, 6, 9, 9, 1],
+        ['Luis Chávez', 30, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Roberto Alvarado', 27, 'FW', 'Mexico', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Brian Gutiérrez', 22, 'MF', 'Mexico', 7, 6, 6, 7, 5, 5, 8, 6, 1],
       ],
     });
   }

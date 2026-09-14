@@ -28,32 +28,32 @@ class Belgium extends AbstractTeam {
       awayShortsColor: '#fdbf00',
       startingXI: ['Thibaut Courtois', 'Zeno Debast', 'Arthur Theate', 'Brandon Mechele', 'Maxim De Cuyper', 'Axel Witsel', 'Kevin De Bruyne', 'Youri Tielemans', 'Diego Moreira', 'Romelu Lukaku', 'Leandro Trossard'],
       squad: [
-        ['Thibaut Courtois', 34, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Zeno Debast', 22, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Arthur Theate', 26, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Brandon Mechele', 33, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Maxim De Cuyper', 25, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Axel Witsel', 37, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Kevin De Bruyne', 34, 'MF', 'Belgium', 10, 8, 9, 6, 8, 8, 8, 9, 1]
-        ['Youri Tielemans', 29, 'MF', 'Belgium', 9, 10, 8, 8, 8, 9, 8, 5, 2]
-        ['Romelu Lukaku', 33, 'FW', 'Belgium', 8, 5, 8, 8, 9, 9, 8, 10, 1]
-        ['Leandro Trossard', 31, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Jérémy Doku', 24, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Senne Lammens', 23, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Mike Penders', 20, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Dodi Lukébakio', 28, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Thomas Meunier', 34, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Koni De Winter', 23, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Charles De Ketelaere', 25, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Joaquin Seys', 21, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Diego Moreira', 21, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Hans Vanaken', 33, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Timothy Castagne', 30, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Alexis Saelemaekers', 26, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Nicolas Raskin', 25, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Amadou Onana', 24, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Nathan Ngoy', 23, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Matias Fernandez-Pardo', 21, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1]
+        ['Thibaut Courtois', 34, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Zeno Debast', 22, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Arthur Theate', 26, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Brandon Mechele', 33, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Maxim De Cuyper', 25, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Axel Witsel', 37, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Kevin De Bruyne', 34, 'MF', 'Belgium', 10, 8, 9, 6, 8, 8, 8, 9, 1],
+        ['Youri Tielemans', 29, 'MF', 'Belgium', 9, 10, 8, 8, 8, 9, 8, 5, 2],
+        ['Romelu Lukaku', 33, 'FW', 'Belgium', 8, 5, 8, 8, 9, 9, 8, 10, 1],
+        ['Leandro Trossard', 31, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Jérémy Doku', 24, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Senne Lammens', 23, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Mike Penders', 20, 'GK', 'Belgium', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Dodi Lukébakio', 28, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Thomas Meunier', 34, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Koni De Winter', 23, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Charles De Ketelaere', 25, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Joaquin Seys', 21, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Diego Moreira', 21, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Hans Vanaken', 33, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Timothy Castagne', 30, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Alexis Saelemaekers', 26, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Nicolas Raskin', 25, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Amadou Onana', 24, 'MF', 'Belgium', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Nathan Ngoy', 23, 'DF', 'Belgium', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Matias Fernandez-Pardo', 21, 'FW', 'Belgium', 7, 2, 2, 9, 4, 6, 4, 8, 1],
       ],
     });
   }

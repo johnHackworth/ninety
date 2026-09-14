@@ -27,32 +27,32 @@ class Scotland extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Angus Gunn', 'Aaron Hickey', 'Andy Robertson', 'Grant Hanley', 'Kieran Tierney', 'Scott McTominay', 'John McGinn', 'Tyler Fletcher', 'Ryan Christie', 'Lyndon Dykes', 'Ché Adams'],
       squad: [
-        ['Angus Gunn', 30, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Aaron Hickey', 24, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Andy Robertson', 32, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Scott McTominay', 29, 'MF', 'Scotland', 9, 9, 10, 8, 8, 8, 8, 5, 2]
-        ['Grant Hanley', 34, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Kieran Tierney', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['John McGinn', 31, 'MF', 'Scotland', 10, 7, 9, 8, 8, 9, 8, 7, 1]
-        ['Tyler Fletcher', 19, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Lyndon Dykes', 30, 'FW', 'Scotland', 8, 4, 8, 8, 10, 9, 8, 9, 1]
-        ['Ché Adams', 29, 'FW', 'Scotland', 8, 4, 8, 8, 10, 9, 9, 8, 2]
-        ['Ryan Christie', 31, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Liam Kelly', 30, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Jack Hendry', 31, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ross Stewart', 29, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['John Souttar', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Dominic Hyam', 30, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ben Gannon-Doak', 20, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['George Hirst', 27, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Lewis Ferguson', 26, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Lawrence Shankland', 30, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Craig Gordon', 43, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Nathan Patterson', 24, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Kenny McLean', 34, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Anthony Ralston', 27, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Findlay Curtis', 20, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Scott McKenna', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Angus Gunn', 30, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Aaron Hickey', 24, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Andy Robertson', 32, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Scott McTominay', 29, 'MF', 'Scotland', 9, 9, 10, 8, 8, 8, 8, 5, 2],
+        ['Grant Hanley', 34, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Kieran Tierney', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['John McGinn', 31, 'MF', 'Scotland', 10, 7, 9, 8, 8, 9, 8, 7, 1],
+        ['Tyler Fletcher', 19, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Lyndon Dykes', 30, 'FW', 'Scotland', 8, 4, 8, 8, 10, 9, 8, 9, 1],
+        ['Ché Adams', 29, 'FW', 'Scotland', 8, 4, 8, 8, 10, 9, 9, 8, 2],
+        ['Ryan Christie', 31, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Liam Kelly', 30, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Jack Hendry', 31, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ross Stewart', 29, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['John Souttar', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Dominic Hyam', 30, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ben Gannon-Doak', 20, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['George Hirst', 27, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Lewis Ferguson', 26, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Lawrence Shankland', 30, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Craig Gordon', 43, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Nathan Patterson', 24, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Kenny McLean', 34, 'MF', 'Scotland', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Anthony Ralston', 27, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Findlay Curtis', 20, 'FW', 'Scotland', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Scott McKenna', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
       ],
     });
   }

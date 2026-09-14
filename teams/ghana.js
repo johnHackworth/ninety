@@ -28,32 +28,32 @@ class Ghana extends AbstractTeam {
       awayShortsColor: '#ffcd00',
       startingXI: ['Lawrence Ati-Zigi', 'Alidu Seidu', 'Jonas Adjetey', 'Abdul Mumin', 'Gideon Mensah', 'Caleb Yirenkyi', 'Thomas Partey', 'Kwasi Sibo', 'Antoine Semenyo', 'Abdul Fatawu', 'Jordan Ayew'],
       squad: [
-        ['Lawrence Ati-Zigi', 29, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Alidu Seidu', 26, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Caleb Yirenkyi', 20, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Jonas Adjetey', 22, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Thomas Partey', 32, 'MF', 'Ghana', 9, 9, 10, 8, 8, 8, 8, 6, 2]
-        ['Abdul Mumin', 28, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Abdul Fatawu', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Kwasi Sibo', 27, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Jordan Ayew', 34, 'FW', 'Ghana', 8, 5, 5, 8, 10, 9, 7, 9, 1]
-        ['Brandon Thomas-Asante', 27, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Antoine Semenyo', 26, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Joseph Anang', 26, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Christopher Bonsu Baah', 21, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Gideon Mensah', 27, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Elisha Owusu', 28, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Benjamin Asare', 33, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Abdul Rahman Baba', 31, 'DF', 'Ghana', 8, 8, 8, 3, 10, 8, 9, 9, 1]
-        ['Jerome Opoku', 27, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Iñaki Williams', 31, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Augustine Boakye', 25, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Kojo Peprah Oppong', 22, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Kamaldeen Sulemana', 24, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Derrick Luckassen', 30, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ernest Nuamah', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Prince Kwabena Adu', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Marvin Senaya', 25, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Lawrence Ati-Zigi', 29, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Alidu Seidu', 26, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Caleb Yirenkyi', 20, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Jonas Adjetey', 22, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Thomas Partey', 32, 'MF', 'Ghana', 9, 9, 10, 8, 8, 8, 8, 6, 2],
+        ['Abdul Mumin', 28, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Abdul Fatawu', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Kwasi Sibo', 27, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Jordan Ayew', 34, 'FW', 'Ghana', 8, 5, 5, 8, 10, 9, 7, 9, 1],
+        ['Brandon Thomas-Asante', 27, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Antoine Semenyo', 26, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Joseph Anang', 26, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Christopher Bonsu Baah', 21, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Gideon Mensah', 27, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Elisha Owusu', 28, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Benjamin Asare', 33, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Abdul Rahman Baba', 31, 'DF', 'Ghana', 8, 8, 8, 3, 10, 8, 9, 9, 1],
+        ['Jerome Opoku', 27, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Iñaki Williams', 31, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Augustine Boakye', 25, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Kojo Peprah Oppong', 22, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Kamaldeen Sulemana', 24, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Derrick Luckassen', 30, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ernest Nuamah', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Prince Kwabena Adu', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Marvin Senaya', 25, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
       ],
     });
   }

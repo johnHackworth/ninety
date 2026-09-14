@@ -28,32 +28,32 @@ class Curaao extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Eloy Room', 'Shurandy Sambo', 'Juriën Gaari', 'Roshon van Eijma', 'Sherel Floranus', 'Godfried Roemeratoe', 'Juninho Bacuna', 'Livano Comenencia', 'Leandro Bacuna', 'Jürgen Locadia', 'Jeremy Antonisse'],
       squad: [
-        ['Eloy Room', 37, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Shurandy Sambo', 24, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Juriën Gaari', 32, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Roshon van Eijma', 28, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Sherel Floranus', 27, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Godfried Roemeratoe', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Juninho Bacuna', 28, 'MF', 'Curaçao', 9, 5, 10, 5, 8, 8, 8, 9, 1]
-        ['Livano Comenencia', 22, 'MF', 'Curaçao', 8, 7, 8, 5, 8, 10, 9, 9, 2]
-        ['Jürgen Locadia', 32, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Leandro Bacuna', 34, 'MF', 'Curaçao', 10, 8, 6, 6, 8, 9, 8, 9, 2]
-        ['Jeremy Antonisse', 24, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Sontje Hansen', 24, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Tyrese Noslin', 23, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Kenji Gorré', 31, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Ar\\\'jany Martha', 22, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Jearl Margaritha', 26, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Brandley Kuwas', 33, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Armando Obispo', 27, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Gervane Kastaneer', 30, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Joshua Brenet', 32, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Tahith Chong', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Kevin Felida', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Riechedly Bazoer', 29, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Deveron Fonville', 23, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Tyrick Bodak', 24, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Trevor Doornbusch', 26, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Eloy Room', 37, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Shurandy Sambo', 24, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Juriën Gaari', 32, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Roshon van Eijma', 28, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Sherel Floranus', 27, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Godfried Roemeratoe', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Juninho Bacuna', 28, 'MF', 'Curaçao', 9, 5, 10, 5, 8, 8, 8, 9, 1],
+        ['Livano Comenencia', 22, 'MF', 'Curaçao', 8, 7, 8, 5, 8, 10, 9, 9, 2],
+        ['Jürgen Locadia', 32, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Leandro Bacuna', 34, 'MF', 'Curaçao', 10, 8, 6, 6, 8, 9, 8, 9, 2],
+        ['Jeremy Antonisse', 24, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Sontje Hansen', 24, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Tyrese Noslin', 23, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Kenji Gorré', 31, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Ar\\\'jany Martha', 22, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Jearl Margaritha', 26, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Brandley Kuwas', 33, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Armando Obispo', 27, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Gervane Kastaneer', 30, 'FW', 'Curaçao', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Joshua Brenet', 32, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Tahith Chong', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Kevin Felida', 26, 'MF', 'Curaçao', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Riechedly Bazoer', 29, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Deveron Fonville', 23, 'DF', 'Curaçao', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Tyrick Bodak', 24, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Trevor Doornbusch', 26, 'GK', 'Curaçao', 2, 4, 4, 2, 4, 1, 4, 5, 6],
       ],
     });
   }

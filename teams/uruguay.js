@@ -28,32 +28,32 @@ class Uruguay extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Sergio Rochet', 'José María Giménez', 'Sebastián Cáceres', 'Ronald Araújo', 'Guillermo Varela', 'Manuel Ugarte', 'Rodrigo Bentancur', 'Nicolás de la Cruz', 'Federico Valverde', 'Darwin Núñez', 'Facundo Pellistri'],
       squad: [
-        ['Sergio Rochet', 33, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['José María Giménez', 31, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Sebastián Cáceres', 26, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Ronald Araújo', 27, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Manuel Ugarte', 25, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Rodrigo Bentancur', 28, 'MF', 'Uruguay', 8, 9, 10, 7, 8, 8, 8, 9, 2]
-        ['Nicolás de la Cruz', 29, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Federico Valverde', 27, 'MF', 'Uruguay', 9, 8, 9, 7, 8, 8, 8, 10, 2]
-        ['Darwin Núñez', 26, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Giorgian de Arrascaeta', 32, 'MF', 'Uruguay', 10, 7, 9, 8, 8, 9, 8, 5, 3]
-        ['Facundo Pellistri', 24, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Santiago Mele', 28, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['Guillermo Varela', 33, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Agustín Canobbio', 27, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Emiliano Martínez', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Mathías Olivera', 28, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Matías Viña', 28, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Brian Rodríguez', 26, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Rodrigo Aguirre', 31, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Maximiliano Araújo', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Federico Viñas', 27, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Joaquín Piquerez', 27, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Fernando Muslera', 39, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['Santiago Bueno', 27, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Juan Manuel Sanabria', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Rodrigo Zalazar', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Sergio Rochet', 33, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['José María Giménez', 31, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Sebastián Cáceres', 26, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Ronald Araújo', 27, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Manuel Ugarte', 25, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Rodrigo Bentancur', 28, 'MF', 'Uruguay', 8, 9, 10, 7, 8, 8, 8, 9, 2],
+        ['Nicolás de la Cruz', 29, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Federico Valverde', 27, 'MF', 'Uruguay', 9, 8, 9, 7, 8, 8, 8, 10, 2],
+        ['Darwin Núñez', 26, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Giorgian de Arrascaeta', 32, 'MF', 'Uruguay', 10, 7, 9, 8, 8, 9, 8, 5, 3],
+        ['Facundo Pellistri', 24, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Santiago Mele', 28, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['Guillermo Varela', 33, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Agustín Canobbio', 27, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Emiliano Martínez', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Mathías Olivera', 28, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Matías Viña', 28, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Brian Rodríguez', 26, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Rodrigo Aguirre', 31, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Maximiliano Araújo', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Federico Viñas', 27, 'FW', 'Uruguay', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Joaquín Piquerez', 27, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Fernando Muslera', 39, 'GK', 'Uruguay', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['Santiago Bueno', 27, 'DF', 'Uruguay', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Juan Manuel Sanabria', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Rodrigo Zalazar', 26, 'MF', 'Uruguay', 6, 5, 6, 6, 5, 5, 7, 5, 1],
       ],
     });
   }

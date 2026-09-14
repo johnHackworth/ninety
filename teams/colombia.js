@@ -28,32 +28,32 @@ class Colombia extends AbstractTeam {
       awayShortsColor: '#ffcd00',
       startingXI: ['David Ospina', 'Daniel Muñoz', 'Jhon Lucumí', 'Santiago Arias', 'Yerry Mina', 'Kevin Castaño', 'Richard Ríos', 'Jorge Carrascal', 'James Rodríguez', 'Luis Díaz', 'Jhon Córdoba'],
       squad: [
-        ['David Ospina', 37, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['Daniel Muñoz', 30, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Jhon Lucumí', 27, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Santiago Arias', 34, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Kevin Castaño', 25, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Richard Ríos', 26, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Luis Díaz', 29, 'FW', 'Colombia', 8, 4, 4, 8, 9, 8, 10, 9, 1]
-        ['Jorge Carrascal', 28, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Jhon Córdoba', 33, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['James Rodríguez', 34, 'MF', 'Colombia', 9, 7, 10, 7, 8, 8, 8, 9, 1]
-        ['Jhon Arias', 28, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Camilo Vargas', 37, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['Yerry Mina', 31, 'DF', 'Colombia', 8, 8, 8, 2, 9, 10, 9, 8, 2]
-        ['Gustavo Puerta', 22, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Juan Portilla', 27, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Jefferson Lerma', 31, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Johan Mojica', 33, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Willer Ditta', 28, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Cucho Hernández', 27, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Juan Fernando Quintero', 33, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
-        ['Jaminton Campaz', 26, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Deiver Machado', 32, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Davinson Sánchez', 29, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
-        ['Álvaro Montero', 31, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
-        ['Luis Suárez', 28, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
-        ['Andrés Gómez', 23, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
+        ['David Ospina', 37, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['Daniel Muñoz', 30, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Jhon Lucumí', 27, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Santiago Arias', 34, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Kevin Castaño', 25, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Richard Ríos', 26, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Luis Díaz', 29, 'FW', 'Colombia', 8, 4, 4, 8, 9, 8, 10, 9, 1],
+        ['Jorge Carrascal', 28, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Jhon Córdoba', 33, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['James Rodríguez', 34, 'MF', 'Colombia', 9, 7, 10, 7, 8, 8, 8, 9, 1],
+        ['Jhon Arias', 28, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Camilo Vargas', 37, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['Yerry Mina', 31, 'DF', 'Colombia', 8, 8, 8, 2, 9, 10, 9, 8, 2],
+        ['Gustavo Puerta', 22, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Juan Portilla', 27, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Jefferson Lerma', 31, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Johan Mojica', 33, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Willer Ditta', 28, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Cucho Hernández', 27, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Juan Fernando Quintero', 33, 'MF', 'Colombia', 6, 5, 6, 6, 5, 5, 7, 5, 1],
+        ['Jaminton Campaz', 26, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Deiver Machado', 32, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Davinson Sánchez', 29, 'DF', 'Colombia', 6, 7, 7, 3, 3, 2, 5, 7, 1],
+        ['Álvaro Montero', 31, 'GK', 'Colombia', 2, 4, 5, 2, 4, 1, 4, 6, 7],
+        ['Luis Suárez', 28, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1],
+        ['Andrés Gómez', 23, 'FW', 'Colombia', 6, 2, 2, 8, 4, 5, 4, 7, 1],
       ],
     });
   }

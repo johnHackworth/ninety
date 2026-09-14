@@ -27,32 +27,32 @@ class IvoryCoast extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Yahia Fofana', 'Ousmane Diomande', 'Ghislain Konan', 'Wilfried Singo', 'Odilon Kossounou', 'Jean Michaël Seri', 'Seko Fofana', 'Franck Kessié', 'Ibrahim Sangaré', 'Ange-Yoan Bonny', 'Simon Adingra'],
       squad: [
-        ['Yahia Fofana', 25, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Ousmane Diomande', 22, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ghislain Konan', 30, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Jean Michaël Seri', 34, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Wilfried Singo', 25, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Seko Fofana', 31, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Odilon Kossounou', 25, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Franck Kessié', 29, 'MF', 'Ivory Coast', 10, 5, 7, 9, 8, 8, 8, 9, 1]
-        ['Ange-Yoan Bonny', 22, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Simon Adingra', 24, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Yan Diomande', 19, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Elye Wahi', 23, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Christopher Opéri', 29, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Oumar Diakité', 22, 'FW', 'Ivory Coast', 8, 4, 8, 8, 10, 9, 8, 9, 1]
-        ['Amad Diallo', 23, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Mohamed Koné', 24, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Guéla Doué', 23, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ibrahim Sangaré', 28, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Nicolas Pépé', 31, 'FW', 'Ivory Coast', 8, 7, 4, 8, 10, 8, 9, 9, 2]
-        ['Emmanuel Agbadou', 28, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Evan Ndicka', 26, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Evann Guessand', 24, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Alban Lafont', 27, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Bazoumana Touré', 20, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Parfait Guiagon', 25, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Christ Inao Oulaï', 20, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Yahia Fofana', 25, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Ousmane Diomande', 22, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ghislain Konan', 30, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Jean Michaël Seri', 34, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Wilfried Singo', 25, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Seko Fofana', 31, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Odilon Kossounou', 25, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Franck Kessié', 29, 'MF', 'Ivory Coast', 10, 5, 7, 9, 8, 8, 8, 9, 1],
+        ['Ange-Yoan Bonny', 22, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Simon Adingra', 24, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Yan Diomande', 19, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Elye Wahi', 23, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Christopher Opéri', 29, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Oumar Diakité', 22, 'FW', 'Ivory Coast', 8, 4, 8, 8, 10, 9, 8, 9, 1],
+        ['Amad Diallo', 23, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Mohamed Koné', 24, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Guéla Doué', 23, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ibrahim Sangaré', 28, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Nicolas Pépé', 31, 'FW', 'Ivory Coast', 8, 7, 4, 8, 10, 8, 9, 9, 2],
+        ['Emmanuel Agbadou', 28, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Evan Ndicka', 26, 'DF', 'Ivory Coast', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Evann Guessand', 24, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Alban Lafont', 27, 'GK', 'Ivory Coast', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Bazoumana Touré', 20, 'FW', 'Ivory Coast', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Parfait Guiagon', 25, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Christ Inao Oulaï', 20, 'MF', 'Ivory Coast', 5, 4, 6, 5, 5, 4, 6, 4, 1],
       ],
     });
   }

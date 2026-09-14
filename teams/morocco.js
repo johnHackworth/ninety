@@ -28,32 +28,32 @@ class Morocco extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Yassine Bounou', 'Achraf Hakimi', 'Noussair Mazraoui', 'Marwane Saâdane', 'Zakaria El Ouahdi', 'Sofyan Amrabat', 'Ayyoub Bouaddi', 'Chemsdine Talbi', 'Azzedine Ounahi', 'Soufiane Rahimi', 'Brahim Díaz'],
       squad: [
-        ['Yassine Bounou', 35, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Achraf Hakimi', 27, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Noussair Mazraoui', 28, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Sofyan Amrabat', 29, 'MF', 'Morocco', 9, 8, 9, 7, 8, 8, 8, 10, 1]
-        ['Marwane Saâdane', 34, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Ayyoub Bouaddi', 18, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Chemsdine Talbi', 21, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Azzedine Ounahi', 26, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Soufiane Rahimi', 30, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Brahim Díaz', 26, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Ismael Saibari', 25, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Munir Mohamedi', 37, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Zakaria El Ouahdi', 24, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Issa Diop', 29, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Samir El Mourabet', 20, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Gessime Yassine', 20, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Amine Sbaï', 25, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Chadi Riad', 22, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Youssef Belammari', 27, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Ayoub El Kaabi', 32, 'FW', 'Morocco', 8, 3, 4, 8, 10, 8, 9, 9, 1]
-        ['Ayoube Amaimouni', 21, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1]
-        ['Ahmed Reda Tagnaouti', 30, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8]
-        ['Bilal El Khannouss', 22, 'MF', 'Morocco', 8, 9, 10, 5, 8, 8, 8, 9, 2]
-        ['Neil El Aynaoui', 24, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1]
-        ['Redouane Halhal', 23, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
-        ['Anass Salah-Eddine', 24, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Yassine Bounou', 35, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Achraf Hakimi', 27, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Noussair Mazraoui', 28, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Sofyan Amrabat', 29, 'MF', 'Morocco', 9, 8, 9, 7, 8, 8, 8, 10, 1],
+        ['Marwane Saâdane', 34, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Ayyoub Bouaddi', 18, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Chemsdine Talbi', 21, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Azzedine Ounahi', 26, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Soufiane Rahimi', 30, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Brahim Díaz', 26, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Ismael Saibari', 25, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Munir Mohamedi', 37, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Zakaria El Ouahdi', 24, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Issa Diop', 29, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Samir El Mourabet', 20, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Gessime Yassine', 20, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Amine Sbaï', 25, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Chadi Riad', 22, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Youssef Belammari', 27, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Ayoub El Kaabi', 32, 'FW', 'Morocco', 8, 3, 4, 8, 10, 8, 9, 9, 1],
+        ['Ayoube Amaimouni', 21, 'FW', 'Morocco', 7, 2, 2, 9, 4, 6, 4, 8, 1],
+        ['Ahmed Reda Tagnaouti', 30, 'GK', 'Morocco', 2, 4, 6, 2, 4, 1, 4, 7, 8],
+        ['Bilal El Khannouss', 22, 'MF', 'Morocco', 8, 9, 10, 5, 8, 8, 8, 9, 2],
+        ['Neil El Aynaoui', 24, 'MF', 'Morocco', 7, 6, 6, 7, 5, 5, 8, 6, 1],
+        ['Redouane Halhal', 23, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
+        ['Anass Salah-Eddine', 24, 'DF', 'Morocco', 7, 7, 7, 4, 5, 2, 6, 7, 1],
       ],
     });
   }

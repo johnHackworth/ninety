@@ -28,32 +28,32 @@ class Haiti extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Johny Placide', 'Carlens Arcus', 'Keeto Thermoncy', 'Ricardo Adé', 'Hannes Delcroix', 'Carl Sainté', 'Jean-Ricner Bellegarde', 'Danley Jean Jacques', 'Dominique Simon', 'Derrick Etienne Jr.', 'Duckens Nazon'],
       squad: [
-        ['Johny Placide', 38, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Carlens Arcus', 29, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Keeto Thermoncy', 20, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ricardo Adé', 36, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Hannes Delcroix', 27, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Carl Sainté', 23, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Derrick Etienne Jr.', 29, 'FW', 'Haiti', 8, 4, 8, 8, 10, 9, 7, 9, 1]
-        ['Martin Expérience', 27, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Duckens Nazon', 32, 'FW', 'Haiti', 8, 5, 7, 8, 10, 8, 9, 9, 1]
-        ['Jean-Ricner Bellegarde', 27, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Louicius Deedson', 25, 'FW', 'Haiti', 8, 4, 7, 8, 8, 9, 10, 9, 1]
-        ['Alexandre Pierre', 25, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Duke Lacroix', 32, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Garven Metusala', 26, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Ruben Providence', 24, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Lenny Joseph', 25, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Danley Jean Jacques', 26, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Wilson Isidor', 25, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Yassin Fortuné', 27, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Frantzdy Pierrot', 31, 'FW', 'Haiti', 8, 4, 8, 8, 9, 8, 10, 9, 2]
-        ['Josué Casimir', 24, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1]
-        ['Jean-Kévin Duverne', 28, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Josué Duverger', 26, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6]
-        ['Wilguens Paugain', 24, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1]
-        ['Dominique Simon', 25, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1]
-        ['Woodensky Pierre', 21, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Johny Placide', 38, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Carlens Arcus', 29, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Keeto Thermoncy', 20, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ricardo Adé', 36, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Hannes Delcroix', 27, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Carl Sainté', 23, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Derrick Etienne Jr.', 29, 'FW', 'Haiti', 8, 4, 8, 8, 10, 9, 7, 9, 1],
+        ['Martin Expérience', 27, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Duckens Nazon', 32, 'FW', 'Haiti', 8, 5, 7, 8, 10, 8, 9, 9, 1],
+        ['Jean-Ricner Bellegarde', 27, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Louicius Deedson', 25, 'FW', 'Haiti', 8, 4, 7, 8, 8, 9, 10, 9, 1],
+        ['Alexandre Pierre', 25, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Duke Lacroix', 32, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Garven Metusala', 26, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Ruben Providence', 24, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Lenny Joseph', 25, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Danley Jean Jacques', 26, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Wilson Isidor', 25, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Yassin Fortuné', 27, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Frantzdy Pierrot', 31, 'FW', 'Haiti', 8, 4, 8, 8, 9, 8, 10, 9, 2],
+        ['Josué Casimir', 24, 'FW', 'Haiti', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Jean-Kévin Duverne', 28, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Josué Duverger', 26, 'GK', 'Haiti', 2, 4, 4, 2, 4, 1, 4, 5, 6],
+        ['Wilguens Paugain', 24, 'DF', 'Haiti', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Dominique Simon', 25, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Woodensky Pierre', 21, 'MF', 'Haiti', 5, 4, 6, 5, 5, 4, 6, 4, 1],
       ],
     });
   }
