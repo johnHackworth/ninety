@@ -233,6 +233,16 @@ function applyOutPlayers() {
   }
 }
 
+function normalizeKickoffFormationFrame(formation, team) {
+  if (team.side !== 'right') return formation;
+  const gk = team.currentPlayers && team.currentPlayers.find((p) => p.position === 'GK');
+  const gkCoord = gk && formation[gk.name];
+  if (!gkCoord || gkCoord[0] >= 4) return formation;
+  const out = {};
+  for (const [name, [x, y]] of Object.entries(formation)) out[name] = [8 - x, y];
+  return out;
+}
+
 async function startMatch(homeName, awayName, homeController, awayController, presetTeams) {
   clearSaveGame();
   if (game) {
@@ -312,6 +322,7 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
           } else {
             team.formation = { ...pendingCoords };
           }
+          team.formation = normalizeKickoffFormationFrame(team.formation, team);
         }
       }
     }

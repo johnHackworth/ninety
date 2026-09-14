@@ -214,6 +214,22 @@ function runAiTurn() {
       return;
     }
 
+    if (action instanceof AllInAction) {
+      const hand = game.inPlay[team.name] || [];
+      if (hand.length > 1) {
+        action.resolve(team);
+      } else {
+        const fallbackResult = game.skip(team);
+        if (fallbackResult.success) renderGame();
+      }
+      return;
+    }
+
+    if (action instanceof GambitAction) {
+      action.resolve(team);
+      return;
+    }
+
     if (action instanceof YellowCardAction) {
       const opponent = board.getOpponent(team);
       const candidates = opponent.currentPlayers.filter(

@@ -32,6 +32,8 @@ class GameController {
     this.tempoControl = {};
     this.tempoControlIntensityCost = {};
     this.skipOpponentNextTurn = {};
+    this.pendingApBonus = {};
+    this.pendingDrawPenalty = {};
     this.suspensionShadowActive = null;
     this.freeKickProtection = null;
     this.pendingPenalty = null;
@@ -458,7 +460,24 @@ class GameController {
         delete this.skipOpponentNextTurn[team.name];
         this.actionPoints[team.name] = 0;
       }
-      const count = this.cardsPerTurn + (team.hasTeamEffect('fullPressure') ? 4 : 0) + (team.hasTeamEffect('wideThinking') ? 1 : 0) + (team.hasTeamEffect('tempoControl') ? 1 : 0);
+      if (this.pendingApBonus[team.name]) {
+        this.actionPoints[team.name] += this.pendingApBonus[team.name];
+        logMatch(team.name, `All-in pays off: +${this.pendingApBonus[team.name]} action points.`);
+        delete this.pendingApBonus[team.name];
+      }
+      const drawPenalty = this.pendingDrawPenalty[team.name] || 0;
+      delete this.pendingDrawPenalty[team.name];
+      const count = Math.max(
+        0,
+        this.cardsPerTurn +
+          (team.hasTeamEffect('fullPressure') ? 4 : 0) +
+          (team.hasTeamEffect('wideThinking') ? 1 : 0) +
+          (team.hasTeamEffect('tempoControl') ? 1 : 0) -
+          drawPenalty
+      );
+      if (drawPenalty > 0) {
+        logMatch(team.name, `Gambit catches up: drawing only ${count} card${count === 1 ? '' : 's'} this turn.`);
+      }
       team.recycleDiscarded(count);
       this.shuffle(team.availableActions);
       const dealt = team.availableActions.splice(0, count);

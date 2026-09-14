@@ -146,8 +146,13 @@
 
   function snapshotCounts() {
     const counts = {};
+    counts.cBodyChildren = document.body ? document.body.children.length : 0;
+    counts.cHead = (document.head || null) ? document.head.querySelectorAll('*').length : 0;
+    counts.cHtml = document.documentElement ? document.documentElement.querySelectorAll('*').length : 0;
     const sel = {
-      tooltips: '.player-tooltip',
+      playerTooltips: '.player-tooltip',
+      actionTooltips: '.action-card-tooltip',
+      teamTooltips: '.team-effect-tooltip',
       tokens: '.player-token',
       chips: '.effect-chips',
       toasts: '[class*="toast"]',
@@ -157,12 +162,52 @@
       players: '.player-token-name',
       benchSlots: '.bench-slot',
       cellElements: '.cell > *',
+      // Container-level subtrees of the main board, to locate the leak.
+      cHands: '#hands-area *',
+      cBenches: '#benches *',
+      cPitch: '#pitch *',
+      cRail: '#right-rail *',
+      cScore: '#scoreboard *',
+      cRailControls: '#rail-controls *',
+      cMatchLog: '#match-log *',
+      cBoard: '#board *',
     };
     const root = document;
     for (const k in sel) {
       try { counts[k] = root.querySelectorAll(sel[k]).length; } catch (_) { counts[k] = -1; }
     }
+    // Top-level body children: the WC-screen is a sibling of #board and was
+    // the UNTRACKED culprit — count every direct child of <body>, keyed by
+    // id (or first class when no id) so the census names the exact screen.
+    // Also scan <html> children (head, body, and anything appended to the
+    // document root directly, which escapes body>*/body.children).
+    counts.topScreens = 0;
+    counts.topOther = 0;
+    counts.topByKeyHtml = {};
+    const topByKey = {};
+    try {
+      for (const el of root.querySelectorAll('body > *')) {
+        const n = nodesIn(el);
+        const key = el.id || (el.className && typeof el.className === 'string' && el.className.split(/\s+/)[0]) || el.tagName.toLowerCase();
+        topByKey[key] = (topByKey[key] || 0) + n;
+        if (el.id) {
+          counts['top#' + el.id] = n;
+          counts.topScreens += n;
+        } else {
+          counts.topOther += n;
+        }
+      }
+      for (const el of document.documentElement.children) {
+        const key = el.id || (el.className && typeof el.className === 'string' && el.className.split(/\s+/)[0]) || el.tagName.toLowerCase();
+        counts.topByKeyHtml[key] = (counts.topByKeyHtml[key] || 0) + nodesIn(el) + 1;
+      }
+    } catch (_) {}
+    const biggest = Object.keys(topByKey)
+      .sort((a, b) => topByKey[b] - topByKey[a])
+      .slice(0, 3);
+    counts.topBig = biggest.map((k) => `${k}:${topByKey[k]}`).join(' ');
     counts.total = nodesIn(root);
+    counts.unacc = counts.cHtml - (counts.topScreens + counts.topOther);
     return counts;
   }
 
@@ -191,16 +236,53 @@
   }
 
   function summarize(c) {
-    return ['tooltips', 'tokens', 'toasts', 'overlays', 'logRows', 'total']
+    return cKeys()
+      .filter((k) => k !== 'total')
       .map((k) => k + '=' + c[k])
+      .filter((s) => !s.endsWith('topOther=0') && !s.endsWith('topScreens=0'))
+      .concat(Object.keys(c).filter((k) => k.startsWith('top#') && c[k] > 0).map((k) => k + '=' + c[k]))
+      .concat('html=[' + Object.keys(c.topByKeyHtml || {}).map((k) => `${k}:${c.topByKeyHtml[k]}`).join(' ') + ']')
+      .concat('big=[' + (c.topBig || '') + ']')
+      .concat('total=' + c.total)
       .join(' ');
   }
 
   function summarizeDeltas(d) {
-    return ['tooltips', 'tokens', 'toasts', 'overlays', 'logRows', 'total']
+    return cKeys()
+      .concat(Object.keys(d).filter((k) => k.startsWith('top#') && d[k] !== 0).sort())
       .filter((k) => d[k] !== 0)
       .map((k) => (d[k] > 0 ? '+' : '') + d[k] + k)
       .join(' ');
+  }
+
+  function cKeys() {
+    return [
+      'playerTooltips',
+      'actionTooltips',
+      'teamTooltips',
+      'tokens',
+      'chips',
+      'toasts',
+      'overlays',
+      'cards',
+      'logRows',
+      'benchSlots',
+      'cellElements',
+      'cHands',
+      'cBenches',
+      'cPitch',
+      'cRail',
+      'cScore',
+      'cRailControls',
+      'cMatchLog',
+      'cBoard',
+      'topScreens',
+      'topOther',
+      'cBodyChildren',
+      'cHead',
+      'cHtml',
+      'unacc',
+    ];
   }
 
   // ---- 1. Timing wrappers around hot paths -----------------------------

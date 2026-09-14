@@ -200,8 +200,25 @@
   // Data preparation
   // ============================================================
   function prepareTeamSheetData(homeTeam, awayTeam, matchday, venue, homeController, awayController) {
-    // Build teams if not already built (TEAMS is only set after startMatch)
-    const teams = (typeof TEAMS !== 'undefined' && TEAMS && TEAMS[homeTeam]) ? TEAMS : buildTeams([homeTeam, awayTeam]);
+    // Build teams if not already built (TEAMS is only set after startMatch).
+    // Never reuse TEAMS in full: only the finished-match teams are guaranteed to
+    // be present once a previous WC phase (e.g. events/training) rebuilt TEAMS.
+    const available = (typeof TEAMS !== 'undefined' && TEAMS) ? TEAMS : {};
+    // Fresh build for THIS fixture so sides + mirrored formations are correct
+    // (a reused live team may still carry the side/formation of a past match),
+    // then re-attach available team objects to keep transient WC state.
+    const built = buildTeams([homeTeam, awayTeam]);
+    const teams = {};
+    for (const name of [homeTeam, awayTeam]) {
+      const live = (available && available[name]) || null;
+      if (live) {
+        live.side = built[name].side;
+        live.formation = { ...built[name].formation };
+        teams[name] = live;
+      } else {
+        teams[name] = built[name];
+      }
+    }
     const home = teams[homeTeam];
     const away = teams[awayTeam];
 
@@ -214,11 +231,42 @@
     const editableTeamName = editableIsHome ? homeTeam : awayTeam;
     const oppositionTeamName = editableIsHome ? awayTeam : homeTeam;
 
-    // Build mutable xi and bench from currentPlayers and squad
-    const xiNames = editableTeam.currentPlayers.map(p => p.name);
-    const xi = editableTeam.currentPlayers.map(p => p);
-    const benchPlayers = editableTeam.squad.filter(p => !xiNames.includes(p.name));
-    const bench = benchPlayers.slice(0, 7);
+    // Build mutable xi and bench from currentPlayers and squad.
+    // Players who cannot play this fixture (injured / sent off / suspended /
+    // exhausted one-match ban) are kept OUT of the XI and the bench: pick a
+    // substitute before starting; none of them can be brought in.
+    const unavailable =
+      typeof wcMatchUnavailableNames === 'function'
+        ? wcMatchUnavailableNames(editableTeamName, editableTeam)
+        : new Set(editableTeam.squad.filter((p) => p.injured || p.sentOff).map((p) => p.name));
+
+    const xi = editableTeam.currentPlayers.filter((p) => !unavailable.has(p.name));
+    const used = new Set(xi.map((p) => p.name));
+    const releasedSlots = editableTeam.currentPlayers
+      .filter((p) => unavailable.has(p.name))
+      .map((p) => editableTeam.formation[p.name])
+      .filter(Boolean);
+    let slotCursor = 0;
+    const backfill = (positions) => {
+      for (const p of editableTeam.squad) {
+        if (xi.length >= 11) break;
+        if (used.has(p.name) || unavailable.has(p.name)) continue;
+        if (positions && !positions.includes(p.position)) continue;
+        xi.push(p);
+        used.add(p.name);
+        if (releasedSlots[slotCursor]) {
+          editableTeam.formation[p.name] = releasedSlots[slotCursor];
+          slotCursor++;
+        }
+      }
+    };
+    backfill(['GK']);
+    backfill(['DF', 'MF', 'FW']);
+    backfill(null);
+    const bench = editableTeam.squad
+      .filter((p) => !used.has(p.name))
+      .filter((p) => !unavailable.has(p.name))
+      .slice(0, 7);
 
     // Build order array: map each xi player to their formation slot index
     const formationCoords = FORMATIONS[state.system];
@@ -1131,6 +1179,33 @@
       }
     }
     // If 'Default', keep the team's existing formation (already set correctly by buildTeams)
+
+    // Guarantee every xi player has a coordinate in the fresh team. In natural
+    // mode, stand-ins backfilled for unavailable players have no natural slot.
+    if (state.useNatural) {
+      const baseByPos = { GK: 0, DF: 2, MF: 4, FW: 6 };
+      const isRight = editableTeam.side === 'right';
+      const usedCells = new Set(Object.values(editableTeam.formation || {}).map(([x, y]) => x + ',' + y));
+      const candidates = [0, 2, 4, 6, 8, 3, 1, 5, 7];
+      for (const p of editableTeam.currentPlayers) {
+        if (editableTeam.formation && editableTeam.formation[p.name]) continue;
+        const base = baseByPos[p.position] !== undefined ? baseByPos[p.position] : 4;
+        let target = null;
+        for (const x of candidates) {
+          const ax = isRight ? 8 - x : x;
+          for (let y = 0; y < 7; y++) {
+            const key = ax + ',' + y;
+            if (!usedCells.has(key)) {
+              target = [ax, y];
+              usedCells.add(key);
+              break;
+            }
+          }
+          if (target) break;
+        }
+        editableTeam.formation[p.name] = target || [isRight ? 8 - base : base, 3];
+      }
+    }
 
     // Hide team sheet
     hideTeamSheet();

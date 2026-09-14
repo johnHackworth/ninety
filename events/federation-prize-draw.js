@@ -19,11 +19,19 @@ class FederationPrizeDrawEvent {
         execute: () => {
           const roll = Math.random();
           if (roll < 0.3) {
+            FederationPrizeDrawEvent.showOutcomeModal(
+              'No luck this time',
+              'The golden wheel clatters to a stop on an empty segment. Nothing changes.'
+            );
             return;
           }
           if (roll < 0.55) {
             if (!wcTeamBuffs) wcTeamBuffs = {};
             wcTeamBuffs[teamName] = { drawBonus: 1, turns: 1 };
+            FederationPrizeDrawEvent.showOutcomeModal(
+              'Bonus cards!',
+              'The wheel lands on the card segment — you draw +1 action card per turn in your next match.'
+            );
             return;
           }
           if (roll < 0.75) {
@@ -35,6 +43,11 @@ class FederationPrizeDrawEvent {
               if (!wcOwnedCoaches) wcOwnedCoaches = {};
               if (!wcOwnedCoaches[teamName]) wcOwnedCoaches[teamName] = [];
               wcOwnedCoaches[teamName].push(coach);
+            } else {
+              FederationPrizeDrawEvent.showOutcomeModal(
+                'An empty chair',
+                'The wheel lands on "New coach", but there is nobody left to sign. Nothing changes.'
+              );
             }
             return;
           }
@@ -53,6 +66,10 @@ class FederationPrizeDrawEvent {
               if (!wcPendingPenalties) wcPendingPenalties = {};
               if (!wcPendingPenalties[teamName]) wcPendingPenalties[teamName] = [];
               wcPendingPenalties[teamName].push(penalty);
+              FederationPrizeDrawEvent.showOutcomeModal(
+                'The wheel has teeth',
+                `You pull a "${penalty.name}" card from the drum — it is slipped into your deck for the next match.`
+              );
             }
             return;
           }
@@ -69,6 +86,36 @@ class FederationPrizeDrawEvent {
         },
       },
     ];
+  }
+
+  static showOutcomeModal(title, message) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const modal = document.createElement('div');
+    modal.className = 'shot-modal halftime-modal event-phase-modal';
+    const content = document.createElement('div');
+    content.className = 'shot-modal-content halftime-content';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'halftime-title';
+    titleEl.textContent = title;
+    content.appendChild(titleEl);
+
+    const msg = document.createElement('div');
+    msg.className = 'halftime-kickoff';
+    msg.textContent = message;
+    content.appendChild(msg);
+
+    const btn = document.createElement('button');
+    btn.className = 'event-phase-option';
+    btn.type = 'button';
+    btn.textContent = 'Done';
+    btn.addEventListener('click', () => overlay.remove());
+    content.appendChild(btn);
+
+    modal.appendChild(content);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
   }
 
   static showJackpotModal(teamName) {

@@ -4347,6 +4347,15 @@ h1 {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0) 45%);
   overflow: hidden;
 }
+.wc-mt-pitch-hint {
+  flex-shrink: 0;
+  font-family: var(--wc-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  line-height: 1.35;
+}
 .wc-mt-line {
   position: absolute;
   box-sizing: border-box;
@@ -4534,6 +4543,25 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.wc-mt-mini-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.wc-mt-star-pill {
+  font-family: var(--wc-sans);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #5f4707;
+  background: #ffe9a3;
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 .wc-mt-mini-meta {
   font-size: 11px;
@@ -6621,30 +6649,6 @@ body.screen-shake #board {
 .wc-badge-opp {
   background: var(--wc-sage-600);
   color: #fff;
-}
-
-/* --- Qualification card --- */
-.wc-qual-card {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.wc-qual-pct {
-  font-family: var(--wc-display);
-  font-size: 44px;
-  line-height: 1;
-  color: var(--wc-terr-700);
-}
-.wc-qual-note {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--wc-ink);
-  margin-top: 8px;
-  line-height: 1.4;
-}
-.wc-qual-sub {
-  font-size: 12px;
-  color: var(--wc-muted);
 }
 
 /* --- Right rail cards --- */

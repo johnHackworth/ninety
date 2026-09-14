@@ -127,6 +127,8 @@ class StartingDeck {
     'knockdown-finish': KnockdownFinishAction,
     'scouting-report': ScoutingReportAction,
     'eagle-eye': EagleEyeAction,
+    'all-in': AllInAction,
+    gambit: GambitAction,
   };
 
   static registry = {};

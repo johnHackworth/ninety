@@ -620,29 +620,68 @@ function nameNeedsCompactFont(name) {
 
 const TOOLTIP_AUTO_HIDE_MS = 5000;
 
-function bindCardTooltip(card, tooltip) {
-  tooltip.style.display = 'none';
-  let hideTimer = null;
-  let autoHideTimer = null;
-  let dismissedByClick = false;
+let cardTooltipEl = null;
+let teamEffectTooltipEl = null;
+let tooltipAction = null;
+
+function ensureCardTooltip() {
+  if (cardTooltipEl && cardTooltipEl.isConnected) return cardTooltipEl;
+  cardTooltipEl = document.createElement('div');
+  cardTooltipEl.className = 'action-card-tooltip';
+  cardTooltipEl.style.display = 'none';
+  document.body.appendChild(cardTooltipEl);
+  cardTooltipEl.addEventListener('mouseenter', () => {
+    if (tooltipAction) tooltipAction.enterEl();
+  });
+  cardTooltipEl.addEventListener('mouseleave', () => {
+    if (tooltipAction) tooltipAction.leaveEl();
+  });
+  return cardTooltipEl;
+}
+
+function ensureTeamEffectTooltip() {
+  if (teamEffectTooltipEl && teamEffectTooltipEl.isConnected) return teamEffectTooltipEl;
+  teamEffectTooltipEl = document.createElement('div');
+  teamEffectTooltipEl.className = 'team-effect-tooltip';
+  teamEffectTooltipEl.style.display = 'none';
+  document.body.appendChild(teamEffectTooltipEl);
+  teamEffectTooltipEl.addEventListener('mouseenter', () => {
+    if (tooltipAction) tooltipAction.enterEl();
+  });
+  teamEffectTooltipEl.addEventListener('mouseleave', () => {
+    if (tooltipAction) tooltipAction.leaveEl();
+  });
+  return teamEffectTooltipEl;
+}
+
+function bindCardTooltip(card, tooltip, tipText) {
+  const action = { enterEl: null, leaveEl: null };
+  tooltipAction = action;
+
+  const state = {
+    hideTimer: null,
+    autoHideTimer: null,
+    dismissedByClick: false,
+  };
 
   const autoHide = () => {
     tooltip.style.display = 'none';
   };
 
   const show = () => {
-    if (dismissedByClick) return;
-    if (!card.isConnected) { tooltip.remove(); return; }
-    clearTimeout(hideTimer);
-    clearTimeout(autoHideTimer);
+    if (state.dismissedByClick) return;
+    if (!card.isConnected) return;
+    clearTimeout(state.hideTimer);
+    clearTimeout(state.autoHideTimer);
     if (card.classList.contains('disabled') || card.classList.contains('face-down')) {
       tooltip.style.display = 'none';
       return;
     }
     const rect = card.getBoundingClientRect();
     if (!rect.width && !rect.height) return;
+    tooltip.textContent = tipText;
     tooltip.style.display = 'block';
-    autoHideTimer = setTimeout(autoHide, TOOLTIP_AUTO_HIDE_MS);
+    state.autoHideTimer = setTimeout(autoHide, TOOLTIP_AUTO_HIDE_MS);
     tooltip.style.position = 'fixed';
     tooltip.style.left = '0';
     tooltip.style.top = '0';
@@ -659,32 +698,31 @@ function bindCardTooltip(card, tooltip) {
     tooltip.style.left = left + 'px';
   };
   const hide = () => {
-    clearTimeout(autoHideTimer);
-    if (!card.isConnected) { tooltip.remove(); return; }
-    hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
+    clearTimeout(state.autoHideTimer);
+    if (!card.isConnected) return;
+    state.hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
-  const resetDismissed = () => { dismissedByClick = false; };
-  card.addEventListener('mouseenter', show);
-  card.addEventListener('mouseleave', hide);
+  const resetDismissed = () => { state.dismissedByClick = false; };
+  action.enterEl = () => clearTimeout(state.hideTimer);
+  action.leaveEl = () => hide();
+  card.addEventListener('mouseenter', () => show());
+  card.addEventListener('mouseleave', () => hide());
   card.addEventListener('click', () => { 
-    dismissedByClick = true;
-    clearTimeout(autoHideTimer);
+    state.dismissedByClick = true;
+    clearTimeout(state.autoHideTimer);
     tooltip.style.display = 'none';
     setTimeout(resetDismissed, 200);
   });
-  tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
-  tooltip.addEventListener('mouseleave', hide);
 }
 
 function bindTeamEffectTooltip(el, description, extraText, turns) {
-  const tooltip = document.createElement('div');
-  tooltip.className = 'team-effect-tooltip';
-  document.body.appendChild(tooltip);
+  const tooltip = ensureTeamEffectTooltip();
+  const action = { enterEl: null, leaveEl: null };
+  tooltipAction = action;
 
   let content = description;
   if (extraText) content += ` ${extraText}`;
   if (turns !== Infinity && turns != null) content += ` (${turns} turn${turns === 1 ? '' : 's'} remaining)`;
-  tooltip.textContent = content;
 
   let hideTimer = null;
   let autoHideTimer = null;
@@ -698,6 +736,7 @@ function bindTeamEffectTooltip(el, description, extraText, turns) {
     clearTimeout(autoHideTimer);
     const rect = el.getBoundingClientRect();
     if (!rect.width && !rect.height) return;
+    tooltip.textContent = content;
     tooltip.style.display = 'block';
     autoHideTimer = setTimeout(autoHide, TOOLTIP_AUTO_HIDE_MS);
     tooltip.style.position = 'fixed';
@@ -716,10 +755,10 @@ function bindTeamEffectTooltip(el, description, extraText, turns) {
     clearTimeout(autoHideTimer);
     hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 100);
   };
-  el.addEventListener('mouseenter', show);
-  el.addEventListener('mouseleave', hide);
-  tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
-  tooltip.addEventListener('mouseleave', hide);
+  action.enterEl = () => clearTimeout(hideTimer);
+  action.leaveEl = () => hide();
+  el.addEventListener('mouseenter', () => show());
+  el.addEventListener('mouseleave', () => hide());
 }
 
 function createActionCard(action) {
@@ -738,11 +777,9 @@ function createActionCard(action) {
   const desc = document.createElement('div');
   desc.className = 'action-card-desc';
 
-  const tooltip = document.createElement('div');
-  tooltip.className = 'action-card-tooltip';
-  tooltip.textContent = action.description;
-  bindCardTooltip(card, tooltip);
-  document.body.appendChild(tooltip);
+  const tooltip = ensureCardTooltip();
+  const tipText = action.description;
+  bindCardTooltip(card, tooltip, tipText);
 
   if (!isGoalkeeping) {
     const cost = document.createElement('span');

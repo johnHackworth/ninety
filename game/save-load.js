@@ -153,6 +153,8 @@ const _saveLoad = {
           tempoControl: { ...game.tempoControl },
           tempoControlIntensityCost: { ...game.tempoControlIntensityCost },
           skipOpponentNextTurn: { ...game.skipOpponentNextTurn },
+          pendingApBonus: { ...game.pendingApBonus },
+          pendingDrawPenalty: { ...game.pendingDrawPenalty },
           revealedHand: { ...game.revealedHand },
           revealedHandTurn: { ...game.revealedHandTurn },
           suspensionShadowActive: game.suspensionShadowActive,
@@ -315,6 +317,8 @@ const _saveLoad = {
     game.tempoControl = g.tempoControl || {};
     game.tempoControlIntensityCost = g.tempoControlIntensityCost || {};
     game.skipOpponentNextTurn = g.skipOpponentNextTurn || {};
+    game.pendingApBonus = g.pendingApBonus || {};
+    game.pendingDrawPenalty = g.pendingDrawPenalty || {};
     game.revealedHand = g.revealedHand || {};
     game.revealedHandTurn = g.revealedHandTurn || {};
     game.suspensionShadowActive = g.suspensionShadowActive || null;

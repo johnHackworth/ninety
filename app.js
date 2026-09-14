@@ -633,6 +633,14 @@ function dispatchActionPlay(team, action, isPending = false) {
     executeAction(team, action, () => action.resolve(team));
     return;
   }
+  if (action instanceof AllInAction) {
+    executeAction(team, action, () => action.resolve(team));
+    return;
+  }
+  if (action instanceof GambitAction) {
+    executeAction(team, action, () => action.resolve(team));
+    return;
+  }
   if (action instanceof HeaderFinishAction || action instanceof KnockdownFinishAction || action instanceof SecondBallHeaderAction) {
     beginFinishTargeting(team, action);
     return;
@@ -1336,6 +1344,8 @@ const CARD_TYPES = [
   KnockdownFinishAction,
   ScoutingReportAction,
   EagleEyeAction,
+  AllInAction,
+  GambitAction,
 ];
 
 
@@ -1448,8 +1458,8 @@ simStartBtn.addEventListener('click', () => {
 });
 startBtn.addEventListener('click', () => {
   if (homeTeamSelect.value === awayTeamSelect.value) return;
-  const homeCtrl = controllerFromSelect(controllerHomeSelect.value);
-  const awayCtrl = controllerFromSelect(controllerAwaySelect.value);
+  const homeCtrl = controllerFromSelect(homeControllerSelect.value);
+  const awayCtrl = controllerFromSelect(awayControllerSelect.value);
   showTeamSheet(
     homeTeamSelect.value,
     awayTeamSelect.value,

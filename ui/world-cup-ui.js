@@ -101,6 +101,8 @@ let wcPendingDeckReshuffle = null;
 let wcMyTeamSelected = null;
 let wcMyTeamTab = 'xi';
 let wcSelectedFormation = null;
+let wcMyTeam = null;
+let wcMyTeamName = null;
 let wcPendingLineup = {};
 let wcPendingFormationCoords = {};
 
@@ -1699,7 +1701,6 @@ function renderWcBody() {
   const group = wcGroupTableFor(human);
   const standings = group ? computeGroupStandings(group) : [];
   main.appendChild(renderWcGroupTable(human, group, standings));
-  main.appendChild(renderWcQualificationCard(human, group, standings));
   grid.appendChild(main);
 
   const rail = document.createElement('div');
@@ -1816,123 +1817,6 @@ function wcSimResult(home, away) {
   if (r < pHome) return { h: 1, a: 0 };
   if (r < pHome + pDraw) return { h: 0, a: 0 };
   return { h: 0, a: 1 };
-}
-
-function wcQualificationProjection(teamName) {
-  const group = wcGroupTableFor(teamName);
-  if (!group) return null;
-  const done = group.matches.every((m) => m.played);
-  if (done) {
-    const st = computeGroupStandings(group);
-    const pos = st.findIndex((r) => r.team === teamName);
-    const qualified = pos <= 1;
-    return {
-      pct: qualified ? 100 : 0,
-      sentence: qualified
-        ? 'The group is decided — you are through.'
-        : 'The group is decided — you cannot finish in the top two.',
-      decided: true,
-    };
-  }
-
-  const trials = 240;
-  let count = 0;
-  for (let t = 0; t < trials; t++) {
-    // Simulate every group's remaining matches, then compute final standings.
-    const simGroups = worldCup.groups.map((g) => {
-      const rows = {};
-      for (const tm of g.teams) {
-        rows[tm] = { team: tm, P: 0, W: 0, D: 0, L: 0, GF: 0, GA: 0, GD: 0, Pts: 0 };
-      }
-      for (const m of g.matches) {
-        if (m.played) {
-          const h = rows[m.home], a = rows[m.away];
-          h.P++; a.P++;
-          h.GF += m.homeScore; h.GA += m.awayScore;
-          a.GF += m.awayScore; a.GA += m.homeScore;
-          if (m.homeScore > m.awayScore) { h.W++; h.Pts += 3; a.L++; }
-          else if (m.homeScore < m.awayScore) { a.W++; a.Pts += 3; h.L++; }
-          else { h.D++; a.D++; h.Pts++; a.Pts++; }
-        } else {
-          const sim = wcSimResult(m.home, m.away);
-          const h = rows[m.home], a = rows[m.away];
-          h.P++; a.P++;
-          if (sim.h) { h.GF++; a.GA++; h.W++; h.Pts += 3; a.L++; }
-          else if (sim.a) { a.GF++; h.GA++; a.W++; a.Pts += 3; h.L++; }
-          else { h.D++; a.D++; h.Pts++; a.Pts++; }
-        }
-      }
-      for (const tm of g.teams) rows[tm].GD = rows[tm].GF - rows[tm].GA;
-      return g.teams
-        .map((tm) => rows[tm])
-        .sort((x, y) => {
-          if (y.Pts !== x.Pts) return y.Pts - x.Pts;
-          if (y.GD !== x.GD) return y.GD - x.GD;
-          return y.GF - x.GF;
-        });
-    });
-
-    let qualifies = false;
-    for (const st of simGroups) {
-      if (!st.some((r) => r.team === teamName)) continue;
-      const pos = st.findIndex((r) => r.team === teamName);
-      if (pos <= 1) qualifies = true;
-      else if (pos === 2) {
-        const thirds = simGroups.map((s, gi) => ({ group: WORLD_CUP_GROUPS[gi] ? worldCup.groups[gi].name : '', row: s[2] }));
-        thirds.sort((a, b) => {
-          if (b.row.Pts !== a.row.Pts) return b.row.Pts - a.row.Pts;
-          if (b.row.GD !== a.row.GD) return b.row.GD - a.row.GD;
-          return b.row.GF - a.row.GF;
-        });
-        if (thirds.slice(0, 8).some((x) => x.row.team === teamName)) qualifies = true;
-      }
-    }
-    if (qualifies) count++;
-  }
-
-  const pct = Math.round((count / trials) * 100);
-  let sentence;
-  const st = computeGroupStandings(group);
-  const pos = st.findIndex((r) => r.team === teamName);
-  if (pct >= 95) {
-    sentence = 'A win makes it certain. Even a point keeps it firmly in your own hands.';
-  } else if (pct >= 80) {
-    sentence = 'A win makes it certain. A loss puts it on the last game.';
-  } else if (pct >= 55) {
-    sentence = 'A win all but seals it. A draw still keeps your fate in your hands.';
-  } else if (pct >= 30) {
-    sentence = pos === 2
-      ? 'Still wide open — a win and a helping result should do it.'
-      : 'Still wide open. Win, and you seize control of the group.';
-  } else if (pct > 0) {
-    sentence = 'You need results your way. A win reopens the door.';
-  } else {
-    sentence = 'Mathematically on the brink. Only a near-perfect finish rescues this.';
-  }
-  return { pct, sentence, decided: false };
-}
-
-function renderWcQualificationCard(human, group, standings) {
-  const card = document.createElement('section');
-  card.className = 'wc-panel wc-qual-card';
-  const proj = wcQualificationProjection(human);
-  if (!proj) {
-    card.textContent = 'Qualification projection computes after the first round.';
-    return card;
-  }
-  const pct = document.createElement('div');
-  pct.className = 'wc-qual-pct';
-  pct.textContent = `${proj.pct}%`;
-  card.appendChild(pct);
-  const note = document.createElement('div');
-  note.className = 'wc-qual-note';
-  note.textContent = proj.sentence;
-  card.appendChild(note);
-  const sub = document.createElement('div');
-  sub.className = 'wc-qual-sub';
-  sub.textContent = 'chance to qualify for the knockout rounds';
-  card.appendChild(sub);
-  return card;
 }
 
 function wcUnavailableItems(teamName) {
@@ -2912,27 +2796,42 @@ function wcMtTemplateSlots(key, mirrorX) {
   return slots;
 }
 
+// The side the team's natural formation should face: current match if one is
+// running, otherwise the upcoming fixture (away ⇒ right). Holds for the squad
+// screen even when the live team object is stale and still says 'left'.
+function wcMtMirrorXFor(teamName, team) {
+  if (matchState) return !!(team && team.side === 'right');
+  const nxt = wcNextMatchForTeam(teamName);
+  if (nxt) return nxt.match.away === teamName;
+  return !!(team && team.side === 'right');
+}
+
 function wcMtFormationAssignment(team, mirrorX) {
   const slots = wcMtTemplateSlots(wcSelectedFormation, mirrorX);
   const used = new Set();
   const out = [];
   const placed = new Set();
+  const unavail = (typeof wcMatchUnavailableNames === 'function') ? wcMatchUnavailableNames(team.name, team) : new Set();
 
   for (const p of team.currentPlayers) {
+    if (unavail.has(p.name)) continue;
     const pos = team.formation && team.formation[p.name];
     if (!pos) continue;
+    // team.formation is stored in absolute pitch coords (own goal at x=0 for a
+    // left team, x=8 for a right team) — match it to the slot's absolute x.
     const idx = slots.findIndex(
-      (s) => !used.has(s) && s.rawTx === pos[0] && s.rawTy === pos[1] && s.role === (p.position === 'GK' ? 'GK' : p.position)
+      (s) => !used.has(s) && s.rawTy === pos[1] && s.role === (p.position === 'GK' ? 'GK' : p.position)
+        && (mirrorX ? 8 - s.rawTx : s.rawTx) === pos[0]
     );
     if (idx !== -1) {
       const s = slots[idx];
       used.add(s);
-      out.push({ player: p, x: s.x, y: s.y });
+      out.push({ player: p, x: s.x, y: s.y, rawTx: s.rawTx, rawTy: s.rawTy });
       placed.add(p.name);
     }
   }
 
-  const remaining = team.currentPlayers.filter((p) => !placed.has(p.name));
+  const remaining = team.currentPlayers.filter((p) => !placed.has(p.name) && !unavail.has(p.name));
   for (const s of slots) {
     if (used.has(s)) continue;
     const cx = mirrorX ? 8 - s.rawTx : s.rawTx;
@@ -2943,7 +2842,7 @@ function wcMtFormationAssignment(team, mirrorX) {
     if (picked) {
       used.add(s);
       placed.add(picked.name);
-      out.push({ player: picked, x: s.x, y: s.y });
+      out.push({ player: picked, x: s.x, y: s.y, rawTx: s.rawTx, rawTy: s.rawTy });
     }
   }
 
@@ -2955,6 +2854,7 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   if (!tmpl) return;
   const placed = [];
   const placedNames = new Set();
+  const unavail = wcMatchUnavailableNames(teamName, team);
 
   for (const [pos, coords] of Object.entries(tmpl)) {
     const matchPos = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
@@ -2962,10 +2862,10 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
       const [rawCx, cy] = coord;
       const cx = mirrorX ? 8 - rawCx : rawCx;
       const canFlex = (pPos) => wcMtCanFlex(pPos, matchPos, cx, cy);
-      let picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && canFlex(p.position));
-      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && canFlex(p.position));
-      if (!picked) picked = team.currentPlayers.find((p) => !placedNames.has(p.name));
-      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name));
+      let picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && !unavail.has(p.name) && canFlex(p.position));
+      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && !unavail.has(p.name) && canFlex(p.position));
+      if (!picked) picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && !unavail.has(p.name));
+      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && !unavail.has(p.name));
       if (picked) {
         placed.push(picked);
         placedNames.add(picked.name);
@@ -2988,7 +2888,9 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   for (const [pos, coords] of Object.entries(tmpl)) {
     for (const coord of coords) {
       if (i < placed.length) {
-        newFormation[placed[i].name] = coord;
+        // Store in absolute pitch coords so kickoff placement matches size.
+        const [rawCx, cy] = coord;
+        newFormation[placed[i].name] = [mirrorX ? 8 - rawCx : rawCx, cy];
         i++;
       }
     }
@@ -2997,6 +2899,47 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   wcSelectedFormation = key;
   wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
   wcPendingFormationCoords[teamName] = { ...newFormation };
+}
+
+function wcMtReplaceInSlot(team, teamName, selected, slot) {
+  // Place `selected` into the pitch slot currently held by the player at `slot`.
+  const incumbent = slot.player;
+  if (!incumbent || incumbent === selected) return;
+
+  if (wcMatchUnavailableNames(teamName, team).has(selected.name)) return;
+
+  const mirrorX = wcMtMirrorXFor(teamName, team);
+  const selectedStarter = team.currentPlayers.includes(selected);
+  const incumbentIdx = team.currentPlayers.indexOf(incumbent);
+  if (incumbentIdx === -1) return;
+
+  const coord = (team.formation && team.formation[incumbent.name]) || [mirrorX ? 8 - slot.rawTx : slot.rawTx, slot.rawTy];
+
+  if (selectedStarter) {
+    // Swap two starters: exchange their formation slots, keep both in the XI.
+    const selectedCoord = team.formation && team.formation[selected.name];
+    if (selectedCoord) team.formation[incumbent.name] = selectedCoord;
+    else delete team.formation[incumbent.name];
+  } else {
+    // Bench player comes on for the incumbent starter.
+    team.currentPlayers[incumbentIdx] = selected;
+    if (selected.position === 'GK') {
+      team.currentGoalkeeper = selected;
+    } else if (incumbent.position === 'GK' || team.currentGoalkeeper === incumbent) {
+      team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
+    }
+    const subIdx = team.substitutedOut.indexOf(incumbent);
+    if (subIdx !== -1) team.substitutedOut.splice(subIdx, 1);
+    const gkIdx = team.substitutedOut.indexOf(selected);
+    if (gkIdx !== -1) team.substitutedOut.splice(gkIdx, 1);
+    team.recomputeOutOfPosition();
+  }
+
+  team.formation[selected.name] = coord;
+  if (!selectedStarter) delete team.formation[incumbent.name];
+
+  wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
+  wcPendingFormationCoords[teamName] = { ...(team.formation || {}) };
 }
 
 function wcMtUnavailablePlayers(teamName, team) {
@@ -3023,6 +2966,23 @@ function wcMtUnavailablePlayers(teamName, team) {
   }
 
   return list;
+}
+
+function wcMatchUnavailableNames(teamName, team) {
+  const names = new Set();
+  const squad = (team && team.squad) || (TEAMS[teamName] && TEAMS[teamName].squad) || [];
+  for (const p of squad) {
+    if (p.injured) names.add(p.name);
+    if (p.sentOff) names.add(p.name);
+  }
+  const outMap = worldCup && worldCup.outPlayers ? worldCup.outPlayers[teamName] : null;
+  if (outMap) {
+    for (const [name, reason] of Object.entries(outMap)) {
+      if (reason === 'injured' || reason === 'red' || reason === 'exhausted') names.add(name);
+    }
+  }
+  for (const name of (wcSuspendedPlayers[teamName] || [])) names.add(name);
+  return names;
 }
 
 function wcMtScoutingNote(player, team) {
@@ -3180,7 +3140,7 @@ function wcMtPitchMarkings() {
   return frag;
 }
 
-function wcMtToken(player, xPct, yPct) {
+function wcMtToken(player, xPct, yPct, slot) {
   const meta = wcMtPosStyle(player.position);
   const tok = document.createElement('button');
   tok.type = 'button';
@@ -3199,7 +3159,15 @@ function wcMtToken(player, xPct, yPct) {
   tok.appendChild(surname);
 
   tok.addEventListener('click', () => {
-    wcMyTeamSelected = wcMyTeamSelected === player ? null : player;
+    const team = wcMyTeam;
+    const teamName = wcMyTeamName;
+    if (wcMyTeamSelected && wcMyTeamSelected !== player && team && slot) {
+      wcMtReplaceInSlot(team, teamName, wcMyTeamSelected, slot);
+      wcMyTeamTab = 'xi';
+      wcMyTeamSelected = null;
+    } else {
+      wcMyTeamSelected = wcMyTeamSelected === player ? null : player;
+    }
     renderWorldCupView();
   });
 
@@ -3251,13 +3219,24 @@ function wcMtPlayerRow(player, team) {
 
   const info = document.createElement('div');
   info.className = 'wc-mt-mini-info';
+  const nameRow = document.createElement('div');
+  nameRow.className = 'wc-mt-mini-name-row';
   const nameEl = document.createElement('div');
   nameEl.className = 'wc-mt-mini-name';
   nameEl.textContent = player.name;
+  nameRow.appendChild(nameEl);
+  const isStar = Boolean(player.isStar) || Boolean(team && team.starPlayers && team.starPlayers.includes(player.name));
+  if (isStar) {
+    const starEl = document.createElement('span');
+    starEl.className = 'wc-mt-star-pill';
+    starEl.textContent = '★ Star';
+    starEl.title = `${player.name} is a star of the team.`;
+    nameRow.appendChild(starEl);
+  }
+  info.appendChild(nameRow);
   const metaEl = document.createElement('div');
   metaEl.className = 'wc-mt-mini-meta';
   metaEl.textContent = `${player.position} · ${player.age}yo`;
-  info.appendChild(nameEl);
   info.appendChild(metaEl);
 
   const stats = document.createElement('div');
@@ -3394,9 +3373,16 @@ function renderWcMtPitch(team, teamName, mirrorX) {
   field.className = 'wc-mt-pitch-field';
   field.appendChild(wcMtPitchMarkings());
   for (const slot of wcMtFormationAssignment(team, mirrorX)) {
-    field.appendChild(wcMtToken(slot.player, slot.x, slot.y));
+    field.appendChild(wcMtToken(slot.player, slot.x, slot.y, slot));
   }
   panel.appendChild(field);
+
+  const hint = document.createElement('div');
+  hint.className = 'wc-mt-pitch-hint';
+  hint.textContent = wcMyTeamSelected
+    ? `${wcMtSurname(wcMyTeamSelected.name)} selected — click a pitch slot to put them there.`
+    : 'Click a squad player, then a pitch slot, to set your lineup.';
+  panel.appendChild(hint);
 
   col.appendChild(panel);
   return col;
@@ -3410,9 +3396,11 @@ function renderWcMtList(team, teamName) {
   seg.className = 'wc-mt-seg';
   const bench = team.availableSubstitutes();
   const unavail = wcMtUnavailablePlayers(teamName, team);
+  const unavailNames = wcMatchUnavailableNames(teamName, team);
+  const benchEligible = bench.filter((p) => !unavailNames.has(p.name));
   const segments = [
-    ['xi', `Starting XI (${team.currentPlayers.length})`],
-    ['bench', `Bench (${bench.length})`],
+    ['xi', `Starting XI (${team.currentPlayers.length - team.currentPlayers.filter((p) => unavailNames.has(p.name)).length})`],
+    ['bench', `Bench (${benchEligible.length})`],
     ['out', `Unavailable (${unavail.length})`],
   ];
   for (const [key, label] of segments) {
@@ -3468,7 +3456,9 @@ function renderWcMtList(team, teamName) {
       }
     }
   } else {
-    const players = wcMyTeamTab === 'xi' ? team.currentPlayers : bench;
+    const players = wcMyTeamTab === 'xi'
+      ? team.currentPlayers.filter((p) => !unavailNames.has(p.name))
+      : benchEligible;
     if (players.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'wc-mt-empty';
@@ -3609,7 +3599,9 @@ function renderWcMyTeam(opts) {
   }
 
   if (!wcSelectedFormation) wcSelectedFormation = Object.keys(FORMATION_TEMPLATES)[0] || '4-4-2';
-  const mirrorX = team && team.side === 'right';
+  const mirrorX = wcMtMirrorXFor(teamName, team);
+  wcMyTeam = team;
+  wcMyTeamName = teamName;
 
   wrap.appendChild(renderWcMtHeader(team, teamName));
   wrap.appendChild(renderWcMtBody(team, teamName, mirrorX));

@@ -4,7 +4,7 @@ class DefensiveWallAction extends Action {
     super({
       name: 'Defensive Wall',
       description:
-        'For this turn, if the opponent shoots from outside the penalty box while you have 2 or more defenders in your penalty box, reduce the shot\'s shooting value by 3.',
+        'For this turn, if the opponent shoots from outside the penalty box while you have 2 or more defenders in your penalty box or in the three cells in front of it, reduce the shot\'s shooting value by 3.',
       cost: [1],
       category: 'defense',
     });
@@ -16,7 +16,7 @@ class DefensiveWallAction extends Action {
     for (const p of team.currentPlayers) {
       if (p.position !== 'DF') continue;
       const c = board.getPlayerCell(p);
-      if (c && (team.side === 'left' ? c.x <= 3 : c.x >= 5)) {
+      if (c && (team.side === 'left' ? c.x <= 6 : c.x >= (board.width || WIDTH) - 7)) {
         boxPlayers.push(p);
       }
     }

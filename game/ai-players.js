@@ -554,6 +554,14 @@ function aiSharedPost(ctx) {
   if (videoSession && !hand.some((c) => c !== videoSession && canPlayAction(team, c)))
     return { play: videoSession };
 
+  const allIn = pick(AllInAction);
+  if (allIn && !hand.some((c) => c !== allIn && canPlayAction(team, c)))
+    return { play: allIn };
+
+  const gambit = pick(GambitAction);
+  if (gambit && hand.some((c) => c !== gambit && canPlayAction(team, c)))
+    return { play: gambit };
+
   const switchGears = pick(SwitchGearsAction);
   if (
     switchGears &&

@@ -316,6 +316,10 @@ function canPlayAction(team, action) {
     return game.inPlay[team.name].length > 1;
   }
 
+  if (action instanceof AllInAction) {
+    return game.inPlay[team.name].length > 1;
+  }
+
   if (action instanceof SprintAction) {
     const holder = matchState.possession && matchState.possession._token.player;
     return team.currentPlayers.some((player) => {
@@ -660,7 +664,7 @@ function canPlayAction(team, action) {
       if (p.position !== 'DF') return false;
       const c = getPlayerCell(p);
       if (!c) return false;
-      return team.side === 'left' ? c.x <= 3 : c.x >= WIDTH - 4;
+      return team.side === 'left' ? c.x <= 6 : c.x >= WIDTH - 7;
     });
     return defsInBox.length >= 1;
   }
@@ -1112,6 +1116,10 @@ function canPlayActionReason(team, action) {
 
   if (action instanceof VeteranBenchAction) {
     if (team.exhaustedActions.length < 3) return 'Need at least 3 cards in your exhaust pile';
+  }
+
+  if (action instanceof AllInAction) {
+    if (game.inPlay[team.name].length <= 1) return 'Need at least one other card in hand';
   }
 
   if (action instanceof YellowCardAction) {

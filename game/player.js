@@ -35,7 +35,7 @@ const PLAYER_EFFECTS = {
     stats: { tackling: -2, marking: -2 },
   },
   scaredToTackle: {
-    char: '🟨',
+    char: '😬',
     turns: Infinity,
     label: 'Scared of a second card',
     explanation: 'Recently booked: their next tackle attempt automatically fails.',
