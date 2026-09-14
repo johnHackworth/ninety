@@ -28,32 +28,32 @@ class CapeVerde extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Vozinha', 'Stopira', 'Diney', 'Pico', 'Logan Costa', 'Kevin Pina', 'Jovane Cabral', 'João Paulo', 'Jamiro Monteiro', 'Gilson Benchimol', 'Dailon Livramento'],
       squad: [
-        ['Vozinha', 40, 'GK', 'Cape Verde', 5, 10, 2, 1, 6, 2, 10, 6, 10],
-        ['Stopira', 38, 'DF', 'Cape Verde', 10, 9, 10, 5, 8, 4, 9, 7, 1],
-        ['Diney', 31, 'DF', 'Cape Verde', 9, 10, 10, 2, 8, 5, 7, 8, 1],
-        ['Pico', 33, 'DF', 'Cape Verde', 9, 10, 10, 3, 10, 10, 9, 10, 2],
-        ['Logan Costa', 25, 'DF', 'Cape Verde', 5, 10, 7, 4, 7, 7, 7, 10, 3],
-        ['Kevin Pina', 29, 'MF', 'Cape Verde', 7, 6, 7, 5, 9, 10, 10, 10, 3],
-        ['Jovane Cabral', 27, 'MF', 'Cape Verde', 8, 9, 6, 7, 9, 10, 10, 6, 1],
-        ['João Paulo', 28, 'MF', 'Cape Verde', 10, 5, 8, 8, 10, 8, 10, 8, 1],
-        ['Gilson Benchimol', 24, 'FW', 'Cape Verde', 10, 2, 5, 10, 10, 10, 10, 10, 1],
-        ['Jamiro Monteiro', 32, 'MF', 'Cape Verde', 10, 8, 7, 5, 10, 10, 8, 10, 1],
-        ['Garry Rodrigues', 35, 'MF', 'Cape Verde', 9, 6, 10, 5, 10, 9, 10, 9, 1],
-        ['Márcio Rosa', 29, 'GK', 'Cape Verde', 3, 7, 2, 2, 7, 3, 8, 4, 8],
-        ['Sidny Lopes Cabral', 23, 'DF', 'Cape Verde', 5, 10, 8, 2, 7, 6, 6, 6, 1],
-        ['Deroy Duarte', 26, 'MF', 'Cape Verde', 10, 5, 6, 6, 10, 9, 10, 5, 1],
-        ['Laros Duarte', 29, 'MF', 'Cape Verde', 10, 5, 5, 5, 10, 8, 9, 7, 2],
-        ['Yannick Semedo', 30, 'MF', 'Cape Verde', 9, 5, 5, 5, 10, 10, 7, 7, 1],
-        ['Willy Semedo', 32, 'MF', 'Cape Verde', 10, 9, 7, 8, 9, 10, 10, 8, 1],
-        ['Telmo Arcanjo', 24, 'MF', 'Cape Verde', 7, 5, 10, 8, 7, 10, 7, 6, 1],
-        ['Dailon Livramento', 25, 'FW', 'Cape Verde', 10, 6, 4, 10, 7, 10, 7, 7, 1],
-        ['Ryan Mendes', 36, 'FW', 'Cape Verde', 10, 5, 6, 10, 10, 10, 10, 10, 1],
-        ['Nuno da Costa', 35, 'MF', 'Cape Verde', 6, 6, 6, 4, 7, 6, 8, 3, 1],
-        ['Steven Moreira', 31, 'DF', 'Cape Verde', 7, 10, 9, 2, 9, 8, 10, 10, 2],
-        ['CJ dos Santos', 25, 'GK', 'Cape Verde', 5, 5, 4, 1, 6, 2, 8, 3, 8],
-        ['Wagner Pina', 23, 'DF', 'Cape Verde', 6, 10, 9, 2, 8, 5, 8, 8, 1],
-        ['Kelvin Pires', 26, 'DF', 'Cape Verde', 8, 9, 8, 3, 8, 6, 9, 9, 1],
-        ['Hélio Varela', 24, 'MF', 'Cape Verde', 10, 7, 8, 8, 9, 8, 7, 8, 1]
+        ['Vozinha', 40, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Stopira', 38, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Diney', 31, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Pico', 33, 'DF', 'Cape Verde', 8, 8, 8, 3, 9, 10, 9, 8, 2]
+        ['Logan Costa', 25, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Kevin Pina', 29, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Jovane Cabral', 27, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['João Paulo', 28, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Gilson Benchimol', 24, 'FW', 'Cape Verde', 8, 2, 5, 8, 10, 8, 9, 9, 1]
+        ['Jamiro Monteiro', 32, 'MF', 'Cape Verde', 9, 8, 7, 5, 8, 9, 8, 10, 1]
+        ['Garry Rodrigues', 35, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Márcio Rosa', 29, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Sidny Lopes Cabral', 23, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Deroy Duarte', 26, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Laros Duarte', 29, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Yannick Semedo', 30, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Willy Semedo', 32, 'MF', 'Cape Verde', 10, 9, 7, 8, 8, 9, 8, 8, 1]
+        ['Telmo Arcanjo', 24, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Dailon Livramento', 25, 'FW', 'Cape Verde', 5, 2, 2, 7, 4, 4, 4, 6, 1]
+        ['Ryan Mendes', 36, 'FW', 'Cape Verde', 8, 5, 6, 8, 10, 8, 9, 9, 1]
+        ['Nuno da Costa', 35, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Steven Moreira', 31, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['CJ dos Santos', 25, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Wagner Pina', 23, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Kelvin Pires', 26, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Hélio Varela', 24, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1]
       ],
     });
   }

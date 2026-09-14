@@ -28,32 +28,32 @@ class Netherlands extends AbstractTeam {
       awayShortsColor: '#00165b',
       startingXI: ['Bart Verbruggen', 'Lutsharel Geertruida', 'Virgil van Dijk', 'Nathan Aké', 'Jan Paul van Hecke', 'Marten de Roon', 'Justin Kluivert', 'Ryan Gravenberch', 'Tijjani Reijnders', 'Wout Weghorst', 'Memphis Depay'],
       squad: [
-        ['Bart Verbruggen', 23, 'GK', 'Netherlands', 6, 10, 5, 2, 10, 4, 9, 5, 10],
-        ['Lutsharel Geertruida', 25, 'DF', 'Netherlands', 9, 9, 7, 3, 6, 8, 8, 10, 2],
-        ['Marten de Roon', 35, 'MF', 'Netherlands', 10, 6, 10, 9, 8, 10, 7, 6, 2],
-        ['Virgil van Dijk', 34, 'DF', 'Netherlands', 8, 9, 8, 5, 6, 6, 7, 9, 1],
-        ['Nathan Aké', 31, 'DF', 'Netherlands', 10, 10, 10, 4, 10, 8, 8, 10, 1],
-        ['Jan Paul van Hecke', 26, 'DF', 'Netherlands', 6, 10, 10, 4, 7, 5, 9, 7, 1],
-        ['Justin Kluivert', 27, 'MF', 'Netherlands', 7, 4, 8, 6, 10, 10, 7, 5, 1],
-        ['Ryan Gravenberch', 24, 'MF', 'Netherlands', 9, 5, 9, 8, 10, 9, 9, 8, 1],
-        ['Wout Weghorst', 33, 'FW', 'Netherlands', 10, 7, 4, 10, 10, 10, 10, 10, 1],
-        ['Memphis Depay', 32, 'FW', 'Netherlands', 10, 3, 9, 10, 10, 10, 10, 10, 2],
-        ['Cody Gakpo', 27, 'FW', 'Netherlands', 10, 2, 5, 10, 8, 10, 10, 10, 1],
-        ['Mats Wieffer', 26, 'DF', 'Netherlands', 8, 8, 9, 5, 8, 7, 8, 9, 2],
-        ['Robin Roefs', 23, 'GK', 'Netherlands', 5, 5, 3, 2, 6, 3, 7, 7, 9],
-        ['Tijjani Reijnders', 27, 'MF', 'Netherlands', 9, 7, 9, 6, 10, 9, 10, 9, 2],
-        ['Micky van de Ven', 25, 'DF', 'Netherlands', 8, 9, 7, 2, 6, 8, 7, 9, 2],
-        ['Guus Til', 28, 'MF', 'Netherlands', 6, 5, 7, 7, 9, 10, 7, 7, 2],
-        ['Noa Lang', 26, 'FW', 'Netherlands', 9, 4, 3, 10, 7, 10, 9, 8, 1],
-        ['Donyell Malen', 27, 'FW', 'Netherlands', 10, 3, 9, 10, 10, 10, 9, 10, 1],
-        ['Brian Brobbey', 24, 'FW', 'Netherlands', 8, 1, 4, 10, 8, 7, 5, 9, 1],
-        ['Teun Koopmeiners', 28, 'MF', 'Netherlands', 10, 9, 8, 4, 10, 10, 10, 4, 2],
-        ['Frenkie de Jong', 29, 'MF', 'Netherlands', 10, 8, 9, 5, 10, 10, 10, 10, 3],
-        ['Denzel Dumfries', 30, 'DF', 'Netherlands', 7, 10, 10, 2, 10, 10, 10, 10, 1],
-        ['Mark Flekken', 32, 'GK', 'Netherlands', 4, 6, 1, 1, 8, 3, 8, 6, 8],
-        ['Crysencio Summerville', 24, 'FW', 'Netherlands', 10, 3, 2, 8, 7, 10, 6, 7, 1],
-        ['Jorrel Hato', 20, 'DF', 'Netherlands', 6, 8, 7, 3, 9, 5, 7, 10, 2],
-        ['Quinten Timber', 24, 'MF', 'Netherlands', 8, 5, 5, 4, 9, 8, 9, 6, 1]
+        ['Bart Verbruggen', 23, 'GK', 'Netherlands', 2, 4, 6, 2, 4, 1, 4, 7, 8]
+        ['Lutsharel Geertruida', 25, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Marten de Roon', 35, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Virgil van Dijk', 34, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Nathan Aké', 31, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Jan Paul van Hecke', 26, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Justin Kluivert', 27, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Ryan Gravenberch', 24, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Wout Weghorst', 33, 'FW', 'Netherlands', 8, 7, 4, 8, 10, 8, 9, 9, 1]
+        ['Memphis Depay', 32, 'FW', 'Netherlands', 8, 3, 9, 8, 10, 8, 9, 8, 2]
+        ['Cody Gakpo', 27, 'FW', 'Netherlands', 7, 2, 2, 9, 4, 6, 4, 8, 1]
+        ['Mats Wieffer', 26, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Robin Roefs', 23, 'GK', 'Netherlands', 2, 4, 6, 2, 4, 1, 4, 7, 8]
+        ['Tijjani Reijnders', 27, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Micky van de Ven', 25, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Guus Til', 28, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Noa Lang', 26, 'FW', 'Netherlands', 7, 2, 2, 9, 4, 6, 4, 8, 1]
+        ['Donyell Malen', 27, 'FW', 'Netherlands', 8, 3, 9, 8, 10, 8, 9, 8, 1]
+        ['Brian Brobbey', 24, 'FW', 'Netherlands', 7, 2, 2, 9, 4, 6, 4, 8, 1]
+        ['Teun Koopmeiners', 28, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Frenkie de Jong', 29, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
+        ['Denzel Dumfries', 30, 'DF', 'Netherlands', 7, 8, 8, 2, 9, 10, 9, 8, 1]
+        ['Mark Flekken', 32, 'GK', 'Netherlands', 2, 4, 6, 2, 4, 1, 4, 7, 8]
+        ['Crysencio Summerville', 24, 'FW', 'Netherlands', 7, 2, 2, 9, 4, 6, 4, 8, 1]
+        ['Jorrel Hato', 20, 'DF', 'Netherlands', 7, 7, 7, 4, 5, 2, 6, 7, 1]
+        ['Quinten Timber', 24, 'MF', 'Netherlands', 7, 6, 6, 7, 5, 5, 8, 6, 1]
       ],
     });
   }

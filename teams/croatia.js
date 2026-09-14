@@ -28,32 +28,32 @@ class Croatia extends AbstractTeam {
       awayShortsColor: '#000000',
       startingXI: ['Dominik Livaković', 'Josip Stanišić', 'Marin Pongračić', 'Joško Gvardiol', 'Duje Ćaleta-Car', 'Nikola Moro', 'Mateo Kovačić', 'Luka Modrić', 'Nikola Vlašić', 'Andrej Kramarić', 'Ante Budimir'],
       squad: [
-        ['Dominik Livaković', 31, 'GK', 'Croatia', 4, 10, 2, 3, 10, 4, 10, 9, 10],
-        ['Josip Stanišić', 26, 'DF', 'Croatia', 9, 10, 10, 1, 6, 7, 9, 10, 1],
-        ['Marin Pongračić', 28, 'DF', 'Croatia', 10, 8, 6, 2, 9, 6, 9, 10, 1],
-        ['Joško Gvardiol', 24, 'DF', 'Croatia', 10, 10, 10, 5, 10, 6, 10, 10, 2],
-        ['Duje Ćaleta-Car', 29, 'DF', 'Croatia', 7, 10, 10, 1, 9, 9, 7, 10, 1],
-        ['Josip Šutalo', 26, 'DF', 'Croatia', 10, 10, 9, 5, 8, 8, 10, 10, 1],
-        ['Nikola Moro', 28, 'MF', 'Croatia', 6, 6, 7, 7, 8, 7, 9, 5, 1],
-        ['Mateo Kovačić', 32, 'MF', 'Croatia', 10, 6, 7, 7, 10, 9, 8, 9, 1],
-        ['Andrej Kramarić', 34, 'FW', 'Croatia', 10, 4, 5, 10, 10, 10, 10, 10, 1],
-        ['Luka Modrić', 40, 'MF', 'Croatia', 8, 9, 6, 6, 9, 10, 7, 7, 2],
-        ['Ante Budimir', 34, 'FW', 'Croatia', 10, 3, 4, 10, 10, 10, 10, 8, 1],
-        ['Ivor Pandur', 26, 'GK', 'Croatia', 3, 7, 2, 1, 6, 4, 5, 7, 8],
-        ['Nikola Vlašić', 28, 'MF', 'Croatia', 10, 6, 10, 10, 10, 8, 9, 10, 2],
-        ['Ivan Perišić', 37, 'FW', 'Croatia', 10, 5, 5, 10, 7, 10, 10, 7, 1],
-        ['Mario Pašalić', 31, 'MF', 'Croatia', 9, 5, 8, 8, 10, 10, 8, 8, 3],
-        ['Martin Baturina', 23, 'MF', 'Croatia', 8, 7, 6, 6, 10, 10, 9, 7, 1],
-        ['Petar Sučić', 22, 'MF', 'Croatia', 10, 7, 6, 6, 10, 9, 9, 6, 1],
-        ['Kristijan Jakić', 29, 'DF', 'Croatia', 7, 10, 8, 3, 9, 8, 6, 10, 2],
-        ['Toni Fruk', 25, 'MF', 'Croatia', 8, 7, 8, 4, 7, 6, 6, 4, 1],
-        ['Igor Matanović', 23, 'FW', 'Croatia', 8, 3, 4, 7, 6, 8, 7, 9, 1],
-        ['Luka Sučić', 23, 'MF', 'Croatia', 8, 6, 8, 4, 8, 8, 8, 4, 2],
-        ['Luka Vušković', 19, 'DF', 'Croatia', 6, 10, 9, 4, 7, 8, 5, 8, 2],
-        ['Dominik Kotarski', 26, 'GK', 'Croatia', 5, 7, 2, 2, 7, 2, 9, 4, 8],
-        ['Marco Pašalić', 25, 'FW', 'Croatia', 9, 1, 4, 8, 7, 7, 9, 8, 1],
-        ['Martin Erlić', 28, 'DF', 'Croatia', 5, 10, 7, 4, 6, 6, 9, 9, 1],
-        ['Petar Musa', 28, 'FW', 'Croatia', 7, 4, 4, 8, 8, 10, 5, 9, 1]
+        ['Dominik Livaković', 31, 'GK', 'Croatia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
+        ['Josip Stanišić', 26, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Marin Pongračić', 28, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Joško Gvardiol', 24, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Duje Ćaleta-Car', 29, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Josip Šutalo', 26, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Nikola Moro', 28, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Mateo Kovačić', 32, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Andrej Kramarić', 34, 'FW', 'Croatia', 8, 4, 5, 8, 10, 8, 9, 9, 1]
+        ['Luka Modrić', 40, 'MF', 'Croatia', 8, 9, 6, 6, 9, 10, 7, 7, 2]
+        ['Ante Budimir', 34, 'FW', 'Croatia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
+        ['Ivor Pandur', 26, 'GK', 'Croatia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
+        ['Nikola Vlašić', 28, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Ivan Perišić', 37, 'FW', 'Croatia', 9, 5, 5, 8, 7, 9, 10, 7, 1]
+        ['Mario Pašalić', 31, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Martin Baturina', 23, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Petar Sučić', 22, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Kristijan Jakić', 29, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Toni Fruk', 25, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Igor Matanović', 23, 'FW', 'Croatia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
+        ['Luka Sučić', 23, 'MF', 'Croatia', 6, 5, 6, 6, 5, 5, 7, 5, 1]
+        ['Luka Vušković', 19, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Dominik Kotarski', 26, 'GK', 'Croatia', 2, 4, 5, 2, 4, 1, 4, 6, 7]
+        ['Marco Pašalić', 25, 'FW', 'Croatia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
+        ['Martin Erlić', 28, 'DF', 'Croatia', 6, 7, 7, 3, 3, 2, 5, 7, 1]
+        ['Petar Musa', 28, 'FW', 'Croatia', 6, 2, 2, 8, 4, 5, 4, 7, 1]
       ],
     });
   }

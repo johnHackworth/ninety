@@ -28,32 +28,32 @@ class BosniaandHerzegovina extends AbstractTeam {
       awayShortsColor: '#ffffff',
       startingXI: ['Nikola Vasilj', 'Nihad Mujakić', 'Dennis Hadžikadunić', 'Tarik Muharemović', 'Sead Kolašinac', 'Benjamin Tahirović', 'Armin Gigović', 'Ivan Bašić', 'Ivan Šunjić', 'Samed Baždar', 'Ermedin Demirović'],
       squad: [
-        ['Nikola Vasilj', 30, 'GK', 'Bosnia and Herzegovina', 5, 8, 5, 1, 8, 3, 10, 8, 10],
-        ['Nihad Mujakić', 28, 'DF', 'Bosnia and Herzegovina', 6, 10, 7, 2, 5, 6, 8, 9, 1],
-        ['Dennis Hadžikadunić', 27, 'DF', 'Bosnia and Herzegovina', 9, 10, 10, 5, 9, 7, 10, 7, 1],
-        ['Tarik Muharemović', 23, 'DF', 'Bosnia and Herzegovina', 9, 9, 10, 5, 7, 7, 6, 10, 1],
-        ['Sead Kolašinac', 32, 'DF', 'Bosnia and Herzegovina', 7, 10, 10, 3, 10, 5, 10, 9, 1],
-        ['Benjamin Tahirović', 23, 'MF', 'Bosnia and Herzegovina', 10, 6, 6, 6, 10, 10, 10, 5, 1],
-        ['Amar Dedić', 23, 'DF', 'Bosnia and Herzegovina', 9, 10, 8, 1, 7, 5, 9, 9, 1],
-        ['Armin Gigović', 24, 'MF', 'Bosnia and Herzegovina', 10, 5, 9, 5, 10, 7, 10, 4, 1],
-        ['Samed Baždar', 22, 'FW', 'Bosnia and Herzegovina', 8, 4, 4, 10, 6, 9, 8, 5, 1],
-        ['Ermedin Demirović', 28, 'FW', 'Bosnia and Herzegovina', 10, 2, 7, 10, 9, 10, 10, 10, 1],
-        ['Edin Džeko', 40, 'FW', 'Bosnia and Herzegovina', 10, 5, 6, 10, 10, 10, 7, 10, 1],
-        ['Mladen Jurkas', 18, 'GK', 'Bosnia and Herzegovina', 3, 8, 3, 1, 8, 2, 6, 5, 10],
-        ['Ivan Bašić', 24, 'MF', 'Bosnia and Herzegovina', 9, 8, 5, 5, 8, 8, 8, 6, 1],
-        ['Ivan Šunjić', 29, 'MF', 'Bosnia and Herzegovina', 8, 4, 6, 4, 9, 6, 9, 4, 1],
-        ['Amar Memić', 25, 'MF', 'Bosnia and Herzegovina', 7, 7, 5, 7, 9, 10, 10, 4, 1],
-        ['Amir Hadžiahmetović', 29, 'MF', 'Bosnia and Herzegovina', 8, 8, 10, 6, 10, 9, 10, 8, 1],
-        ['Dženis Burnić', 28, 'MF', 'Bosnia and Herzegovina', 8, 6, 8, 5, 9, 10, 10, 5, 1],
-        ['Nikola Katić', 29, 'DF', 'Bosnia and Herzegovina', 9, 10, 8, 3, 6, 7, 6, 7, 2],
-        ['Kerim Alajbegović', 18, 'FW', 'Bosnia and Herzegovina', 9, 3, 5, 10, 8, 10, 9, 10, 1],
-        ['Esmir Bajraktarević', 21, 'FW', 'Bosnia and Herzegovina', 10, 2, 7, 10, 8, 10, 9, 10, 1],
-        ['Stjepan Radeljić', 28, 'DF', 'Bosnia and Herzegovina', 6, 7, 9, 3, 4, 3, 8, 6, 1],
-        ['Martin Zlomislić', 27, 'GK', 'Bosnia and Herzegovina', 4, 6, 1, 1, 7, 4, 7, 7, 10],
-        ['Haris Tabaković', 31, 'FW', 'Bosnia and Herzegovina', 7, 2, 5, 10, 7, 8, 5, 5, 1],
-        ['Arjan Malić', 20, 'DF', 'Bosnia and Herzegovina', 6, 10, 8, 5, 8, 6, 9, 7, 2],
-        ['Jovo Lukić', 27, 'FW', 'Bosnia and Herzegovina', 7, 1, 4, 7, 5, 8, 4, 5, 1],
-        ['Ermin Mahmić', 21, 'MF', 'Bosnia and Herzegovina', 8, 6, 6, 6, 7, 7, 6, 6, 1]
+        ['Nikola Vasilj', 30, 'GK', 'Bosnia and Herzegovina', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Nihad Mujakić', 28, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Dennis Hadžikadunić', 27, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Tarik Muharemović', 23, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Sead Kolašinac', 32, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Benjamin Tahirović', 23, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Amar Dedić', 23, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Armin Gigović', 24, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Samed Baždar', 22, 'FW', 'Bosnia and Herzegovina', 5, 2, 2, 7, 4, 4, 4, 6, 1]
+        ['Ermedin Demirović', 28, 'FW', 'Bosnia and Herzegovina', 8, 2, 7, 8, 9, 8, 10, 9, 1]
+        ['Edin Džeko', 40, 'FW', 'Bosnia and Herzegovina', 8, 5, 6, 8, 10, 9, 7, 9, 1]
+        ['Mladen Jurkas', 18, 'GK', 'Bosnia and Herzegovina', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Ivan Bašić', 24, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Ivan Šunjić', 29, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Amar Memić', 25, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Amir Hadžiahmetović', 29, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Dženis Burnić', 28, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
+        ['Nikola Katić', 29, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Kerim Alajbegović', 18, 'FW', 'Bosnia and Herzegovina', 5, 2, 2, 7, 4, 4, 4, 6, 1]
+        ['Esmir Bajraktarević', 21, 'FW', 'Bosnia and Herzegovina', 8, 2, 7, 8, 8, 9, 9, 10, 1]
+        ['Stjepan Radeljić', 28, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Martin Zlomislić', 27, 'GK', 'Bosnia and Herzegovina', 2, 4, 4, 2, 4, 1, 4, 5, 6]
+        ['Haris Tabaković', 31, 'FW', 'Bosnia and Herzegovina', 5, 2, 2, 7, 4, 4, 4, 6, 1]
+        ['Arjan Malić', 20, 'DF', 'Bosnia and Herzegovina', 5, 6, 6, 3, 3, 2, 5, 6, 1]
+        ['Jovo Lukić', 27, 'FW', 'Bosnia and Herzegovina', 5, 2, 2, 7, 4, 4, 4, 6, 1]
+        ['Ermin Mahmić', 21, 'MF', 'Bosnia and Herzegovina', 5, 4, 6, 5, 5, 4, 6, 4, 1]
       ],
     });
   }
