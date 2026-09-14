@@ -24,12 +24,12 @@ const TEAM_CLASSES = {
   'South Africa': SouthAfrica,
   'Ivory Coast': IvoryCoast,
   Senegal,
-  'DR Congo': DrCongo,
+  'DR Congo': DRCongo,
   Canada,
   Mexico,
   'United States': UnitedStates,
   Panama,
-  'Curaçao': Curacao,
+  'Curaçao': Curaao,
   Haiti,
   'New Zealand': NewZealand,
   England,
@@ -44,9 +44,9 @@ const TEAM_CLASSES = {
   Switzerland,
   Scotland,
   Sweden,
-  'Türkiye': Turkiye,
-  Czechia,
-  'Bosnia and Herzegovina': BosniaAndHerzegovina,
+  Turkey,
+  CzechRepublic,
+  'Bosnia and Herzegovina': BosniaandHerzegovina,
 };
 
 const TEAM_FLAGS = {
@@ -95,8 +95,8 @@ const TEAM_FLAGS = {
   Switzerland: '🇨🇭',
   Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
   Sweden: '🇸🇪',
-  'Türkiye': '🇹🇷',
-  Czechia: '🇨🇿',
+  Turkey: '🇹🇷',
+  CzechRepublic: '🇨🇿',
   'Bosnia and Herzegovina': '🇧🇦',
 };
 
