@@ -203,19 +203,13 @@ const WC_TOP_CATEGORIES = [
 ];
 
 // ---- Formation templates (x: 0=left goal, 8=right goal; y: 0=top, 6=bottom) ----
+// Positions: GK, DF, MF, FW only.  All FW at x ≤ 6 (no one starts in the penalty box).
 const FORMATION_TEMPLATES = {
   '4-4-2': {
     GK: [[0, 3]],
     DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
     MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
     FW: [[6, 1], [6, 5]],
-  },
-  '4-2-3-1': {
-    GK: [[0, 3]],
-    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
-    MF: [[4, 2], [4, 4]],
-    AM: [[5, 0], [5, 3], [5, 6]],
-    FW: [[7, 3]],
   },
   '4-3-3': {
     GK: [[0, 3]],
@@ -235,11 +229,28 @@ const FORMATION_TEMPLATES = {
     MF: [[4, 1], [4, 3], [4, 5]],
     FW: [[6, 2], [6, 4]],
   },
+  '4-2-3-1': {
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 2], [4, 4], [5, 0], [5, 3], [5, 6]],
+    FW: [[6, 3]],
+  },
+  '4-5-1': {
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 3], [4, 4], [4, 6]],
+    FW: [[6, 3]],
+  },
+  '3-4-3': {
+    GK: [[0, 3]],
+    DF: [[2, 1], [2, 3], [2, 5]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 1], [6, 3], [6, 5]],
+  },
   '4-1-4-1': {
     GK: [[0, 3]],
     DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
-    DM: [[3, 3]],
-    MF: [[4, 0], [4, 1], [4, 5], [4, 6]],
+    MF: [[3, 3], [4, 0], [4, 1], [4, 5], [4, 6]],
     FW: [[6, 3]],
   },
 };
@@ -267,7 +278,7 @@ function showWorldCupView() {
 
 // ===== WC SETUP SCREEN DATA =====
 const WC_TEAMS_DATA = [
-  // UEFA (13 teams for 2026)
+  // UEFA (16 teams — 48-team field with playoff winners confirmed for 2026)
   { confed: 'UEFA', code: 'ESP', name: 'Spain', flag: '🇪🇸' },
   { confed: 'UEFA', code: 'FRA', name: 'France', flag: '🇫🇷' },
   { confed: 'UEFA', code: 'GER', name: 'Germany', flag: '🇩🇪' },
@@ -282,6 +293,8 @@ const WC_TEAMS_DATA = [
   { confed: 'UEFA', code: 'TUR', name: 'Türkiye', flag: '🇹🇷' },
   { confed: 'UEFA', code: 'CZE', name: 'Czechia', flag: '🇨🇿' },
   { confed: 'UEFA', code: 'BIH', name: 'Bosnia and Herzegovina', flag: '🇧🇦' },
+  { confed: 'UEFA', code: 'NOR', name: 'Norway', flag: '🇳🇴' },
+  { confed: 'UEFA', code: 'SWE', name: 'Sweden', flag: '🇸🇪' },
   // CONMEBOL (6 teams)
   { confed: 'CONMEBOL', code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
   { confed: 'CONMEBOL', code: 'BRA', name: 'Brazil', flag: '🇧🇷' },
@@ -289,17 +302,18 @@ const WC_TEAMS_DATA = [
   { confed: 'CONMEBOL', code: 'COL', name: 'Colombia', flag: '🇨🇴' },
   { confed: 'CONMEBOL', code: 'ECU', name: 'Ecuador', flag: '🇪🇨' },
   { confed: 'CONMEBOL', code: 'PAR', name: 'Paraguay', flag: '🇵🇾' },
-  // CAF (9 teams)
+  // CAF (11 teams)
   { confed: 'CAF', code: 'MAR', name: 'Morocco', flag: '🇲🇦' },
   { confed: 'CAF', code: 'SEN', name: 'Senegal', flag: '🇸🇳' },
   { confed: 'CAF', code: 'TUN', name: 'Tunisia', flag: '🇹🇳' },
-  { confed: 'CAF', code: 'CMR', name: 'Cameroon', flag: '🇨🇲' },
   { confed: 'CAF', code: 'GHA', name: 'Ghana', flag: '🇬🇭' },
   { confed: 'CAF', code: 'CIV', name: 'Ivory Coast', flag: '🇨🇮' },
   { confed: 'CAF', code: 'ALG', name: 'Algeria', flag: '🇩🇿' },
   { confed: 'CAF', code: 'EGY', name: 'Egypt', flag: '🇪🇬' },
   { confed: 'CAF', code: 'RSA', name: 'South Africa', flag: '🇿🇦' },
-  // AFC (8 teams)
+  { confed: 'CAF', code: 'CPV', name: 'Cape Verde', flag: '🇨🇻' },
+  { confed: 'CAF', code: 'COD', name: 'DR Congo', flag: '🇨🇩' },
+  // AFC (9 teams)
   { confed: 'AFC', code: 'JPN', name: 'Japan', flag: '🇯🇵' },
   { confed: 'AFC', code: 'KOR', name: 'South Korea', flag: '🇰🇷' },
   { confed: 'AFC', code: 'IRN', name: 'Iran', flag: '🇮🇷' },
@@ -308,13 +322,14 @@ const WC_TEAMS_DATA = [
   { confed: 'AFC', code: 'QAT', name: 'Qatar', flag: '🇶🇦' },
   { confed: 'AFC', code: 'UZB', name: 'Uzbekistan', flag: '🇺🇿' },
   { confed: 'AFC', code: 'IRQ', name: 'Iraq', flag: '🇮🇶' },
+  { confed: 'AFC', code: 'JOR', name: 'Jordan', flag: '🇯🇴' },
   // CONCACAF (6 teams)
   { confed: 'CONCACAF', code: 'USA', name: 'United States', flag: '🇺🇸' },
   { confed: 'CONCACAF', code: 'MEX', name: 'Mexico', flag: '🇲🇽' },
   { confed: 'CONCACAF', code: 'CAN', name: 'Canada', flag: '🇨🇦' },
-  { confed: 'CONCACAF', code: 'CRC', name: 'Costa Rica', flag: '🇨🇷' },
   { confed: 'CONCACAF', code: 'PAN', name: 'Panama', flag: '🇵🇦' },
-  { confed: 'CONCACAF', code: 'JAM', name: 'Jamaica', flag: '🇯🇲' },
+  { confed: 'CONCACAF', code: 'CUW', name: 'Curaçao', flag: '🇨🇼' },
+  { confed: 'CONCACAF', code: 'HTI', name: 'Haiti', flag: '🇭🇹' },
   // OFC (1 team)
   { confed: 'OFC', code: 'NZL', name: 'New Zealand', flag: '🇳🇿' },
 ];
@@ -356,6 +371,7 @@ function openWcSetup() {
   renderWcSetupScreen();
   screen.classList.remove('hidden');
   worldCupScreen.classList.add('hidden');
+  if (typeof Onboarding !== 'undefined') Onboarding.maybeWcSetup();
 }
 
 function closeWcSetup() {
@@ -766,9 +782,10 @@ function wcStartExtraTime(m) {
     game.finished = false;
     wcEndingShown = false;
     await humanNotice('EXTRA TIME');
-    const kickoffTeam = board.getOpponent(Object.values(TEAMS)[0]);
+    const kickoffTeam = board.nextKickoffTeam();
     resetForRestart(kickoffTeam);
     if (!game.finished) game.currentTeam = kickoffTeam;
+    game.lastKickoffTeam = kickoffTeam;
     logMatch(kickoffTeam.name, `${kickoffTeam.name} kick off extra time.`);
     renderGame();
   });
@@ -980,6 +997,9 @@ function wcRollTrainingPhases(match) {
 
 async function wcContinue() {
   try {
+    if (typeof Onboarding !== 'undefined') {
+      await Onboarding.maybeWcLoop();
+    }
     await wcContinueStep();
   } catch (err) {
     console.error('[wcContinue] failed:', err);
@@ -1027,6 +1047,9 @@ async function wcContinueStep() {
   if (!startIsHuman) {
     wcSimRunning = true;
     try {
+      worldCupPlayNextBtn.disabled = true;
+      wcSetContinueLabel('Simulating…');
+      renderWorldCupView();
       for (let i = 0; i < 200; i++) {
         const nxt = wcNextMatch(worldCup);
         if (!nxt) break;
@@ -1041,11 +1064,8 @@ async function wcContinueStep() {
         const homeCtrl = wcControllerForTeam(nxt.match.home);
         const awayCtrl = wcControllerForTeam(nxt.match.away);
         if (homeCtrl.type === 'human' || awayCtrl.type === 'human') break;
-        worldCupPlayNextBtn.disabled = true;
-        wcSetContinueLabel('Simulating…');
         wcPlayMatch(nxt.match);
         wcAdvance(worldCup);
-        renderWorldCupView();
         await new Promise((r) => setTimeout(r, 0));
       }
     } finally {
@@ -1080,6 +1100,9 @@ async function wcContinueStep() {
     return;
   }
   wcPendingTrainingMatch = null;
+  if (typeof Onboarding !== 'undefined') {
+    Onboarding.armWorldCup(startHomeCtrl, startAwayCtrl);
+  }
   wcHumanPlaying = true;
   wcMatchMode = true;
   wcMatchInProgress = start.match;
@@ -1293,20 +1316,15 @@ function wcShootoutShoot(team, action, { ai = false } = {}) {
     st[isHome ? 'homeScore' : 'awayScore'] += 1;
   }
 
-  if (ai) {
-    logMatch(teamName, scored
-      ? `GOAL! ${shooter.name} scores the penalty for ${teamName}.`
-      : `${shooter.name}'s penalty is saved by ${result.goalkeeper ? result.goalkeeper.name : 'the keeper'}.`);
-    renderGame();
-    setTimeout(() => wcShootoutAdvance(st), 700);
-  } else {
-    showShotResultModal({
-      result,
-      attackerCard: action,
-      goalkeepingCard: keeperCard,
-      onClose: () => { renderGame(); wcShootoutAdvance(st); },
-    });
-  }
+  logMatch(teamName, scored
+    ? `GOAL! ${shooter.name} scores the penalty for ${teamName}.`
+    : `${shooter.name}'s penalty is saved by ${result.goalkeeper ? result.goalkeeper.name : 'the keeper'}.`);
+  showShotResultModal({
+    result,
+    attackerCard: action,
+    goalkeepingCard: keeperCard,
+    onClose: () => { renderGame(); wcShootoutAdvance(st); },
+  });
 }
 
 function wcShootoutAdvance(st) {
@@ -1378,6 +1396,14 @@ function wcSetTab(view) {
 
 function renderWorldCupView() {
   if (!worldCup) return;
+
+  if (typeof Onboarding !== 'undefined') {
+    try {
+      Onboarding.maybeWorldCup(worldCup);
+    } catch (err) {
+      console.error('[onboarding] maybeWorldCup failed:', err);
+    }
+  }
 
   renderWcTabs();
   const isOverview = wcStatsView === 'overview';
@@ -1537,6 +1563,7 @@ function wcOpponentTraits(opponentName) {
 }
 
 function wcMatchdayLine() {
+  if (wcSimRunning) return 'Simulating next fixtures…';
   const nxt = wcNextMatch(worldCup);
   if (worldCup.completed) return 'Tournament complete';
   if (!nxt) return worldCup.phase === 'groups' ? 'Group stage complete' : 'Knockout complete';
@@ -1567,7 +1594,9 @@ function renderWcBanner() {
 
   const titleEl = document.createElement('div');
   titleEl.className = 'wc-banner-title';
-  if (worldCup.completed) {
+  if (wcSimRunning) {
+    titleEl.textContent = 'Simulating AI matches…';
+  } else if (worldCup.completed) {
     titleEl.innerHTML = `${wcTeamName(worldCup.champion)} lift the trophy`;
   } else if (nxt && human) {
     const opp = nxt.match.home === human ? nxt.match.away : nxt.match.home;
@@ -1829,14 +1858,19 @@ function wcUnavailableItems(teamName) {
 
   if (team) {
     for (const p of team.squad) {
-      if (p.hasEffect('injured') || out[p.name] === 'injured') {
+      const entry = out[p.name];
+      const injuryOut =
+        entry === 'injured' || (entry && typeof entry === 'object' && entry.reason === 'injured');
+      if (p.hasEffect('injured') || injuryOut) {
         if (seen.has(p.name)) continue;
         seen.add(p.name);
+        const left =
+          typeof p.injuryMatches === 'number' && p.injuryMatches > 0 ? p.injuryMatches : null;
         items.push({
           name: p.name,
           tagClass: 'Inj',
           tagLabel: 'Inj',
-          note: out[p.name] === 'injured' ? 'injured' : 'injured',
+          note: left ? `injured — out ${left} match${left === 1 ? '' : 'es'}` : 'injured',
           star: team.starPlayers.includes(p.name),
         });
       }
@@ -1845,6 +1879,16 @@ function wcUnavailableItems(teamName) {
   for (const [name, reason] of Object.entries(out)) {
     if (seen.has(name)) continue;
     seen.add(name);
+    if (reason && typeof reason === 'object') {
+      items.push({
+        name,
+        tagClass: 'Inj',
+        tagLabel: 'Inj',
+        note: `injured — out ${reason.matches} match${reason.matches === 1 ? '' : 'es'}`,
+        star: team ? team.starPlayers.includes(name) : false,
+      });
+      continue;
+    }
     items.push({
       name,
       tagClass: reason === 'red' ? 'Susp' : 'Back',
@@ -2315,7 +2359,7 @@ const WC_BRACKET_ROUNDS = [
 ];
 
 const WC_BRACKET_DISPLAY = {
-  'Round of 32': [74, 77, 73, 75, 76, 78, 79, 80, 83, 84, 81, 82, 86, 88, 85, 87],
+  'Round of 32': [74, 77, 73, 75, 83, 84, 81, 82, 76, 78, 79, 80, 86, 88, 85, 87],
   'Round of 16': [89, 90, 93, 94, 91, 92, 95, 96],
   'Quarter-finals': [97, 98, 99, 100],
   'Semi-finals': [101, 102],
@@ -2496,16 +2540,11 @@ function drawWcBracketLines(wrap) {
     cards[Number(card.dataset.label)] = card;
   }
 
-  const link = (fromLabel, toLabel, fromLoser) => {
+  const link = (fromLabel, toLabel) => {
     const fromCard = cards[fromLabel];
     const toCard = cards[toLabel];
     if (!fromCard || !toCard) return;
-    const rows = fromCard.querySelectorAll('.wc-card-team');
-    const fEl = fromLoser
-      ? (Array.from(rows).find((el) => !el.classList.contains('won')) || rows[0])
-      : (Array.from(rows).find((el) => el.classList.contains('won')) || rows[0]);
-    if (!fEl) return;
-    const fr = fEl.getBoundingClientRect();
+    const fr = fromCard.getBoundingClientRect();
     const tr = toCard.getBoundingClientRect();
     const sx = fr.left + fr.width / 2 - wrapRect.left;
     const sy = fr.bottom - wrapRect.top;
@@ -2523,11 +2562,11 @@ function drawWcBracketLines(wrap) {
   };
 
   for (const [fromLabel, toLabel] of Object.entries(WC_BRACKET_CHILD_OF)) {
-    link(Number(fromLabel), toLabel, false);
+    link(Number(fromLabel), toLabel);
   }
   // Semi-final losers drop to the Third-place match.
-  link(101, 103, true);
-  link(102, 103, true);
+  link(101, 103);
+  link(102, 103);
 }
 
 window.addEventListener('resize', () => {
@@ -2767,11 +2806,7 @@ function wcMtCaptain(team) {
 }
 
 function wcMtCanFlex(pPos, slotPos, cx, cy) {
-  if (pPos === slotPos) return true;
-  if (slotPos === 'MF' && pPos === 'DF' && cx < 5) return true;
-  if (slotPos === 'FW' && pPos === 'MF' && !(cx === 6 && (cy === 2 || cy === 3 || cy === 4))) return true;
-  if (slotPos === 'MF' && pPos === 'FW' && (cy === 0 || cy === 6) && cx >= 5) return true;
-  return false;
+  return Team.canFlex(pPos, slotPos, cx, cy);
 }
 
 function wcMtToPercent(tx, ty, mirrorX) {
@@ -2787,10 +2822,9 @@ function wcMtTemplateSlots(key, mirrorX) {
   const tmpl = FORMATION_TEMPLATES[key] || FORMATION_TEMPLATES['4-4-2'];
   const slots = [];
   for (const [pos, coords] of Object.entries(tmpl)) {
-    const role = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
     for (const coord of coords) {
       const pct = wcMtToPercent(coord[0], coord[1], mirrorX);
-      slots.push({ role, rawTx: coord[0], rawTy: coord[1], x: pct.x, y: pct.y });
+      slots.push({ role: pos, rawTx: coord[0], rawTy: coord[1], x: pct.x, y: pct.y });
     }
   }
   return slots;
@@ -2852,27 +2886,15 @@ function wcMtFormationAssignment(team, mirrorX) {
 function wcMtApplyFormation(team, teamName, mirrorX, key) {
   const tmpl = FORMATION_TEMPLATES[key];
   if (!tmpl) return;
-  const placed = [];
-  const placedNames = new Set();
   const unavail = wcMatchUnavailableNames(teamName, team);
+  const { map, placed } = Team.resolveFormation(tmpl, {
+    starters: [...team.currentPlayers],
+    subs: team.availableSubstitutes(),
+    side: mirrorX ? 'right' : 'left',
+    unavailable: unavail,
+  });
 
-  for (const [pos, coords] of Object.entries(tmpl)) {
-    const matchPos = (pos === 'AM' || pos === 'DM') ? 'MF' : pos;
-    for (const coord of coords) {
-      const [rawCx, cy] = coord;
-      const cx = mirrorX ? 8 - rawCx : rawCx;
-      const canFlex = (pPos) => wcMtCanFlex(pPos, matchPos, cx, cy);
-      let picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && !unavail.has(p.name) && canFlex(p.position));
-      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && !unavail.has(p.name) && canFlex(p.position));
-      if (!picked) picked = team.currentPlayers.find((p) => !placedNames.has(p.name) && !unavail.has(p.name));
-      if (!picked) picked = team.availableSubstitutes().find((p) => !placedNames.has(p.name) && !unavail.has(p.name));
-      if (picked) {
-        placed.push(picked);
-        placedNames.add(picked.name);
-      }
-    }
-  }
-
+  const placedNames = new Set(placed.map((p) => p.name));
   const droppedFromXI = team.currentPlayers.filter((p) => !placedNames.has(p.name));
   for (const p of droppedFromXI) {
     const idx = team.substitutedOut.indexOf(p);
@@ -2883,22 +2905,9 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   team.currentPlayers.push(...placed);
   team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
 
-  const newFormation = {};
-  let i = 0;
-  for (const [pos, coords] of Object.entries(tmpl)) {
-    for (const coord of coords) {
-      if (i < placed.length) {
-        // Store in absolute pitch coords so kickoff placement matches size.
-        const [rawCx, cy] = coord;
-        newFormation[placed[i].name] = [mirrorX ? 8 - rawCx : rawCx, cy];
-        i++;
-      }
-    }
-  }
-
   wcSelectedFormation = key;
   wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
-  wcPendingFormationCoords[teamName] = { ...newFormation };
+  wcPendingFormationCoords[teamName] = { ...map };
 }
 
 function wcMtReplaceInSlot(team, teamName, selected, slot) {
@@ -2947,7 +2956,14 @@ function wcMtUnavailablePlayers(teamName, team) {
   const add = (name, reason, icon) => list.push({ name, reason, icon });
 
   for (const p of team.squad) {
-    if (p.injured) add(p.name, 'Injured — out until healed', '🤕');
+    if (p.injured) {
+      const left = typeof p.injuryMatches === 'number' && p.injuryMatches > 0 ? p.injuryMatches : null;
+      add(
+        p.name,
+        left ? `Injured — out for ${left} more match${left === 1 ? '' : 'es'}` : 'Injured — out until healed',
+        '🤕'
+      );
+    }
   }
 
   const outMap = worldCup && worldCup.outPlayers ? worldCup.outPlayers[teamName] : null;
@@ -2978,7 +2994,8 @@ function wcMatchUnavailableNames(teamName, team) {
   const outMap = worldCup && worldCup.outPlayers ? worldCup.outPlayers[teamName] : null;
   if (outMap) {
     for (const [name, reason] of Object.entries(outMap)) {
-      if (reason === 'injured' || reason === 'red' || reason === 'exhausted') names.add(name);
+      const r = reason && typeof reason === 'object' ? reason.reason : reason;
+      if (r === 'injured' || r === 'red' || r === 'exhausted') names.add(name);
     }
   }
   for (const name of (wcSuspendedPlayers[teamName] || [])) names.add(name);
@@ -4440,7 +4457,9 @@ function wcInjuryCount(teamName) {
     for (const p of team.squad) if (p.hasEffect && p.hasEffect('injured')) n++;
   }
   const out = (worldCup && worldCup.outPlayers && worldCup.outPlayers[teamName]) || {};
-  for (const [, reason] of Object.entries(out)) if (reason === 'injured') n++;
+  for (const [, reason] of Object.entries(out)) {
+    if (reason === 'injured' || (reason && typeof reason === 'object' && reason.reason === 'injured')) n++;
+  }
   return n;
 }
 
