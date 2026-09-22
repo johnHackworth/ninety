@@ -25,35 +25,44 @@ class FastTrackStaffEvent {
         ? new allPenaltyCards[Math.floor(Math.random() * allPenaltyCards.length)]()
         : null;
 
+    const pool = wcUnusedCoaches(teamName);
+    const coach = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : null;
+    const promotedPenalty = randomPenalty();
+    const snubPenalty = randomPenalty();
+
     return [
       {
         label: 'Promote them — gain a new coach, but a penalty card joins your deck permanently',
-        description: 'Your junior coach gets promoted to the first team. A penalty card is permanently added to your deck as a consequence of reshuffling responsibilities.',
+        description: coach && promotedPenalty
+          ? `Your junior coach gets promoted to the first team. ${coach.name} (${coach.nationality}) joins backroom staff, but ${promotedPenalty.name} is permanently added to your deck as a consequence of reshuffling responsibilities.`
+          : coach
+            ? `Your junior coach gets promoted to the first team. ${coach.name} (${coach.nationality}) joins backroom staff.`
+            : 'Your junior coach gets promoted to the first team.',
+        gain: [coach ? `Coach: ${coach.name}` : 'Coach', promotedPenalty ? `+${promotedPenalty.name}` : 'Penalty card'].join(' · '),
         execute: () => {
-          const pool = wcUnusedCoaches(teamName);
-          if (pool.length > 0) {
-            const coach = pool[Math.floor(Math.random() * pool.length)];
+          if (coach) {
             if (!wcPendingCoaches) wcPendingCoaches = {};
             wcPendingCoaches[teamName] = coach;
             if (!wcOwnedCoaches[teamName]) wcOwnedCoaches[teamName] = [];
             wcOwnedCoaches[teamName].push(coach);
           }
-          const penalty = randomPenalty();
-          if (penalty) {
+          if (promotedPenalty) {
             if (!wcTrainingCards[teamName]) wcTrainingCards[teamName] = [];
-            wcTrainingCards[teamName].push(penalty);
+            wcTrainingCards[teamName].push(promotedPenalty);
           }
         },
       },
       {
         label: "Don't promote — they're unhappy. A penalty card appears just for next match",
-        description: 'You keep things as they are. The junior coach is disappointed, and morale takes a hit. A penalty card appears in your deck for the next match only.',
+        description: snubPenalty
+          ? `You keep things as they are. The junior coach is disappointed, and morale takes a hit. ${snubPenalty.name} appears in your deck for the next match only.`
+          : 'You keep things as they are. The junior coach is disappointed, and morale takes a hit. A penalty card appears in your deck for the next match only.',
+        lose: snubPenalty ? `+${snubPenalty.name} (next match)` : 'Penalty card (next match)',
         execute: () => {
-          const penalty = randomPenalty();
-          if (penalty) {
+          if (snubPenalty) {
             if (!wcPendingPenalties) wcPendingPenalties = {};
             if (!wcPendingPenalties[teamName]) wcPendingPenalties[teamName] = [];
-            wcPendingPenalties[teamName].push(penalty);
+            wcPendingPenalties[teamName].push(snubPenalty);
           }
         },
       },

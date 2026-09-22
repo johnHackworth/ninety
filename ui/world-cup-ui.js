@@ -4198,7 +4198,7 @@ function wcQueueTraining(teamName, cards = 1) {
 
 function wcQueueEvent(teamName) {
   const event = pickRandomEvent();
-  wcEventQueue.push({ teamName, event });
+  wcEventQueue.push({ teamName, event, eventType: event ? event.constructor.name : null });
 }
 
 function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
@@ -4211,11 +4211,7 @@ function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
     if (!TEAMS || !TEAMS[teamName]) {
       TEAMS = buildTeams([teamName]);
     }
-    const event = (queuedEvent && queuedEvent.options) ? queuedEvent : pickRandomEvent();
-    console.log(queuedEvent);
-    console.log('---')
-
-    console.log(event)
+    const event = resolveEvent(queuedEvent) || pickRandomEvent();
     if (event) {
       const instance = wcShowEventPhaseModal(teamName, event, () => {
         instance.close();

@@ -8905,32 +8905,6 @@ body.screen-shake #board {
   line-height: 1.35;
 }
 
-/* Player Traits (individual strengths) */
-.ts-opp-player-traits {
-  padding: 0 16px 12px;
-}
-
-.ts-player-trait-row {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-}
-
-.ts-player-trait-name {
-  font-weight: 700;
-  font-size: 12.5px;
-  color: #fff;
-  margin-bottom: 4px;
-}
-
-.ts-player-trait-list {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.35;
-}
-
 /* Traits (legacy - keeping for compatibility) */
 .ts-opp-traits {
   display: flex;
@@ -9037,6 +9011,13 @@ body.screen-shake #board {
   border-radius: 999px;
   padding: 2px 8px;
   line-height: 1;
+}
+
+.ts-danger-traits {
+  font-size: 11px;
+  color: #ffd24a;
+  line-height: 1.4;
+  margin-top: 4px;
 }
 
 .ts-threat,

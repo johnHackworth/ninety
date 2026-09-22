@@ -57,3 +57,14 @@ function pickRandomEvent() {
   }
   return events[events.length - 1];
 }
+
+function resolveEvent(queuedEvent) {
+  if (!queuedEvent) return null;
+  if (typeof queuedEvent.options === 'function') return queuedEvent;
+  const events = loadAllEvents();
+  return (
+    events.find((e) => e.constructor.name === queuedEvent.eventType) ||
+    events.find((e) => e.title === queuedEvent.title) ||
+    null
+  );
+}

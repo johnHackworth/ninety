@@ -276,15 +276,6 @@
       }
     }
 
-    // Opposition player traits — individual strengths based on stats
-    const oppPlayerTraits = [];
-    for (const starName of oppositionTeam.starPlayers) {
-      const player = oppositionTeam.squad.find(p => p.name === starName);
-      if (!player) continue;
-      const traits = playerTraitsFromStats(player);
-      oppPlayerTraits.push({ name: player.name, traits });
-    }
-
     // Danger men: opposition star players
     const oppDangerMen = [];
     for (const starName of oppositionTeam.starPlayers) {
@@ -298,6 +289,7 @@
         role,
         threat,
         counter,
+        traits: playerTraitsFromStats(player),
         isDoubt: oppUnavailable.some(u => u.name === starName),
       });
     }
@@ -313,7 +305,6 @@
       conditions,
       oppUnavailable,
       oppTeamEffects,
-      oppPlayerTraits,
       oppDangerMen,
       homeFlag: flagForTeam(homeTeam),
       awayFlag: flagForTeam(awayTeam),
@@ -820,22 +811,7 @@
       }
     }
 
-    // Player Traits (individual strengths)
-    const playerTraitsEl = document.getElementById('ts-opp-player-traits');
-    if (playerTraitsEl) {
-      playerTraitsEl.innerHTML = '';
-      for (const pt of state.oppPlayerTraits) {
-        const div = document.createElement('div');
-        div.className = 'ts-player-trait-row';
-        div.innerHTML = `
-          <div class="ts-player-trait-name">${pt.name}</div>
-          <div class="ts-player-trait-list">${pt.traits.join(', ')}</div>
-        `;
-        playerTraitsEl.appendChild(div);
-      }
-    }
-
-    // Danger men
+    // Danger men (star players with their strengths)
     EL.dangerList.innerHTML = '';
     // Star players section title
     const dangerTitle = document.createElement('div');
@@ -852,6 +828,7 @@
           <span class="ts-danger-name">${dm.player.name}</span>
           <span class="ts-danger-role">${dm.role}</span>
         </div>
+        <div class="ts-danger-traits">${dm.traits.length > 0 ? dm.traits.join(' · ') : '—'}</div>
         <div class="ts-threat">Threat — ${dm.threat}</div>
         <div class="ts-counter"><span class="ts-counter-label">Counter:</span> ${dm.counter}</div>
       `;
@@ -1029,7 +1006,6 @@
     EL.oppFormation = document.getElementById('ts-opp-formation');
     EL.oppNews = document.getElementById('ts-opp-news');
     EL.oppTeamEffects = document.getElementById('ts-opp-team-effects');
-    EL.oppPlayerTraits = document.getElementById('ts-opp-player-traits');
     EL.dangerList = document.getElementById('ts-danger-list');
 
     // Bind events
