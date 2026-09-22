@@ -1460,6 +1460,7 @@ startBtn.addEventListener('click', () => {
   if (homeTeamSelect.value === awayTeamSelect.value) return;
   const homeCtrl = controllerFromSelect(homeControllerSelect.value);
   const awayCtrl = controllerFromSelect(awayControllerSelect.value);
+  if (window.Onboarding) Onboarding.armFriendly(homeCtrl, awayCtrl);
   showTeamSheet(
     homeTeamSelect.value,
     awayTeamSelect.value,

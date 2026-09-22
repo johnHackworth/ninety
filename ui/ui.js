@@ -72,6 +72,7 @@ let railDeckSlots = null;
 let game = null;
 let gameOverModalShown = false;
 let noticeOverlayActive = false;
+let halftimeModalOpen = false;
 
 function showNotice(text) {
   return new Promise((resolve) => {
@@ -520,6 +521,10 @@ const board = {
   getPlayerCell: (player) => getPlayerCell(player),
   getBallHolder: () => (matchState.possession ? matchState.possession._token.player : null),
   getOpponent: (team) => Object.values(TEAMS).find((t) => t !== team),
+  nextKickoffTeam: () =>
+    game && game.lastKickoffTeam
+      ? board.getOpponent(game.lastKickoffTeam)
+      : Object.values(TEAMS).find((t) => t.side === 'left') || Object.values(TEAMS)[0],
   getTeam: (name) => TEAMS[name],
   inPenaltyBox: (x, y, side) => {
     if (y < 2 || y > 4) return false;
@@ -1047,7 +1052,7 @@ function openSubstitutionModal(team) {
   modal.className = 'shot-modal';
 
   const content = document.createElement('div');
-  content.className = 'shot-modal-content';
+  content.className = 'shot-modal-content halftime-content';
 
   const title = document.createElement('div');
   title.className = 'shot-modal-label';
@@ -1062,7 +1067,7 @@ function openSubstitutionModal(team) {
   content.appendChild(hint);
 
   const rows = document.createElement('div');
-  rows.className = 'shot-modal-side';
+  rows.className = 'halftime-col';
 
   const onPitch = team.currentPlayers.filter((p) => !p.sentOff);
   const bench = team.availableSubstitutes();
@@ -1288,7 +1293,13 @@ function renderInPlay() {
     }
 
     if (panelSlots && panelSlots[teamName]) panelSlots[teamName].style.display = '';
-    for (const action of game.inPlay[team.name]) {
+    const heldSet = new Set(game.heldCards && game.heldCards[team.name] ? game.heldCards[team.name] : []);
+    const orderedHand = game.inPlay[team.name].slice().sort((a, b) => {
+      const aHeld = (a.hold || heldSet.has(a)) ? 1 : 0;
+      const bHeld = (b.hold || heldSet.has(b)) ? 1 : 0;
+      return bHeld - aHeld;
+    });
+    for (const action of orderedHand) {
       const card = createActionCard(action);
       card.__action = action;
       const pending = currentPending(team, action);
@@ -1592,14 +1603,16 @@ function renderHint() {
 function refreshCellLayout(cellEl) {
   const tokens = [...cellEl.querySelectorAll('.player-token')];
   for (const el of tokens) {
+    const team = el._token && TEAMS[el._token.player.team];
+    if (!team) continue;
     el.classList.remove('alone', 'half-left', 'half-right');
-    el.classList.add(TEAMS[el._token.player.team].side === 'left' ? 'half-left' : 'half-right');
+    el.classList.add(team.side === 'left' ? 'half-left' : 'half-right');
   }
-  if (tokens.length === 1) {
+  if (tokens.length === 1 && tokens[0]._token && TEAMS[tokens[0]._token.player.team]) {
     tokens[0].classList.remove('half-left', 'half-right');
     tokens[0].classList.add('alone');
   }
-  const teams = new Set(tokens.map((el) => el._token.player.team));
+  const teams = new Set(tokens.map((el) => el._token && el._token.player.team).filter((t) => t && TEAMS[t]));
   cellEl.classList.toggle('duel', tokens.length >= 2 && teams.size >= 2);
 }
 
@@ -1770,7 +1783,7 @@ function showActingGoalkeeperModal(team, candidates) {
   modal.className = 'shot-modal';
 
   const content = document.createElement('div');
-  content.className = 'shot-modal-content';
+  content.className = 'shot-modal-content halftime-content';
 
   const title = document.createElement('div');
   title.className = 'shot-modal-label';
@@ -1858,11 +1871,25 @@ function showHardTackleModal({ team, action, tackler, holder, result }) {
   const availableSubs = opponent.squad.filter(
     (p) => !opponent.currentPlayers.includes(p) && !p.injured && !p.sentOff
   );
-  let selectedSub = availableSubs[0] || null;
+  const aiControlled = opponent.controller && opponent.controller.type === 'ai';
+  let selectedSub = null;
+  if (aiControlled) {
+    selectedSub =
+      availableSubs.find((p) => p.position === holder.position) ||
+      availableSubs.slice().sort((a, b) => Team.rating(b) - Team.rating(a))[0];
+  } else {
+    selectedSub = availableSubs[0] || null;
+  }
 
   const subRow = document.createElement('div');
   subRow.className = 'hard-tackle-sub-row';
-  if (availableSubs.length > 0) {
+  if (aiControlled) {
+    const label = document.createElement('div');
+    label.textContent = selectedSub
+      ? `AI coach selects ${selectedSub.name} to come on.`
+      : 'No substitutes available.';
+    subRow.appendChild(label);
+  } else if (availableSubs.length > 0) {
     const label = document.createElement('div');
     label.textContent = 'Replace with:';
     subRow.appendChild(label);
@@ -1926,7 +1953,12 @@ function showHardTackleModal({ team, action, tackler, holder, result }) {
     overlay.remove();
 
     holder.addEffect('injured', Infinity);
-    logMatch(team.name, `Hard tackle! ${holder.name} is injured (whole match).`, 'injury');
+    holder.injuryMatches = 1 + Math.floor(Math.random() * 3);
+    logMatch(
+      team.name,
+      `Hard tackle! ${holder.name} is injured and will miss the next ${holder.injuryMatches} match${holder.injuryMatches === 1 ? '' : 'es'}.`,
+      'injury'
+    );
     humanNotice('INJURY!');
     if (selectedSub) {
       game.recordEvent({
@@ -2369,8 +2401,9 @@ function renderGame() {
   }
   if (simulationMode) return;
   if (!panelSlots || !document.getElementById('pitch')) return;
+  if (!game) return;
 
-  if (game.pendingHandoff && !handoffCaptured) {
+  if (game && game.pendingHandoff && !handoffCaptured) {
     handoffCaptured = {
       teamName: game.pendingHandoff.teamName,
       cards: captureHandPositions(game.pendingHandoff.teamName),
@@ -2406,7 +2439,7 @@ function renderGame() {
     else showGameOverModal();
   }
   if (animateHands) flyInHands();
-  if (game.pendingHandoff && !handoffScheduled) {
+  if (game && game.pendingHandoff && !handoffScheduled) {
     handoffScheduled = true;
     deferredPlayActive = true;
     const handoff = game.pendingHandoff;
@@ -2414,7 +2447,7 @@ function renderGame() {
     setTimeout(() => {
       handoffScheduled = false;
       deferredPlayActive = false;
-      if (game.pendingHandoff) game.resolveHandoff();
+      if (game && game.pendingHandoff) game.resolveHandoff();
       renderGame();
     }, HANDOFF_WAIT_MS);
   }
@@ -2447,6 +2480,7 @@ function appendMatchStatsSection(section) {
 async function showHalftimeModal() {
   if (!isHumanGame()) return;
   substitutionWindowOpen = true;
+  halftimeModalOpen = true;
 
   game.halftimePending = false;
 
@@ -2558,7 +2592,7 @@ async function showHalftimeModal() {
 
   appendMatchStatsSection((heading) => section(colRight, heading));
 
-  const kickoffTeam = board.getOpponent(Object.values(TEAMS)[0]);
+  const kickoffTeam = board.nextKickoffTeam();
   const kickoffNote = document.createElement('div');
   kickoffNote.className = 'halftime-kickoff';
   kickoffNote.textContent = `${kickoffTeam.name} will kick off the second half.`;
@@ -2582,7 +2616,9 @@ async function showHalftimeModal() {
     await humanNotice('SECOND HALF');
     resetForRestart(kickoffTeam);
     if (!game.finished) game.currentTeam = kickoffTeam;
+    game.lastKickoffTeam = kickoffTeam;
     logMatch(kickoffTeam.name, `${kickoffTeam.name} kick off the second half.`);
+    halftimeModalOpen = false;
     renderGame();
   }
   function onKey(e) {

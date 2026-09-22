@@ -4817,6 +4817,7 @@ h1 {
 
 .world-cup-bracket {
   position: relative;
+  z-index: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -4877,13 +4878,12 @@ h1 {
 .r32 .wc-match-card { flex: 1 1 0; max-width: 96px; min-width: 0; }
 .r16 .wc-match-card { flex: 2 1 0; min-width: 0; }
 .qf  .wc-match-card { flex: 4 1 0; max-width: 340px; min-width: 0; }
-.world-cup-round.sf .world-cup-round-row,
 .world-cup-round.third .world-cup-round-row,
 .world-cup-round.final .world-cup-round-row {
   justify-content: center;
   width: 100%;
 }
-.sf  .wc-match-card { flex: 0 1 360px; min-width: 0; }
+.sf  .wc-match-card { flex: 8 1 0; min-width: 0; }
 .third .wc-match-card { flex: 0 1 320px; min-width: 0; }
 .final .wc-match-card { flex: 0 1 480px; min-width: 0; }
 
@@ -5018,6 +5018,7 @@ h1 {
 .world-cup-bracket-lines {
   position: absolute;
   inset: 0;
+  z-index: -1;
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -9101,3 +9102,1852 @@ body.screen-shake #board {
 
 /* Opp formation/notes on right panel */
 .ts-opp-news-tag.doubt { background: #ffd24a; color: #3a2c05; }
+
+/* ============================================================
+   MATCHDAY MODAL REDESIGN — light "paper sheet" modals.
+   Applies to every .modal-overlay (in-match + campaign modals).
+   Tokens are re-declared on the overlay so modals appended to
+   <body> always have the WC26 palette, whichever screen opened
+   them. Scoped so nothing outside a modal overlay is affected.
+   ============================================================ */
+
+.modal-overlay {
+  --wc-ink: #201e1d;
+  --wc-ink-soft: #4a423d;
+  --wc-muted: #7b716a;
+  --wc-ground: #f5ead8;
+  --wc-ground-2: #eee0c9;
+  --wc-paper: #fffaf3;
+  --wc-paper-2: #fdf3e3;
+  --wc-line: rgba(32, 30, 29, 0.14);
+  --wc-terr-100: #faf0e2;
+  --wc-terr-200: #f5dfc5;
+  --wc-terr-300: #edc7a1;
+  --wc-terr-400: #e2aa7b;
+  --wc-terr-500: #d58d58;
+  --wc-terr-600: #c67139;
+  --wc-terr-700: #a9542a;
+  --wc-terr-800: #863e1d;
+  --wc-terr-900: #612a11;
+  --wc-sage-100: #f0f1e6;
+  --wc-sage-200: #dfe4ce;
+  --wc-sage-300: #c4cfab;
+  --wc-sage-400: #a6b688;
+  --wc-sage-500: #8d9d70;
+  --wc-sage-600: #7a8a5e;
+  --wc-sage-700: #636f4b;
+  --wc-sage-800: #4a5438;
+  --wc-sage-900: #333b26;
+  --wc-display: 'Caprasimo', Georgia, serif;
+  --wc-sans: 'Figtree', system-ui, sans-serif;
+  --wc-r: 16px;
+  --wc-r-lg: 20px;
+  --wc-r-xl: 28px;
+  --wc-pill: 999px;
+  --wc-shadow: 0 1px 2px rgba(32, 30, 29, 0.08), 0 8px 24px rgba(32, 30, 29, 0.08);
+  --wc-shadow-lift: 0 2px 4px rgba(32, 30, 29, 0.1), 0 14px 34px rgba(32, 30, 29, 0.14);
+  --dm-danger: oklch(0.58 0.19 30);
+  --dm-danger-strong: oklch(0.5 0.18 25);
+  --dm-danger-soft: oklch(0.58 0.19 30 / 0.12);
+  --dm-amber: oklch(0.68 0.14 62);
+  --dm-amber-soft: oklch(0.68 0.14 62 / 0.14);
+  background: rgba(18, 16, 15, 0.66);
+  backdrop-filter: blur(3px);
+  padding: 18px;
+}
+
+.modal-overlay .shot-modal,
+.modal-overlay .wc-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  background: var(--wc-paper);
+  color: var(--wc-ink);
+  font-family: var(--wc-sans);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r-lg);
+  box-shadow: var(--wc-shadow-lift);
+  padding: 22px 24px 20px;
+  max-height: min(92vh, 100vh - 36px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.modal-overlay .shot-modal {
+  width: min(460px, 92vw);
+}
+
+/* 3-column shot/tackle layouts (attacker + center + keeper): need room
+   for the two 110px cards and the mid column, so widen just those. */
+.modal-overlay .shot-modal:has(.shot-modal-side) {
+  width: min(680px, 94vw);
+}
+
+.modal-overlay .wc-modal {
+  width: min(640px, 92vw);
+  min-width: 0;
+}
+
+.modal-overlay .halftime-modal.wide-modal {
+  min-width: 0;
+  width: min(920px, 92vw);
+}
+
+.modal-overlay .card-pick-modal,
+.modal-overlay .deck-pick-modal {
+  width: min(900px, 94vw);
+  max-width: 94vw;
+}
+
+.modal-overlay .training-intro-modal {
+  width: min(520px, 92vw);
+  max-width: 520px;
+}
+
+/* Sim result shows the full match log; reward modals lay out wide card rows —
+   both were wide pre-redesign, keep them roomier than the 460px base. */
+.modal-overlay .sim-modal {
+  width: min(720px, 94vw);
+}
+
+.modal-overlay .reward-modal {
+  width: min(640px, 94vw);
+}
+
+.modal-overlay .wc-team-flag-badge {
+  top: 16px;
+  left: 18px;
+  font-size: 28px;
+}
+
+.modal-overlay .modal-overlay-madcap,
+.modal-overlay .fireworks-layer { display: block; }
+
+/* --- shared content columns --- */
+.modal-overlay .shot-modal-content {
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.modal-overlay .halftime-content {
+  max-width: 480px;
+  width: 100%;
+  gap: 10px;
+}
+
+.modal-overlay .wc-modal .halftime-content,
+.modal-overlay .event-phase-modal .halftime-content,
+.modal-overlay .training-modal .halftime-content {
+  max-width: none;
+  width: 100%;
+}
+
+/* --- kickers, titles, verdicts --- */
+.modal-overlay .shot-modal-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  color: var(--wc-terr-800);
+}
+
+.modal-overlay .halftime-title {
+  margin: 0;
+  font-family: var(--wc-display);
+  font-size: 26px;
+  line-height: 1.12;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--wc-ink);
+}
+
+.modal-overlay .halftime-title::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin: 9px auto 0;
+  border-radius: 2px;
+  background: var(--wc-terr-600);
+}
+
+.modal-overlay .shot-modal-outcome {
+  font-family: var(--wc-display);
+  font-size: 25px;
+  letter-spacing: 0.4px;
+  line-height: 1.05;
+}
+
+.modal-overlay .shot-modal-outcome.goal { color: var(--wc-sage-700); }
+.modal-overlay .shot-modal-outcome.blocked { color: var(--dm-danger); }
+
+.modal-overlay .shot-modal-verdict,
+.modal-overlay .shot-formula-line {
+  color: var(--wc-ink-soft);
+  font-size: 12.5px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.modal-overlay .shot-formula-line.goalkeeping { color: var(--wc-muted); }
+
+.modal-overlay .halftime-kickoff,
+.modal-overlay .halftime-note,
+.modal-overlay .reward-subtitle {
+  margin-top: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--wc-muted);
+}
+
+/* --- scoreboard panel --- */
+.modal-overlay .halftime-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 2px 0 0;
+  background: var(--wc-ink);
+  color: #f3ead9;
+  font-family: var(--wc-display);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  border-radius: var(--wc-r);
+  padding: 10px 18px;
+  box-shadow: var(--wc-shadow);
+}
+
+/* --- stats grid (half time / full time) --- */
+.modal-overlay .halftime-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 28px;
+  width: 100%;
+  margin-top: 6px;
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  padding: 14px 18px;
+}
+
+.modal-overlay .halftime-section-title {
+  margin-top: 6px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--wc-terr-800);
+}
+
+.modal-overlay .halftime-list {
+  text-align: left;
+  font-size: 12.5px;
+  color: var(--wc-ink-soft);
+  gap: 4px;
+}
+
+/* --- player of the match --- */
+.modal-overlay .player-of-match {
+  margin: 4px 0;
+  padding: 10px 18px;
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+}
+
+.modal-overlay .player-of-match .pom-label {
+  color: var(--wc-terr-800);
+  letter-spacing: 1.1px;
+}
+
+.modal-overlay .player-of-match .pom-name {
+  color: var(--wc-ink);
+  font-family: var(--wc-display);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.modal-overlay .player-of-match .pom-team { color: var(--wc-muted); }
+
+/* --- primary pill buttons --- */
+.modal-overlay .shot-modal-close,
+.modal-overlay .skip-btn,
+.modal-overlay .menu-btn,
+.modal-overlay .shootout-btn {
+  width: auto;
+  border: 0;
+  color: #fff7ef;
+  background: var(--wc-terr-700);
+  border-radius: var(--wc-pill);
+  padding: 11px 24px;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(169, 84, 42, 0.26);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.modal-overlay .shot-modal-close:hover,
+.modal-overlay .skip-btn:hover,
+.modal-overlay .menu-btn:hover,
+.modal-overlay .shootout-btn:hover {
+  background: var(--wc-terr-800);
+  transform: translateY(-1px);
+}
+
+.modal-overlay .shot-modal-close:active,
+.modal-overlay .skip-btn:active,
+.modal-overlay .menu-btn:active,
+.modal-overlay .shootout-btn:active {
+  background: var(--wc-terr-900);
+  transform: translateY(0);
+}
+
+.modal-overlay .shot-modal-close:disabled,
+.modal-overlay .skip-btn:disabled,
+.modal-overlay .menu-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- selection chips (subs / keeper / pending) --- */
+.modal-overlay .hard-tackle-sub-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0;
+  color: var(--wc-ink-soft);
+  font-size: 12px;
+}
+
+.modal-overlay .halftime-col { gap: 6px; }
+
+.modal-overlay .bench-slot-button {
+  background: transparent;
+  color: var(--wc-ink-soft);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-pill);
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.modal-overlay .bench-slot-button:hover {
+  background: var(--wc-terr-100);
+  border-color: var(--wc-terr-300);
+  color: var(--wc-terr-800);
+}
+
+.modal-overlay .bench-slot-button.selected {
+  background: var(--wc-terr-200);
+  border: 1.5px solid var(--wc-terr-600);
+  color: var(--wc-terr-900);
+  outline: none;
+}
+
+.modal-overlay .bench-slot-button.eligible {
+  background: var(--wc-sage-200);
+  border: 1.5px solid var(--wc-sage-500);
+  color: var(--wc-sage-900);
+  outline: none;
+  animation: none;
+  box-shadow: none;
+}
+
+.modal-overlay .bench-slot-button.sub-candidate {
+  background: var(--dm-danger-soft);
+  border: 1.5px solid var(--dm-danger);
+  color: var(--dm-danger-strong);
+  outline: none;
+}
+
+.modal-overlay .bench-slot-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- event phase option cards (deck pick, staff picks) --- */
+.modal-overlay .event-phase-options .event-phase-option {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  color: var(--wc-ink);
+  padding: 14px 16px;
+  text-align: left;
+  box-shadow: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.modal-overlay .event-phase-options .event-phase-option:hover {
+  background: var(--wc-terr-100);
+  border-color: var(--wc-terr-400);
+  transform: translateY(-1px);
+}
+
+.modal-overlay .event-phase-option {
+  background: var(--wc-terr-700);
+  border: 0;
+  border-radius: var(--wc-pill);
+  color: #fff7ef;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(169, 84, 42, 0.24);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.modal-overlay .event-phase-option:hover {
+  background: var(--wc-terr-800);
+  transform: translateY(-1px);
+}
+
+.modal-overlay .event-option-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--wc-ink);
+}
+
+.modal-overlay .event-option-desc {
+  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--wc-muted);
+}
+
+/* --- training & coach cards inside modals --- */
+.modal-overlay .training-card {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  color: var(--wc-ink);
+  box-shadow: var(--wc-shadow);
+}
+
+.modal-overlay .training-card.rarity-1 { border-color: var(--wc-sage-300); }
+.modal-overlay .training-card.rarity-2 { border-color: var(--wc-terr-300); }
+
+.modal-overlay .training-card.selected {
+  outline: 2px solid var(--wc-terr-600);
+  outline-offset: 1px;
+  border-color: var(--wc-terr-400);
+}
+
+.modal-overlay .training-card-name {
+  color: var(--wc-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.modal-overlay .training-card-desc { color: var(--wc-muted); }
+.modal-overlay .training-card-rarity { color: var(--wc-terr-800); }
+
+.modal-overlay .coach-card {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r-lg);
+  color: var(--wc-ink);
+  box-shadow: var(--wc-shadow);
+}
+
+.modal-overlay .coach-card-name { color: var(--wc-ink); }
+.modal-overlay .coach-card-nationality { color: var(--wc-terr-800); }
+.modal-overlay .coach-card-desc { color: var(--wc-muted); }
+.modal-overlay .coach-card-effects { color: var(--wc-sage-800); }
+
+/* --- training intro rules --- */
+.modal-overlay .training-intro-rules {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.modal-overlay .training-intro-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--wc-ink-soft);
+}
+
+.modal-overlay .training-intro-rule::before {
+  content: '\2022';
+  color: var(--wc-terr-600);
+  font-weight: 800;
+}
+
+/* --- WC deck / staff panels --- */
+.modal-overlay .wc-mt-deck-scroll {
+  max-height: min(520px, 58vh);
+  overflow-y: auto;
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  padding: 12px;
+}
+
+.modal-overlay .wc-mt-staff-card {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  padding: 12px 16px;
+}
+
+.modal-overlay .wc-mt-staff-name {
+  color: var(--wc-ink);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.modal-overlay .wc-mt-staff-desc {
+  margin-top: 2px;
+  color: var(--wc-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* --- event result chips --- */
+.modal-overlay .event-result-subtitle {
+  margin-top: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--wc-terr-800);
+}
+
+.modal-overlay .event-result-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-overlay .event-result-arrow { color: var(--wc-muted); font-weight: 800; }
+
+.modal-overlay .event-result-chip {
+  border-radius: var(--wc-pill);
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modal-overlay .event-result-chip.removed {
+  background: var(--dm-danger-soft);
+  color: var(--dm-danger-strong);
+}
+
+.modal-overlay .event-result-chip.held {
+  background: var(--wc-sage-200);
+  color: var(--wc-sage-900);
+}
+
+/* --- WC results / verdicts --- */
+.modal-overlay .wc-result-pens,
+.modal-overlay .wc-result-winner {
+  font-family: var(--wc-display);
+  font-size: 19px;
+  text-align: center;
+  color: var(--wc-sage-800);
+}
+
+/* --- KO preview --- */
+.modal-overlay .wc-ko-preview-matchup {
+  font-family: var(--wc-display);
+  font-size: 22px;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--wc-ink);
+}
+
+.modal-overlay .wc-ko-preview-vs {
+  color: var(--wc-terr-600);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+/* --- champion --- */
+.modal-overlay .wc-champion-title {
+  font-family: var(--wc-display);
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.12;
+  text-align: center;
+  letter-spacing: 0.3px;
+  color: var(--wc-terr-800);
+}
+
+.modal-overlay .wc-champion-sub {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--wc-muted);
+}
+
+.modal-overlay .wc-awards-title {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--wc-muted);
+}
+
+.modal-overlay .wc-award-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--wc-line);
+  font-size: 13px;
+}
+
+.modal-overlay .wc-award-label { color: var(--wc-muted); }
+.modal-overlay .wc-award-winner { color: var(--wc-ink); font-weight: 800; text-align: right; }
+
+/* --- save / load --- */
+.modal-overlay .wc-setup-title {
+  font-family: var(--wc-display);
+  font-size: 22px;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  color: var(--wc-ink);
+}
+
+.modal-overlay .wc-setup-note {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--wc-muted);
+}
+
+.modal-overlay .wc-save-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.modal-overlay .wc-save-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-pill);
+  padding: 9px 14px;
+  color: var(--wc-ink);
+  font-size: 13px;
+}
+
+.modal-overlay .wc-save-name { color: var(--wc-ink); font-weight: 800; font-size: 13.5px; }
+.modal-overlay .wc-save-meta { color: var(--wc-muted); font-size: 11.5px; margin-top: 2px; }
+.modal-overlay .wc-save-info { min-width: 0; }
+.modal-overlay .wc-save-actions { margin-left: auto; display: flex; gap: 6px; flex-shrink: 0; }
+.modal-overlay .wc-save-actions .menu-btn { padding: 8px 14px; font-size: 12px; box-shadow: none; }
+
+/* --- misc --- */
+.modal-overlay .gk-placeholder {
+  width: 96px;
+  background: var(--wc-sage-100);
+  border: 2px dashed var(--wc-sage-400);
+  border-radius: 10px;
+  color: var(--wc-muted);
+  font-size: 11px;
+}
+
+.modal-overlay .sim-log {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  color: var(--wc-ink-soft);
+  padding: 14px;
+  margin-top: 6px;
+}
+
+.modal-overlay .shootout-prompt {
+  color: var(--dm-amber);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.modal-overlay .action-card { box-shadow: var(--wc-shadow); }
+.modal-overlay .reward-card:hover { box-shadow: 0 8px 20px rgba(169, 84, 42, 0.2); }
+.modal-overlay .reward-card:focus-visible { outline-color: var(--wc-terr-700); }
+
+.modal-overlay .sim-log .log-row,
+.modal-overlay .sim-log [class*='log-'] { color: inherit; }
+
+.modal-overlay button:focus-visible {
+  outline: 2px solid var(--wc-terr-700);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .modal-overlay { padding: 12px; }
+  .modal-overlay .halftime-modal.wide-modal,
+  .modal-overlay .wc-modal { width: 92vw; }
+  .modal-overlay .card-pick-modal,
+  .modal-overlay .deck-pick-modal { width: 94vw; max-width: 94vw; }
+  .modal-overlay .halftime-grid { grid-template-columns: 1fr; }
+  .modal-overlay .wc-save-row { flex-wrap: wrap; }
+  .modal-overlay .wc-save-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+}
+
+@media (max-width: 640px) {
+  .modal-overlay .shot-modal:has(.shot-modal-side) .shot-modal-side .action-card {
+    width: 92px;
+    height: 138px;
+  }
+  .modal-overlay .shot-modal:has(.shot-modal-side) .shot-modal-center {
+    min-width: 0;
+    max-width: none;
+    flex: 1;
+  }
+  .modal-overlay .shot-modal:has(.shot-modal-side) .shot-modal-content {
+    gap: 12px;
+    justify-content: center;
+  }
+}
+
+/* =====================================================================
+   TUTORIAL ONBOARDING (game/onboarding.js)
+   Full-screen lesson sheets over the dark game. Mirror the WC26 paper
+   palette so the coach reads like the rest of the campaign modals.
+   ===================================================================== */
+
+.ob-overlay {
+  --wc-ink: #201e1d;
+  --wc-ink-soft: #4a423d;
+  --wc-muted: #7b716a;
+  --wc-ground: #f5ead8;
+  --wc-ground-2: #eee0c9;
+  --wc-paper: #fffaf3;
+  --wc-paper-2: #fdf3e3;
+  --wc-line: rgba(32, 30, 29, 0.14);
+  --wc-terr-500: #d58d58;
+  --wc-terr-600: #c67139;
+  --wc-terr-700: #a9542a;
+  --wc-terr-800: #863e1d;
+  --wc-sage-100: #f0f1e6;
+  --wc-sage-200: #dfe4ce;
+  --wc-sage-500: #8d9d70;
+  --wc-sage-600: #7a8a5e;
+  --wc-sage-700: #636f4b;
+  --wc-gold: #ffd24d;
+  --wc-sans: 'Figtree', system-ui, sans-serif;
+  --wc-display: 'Caprasimo', Georgia, serif;
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(18, 16, 15, 0.66);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.ob-sheet {
+  font-family: var(--wc-sans);
+  background: var(--wc-paper);
+  color: var(--wc-ink);
+  border: 1px solid var(--wc-line);
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(32, 30, 29, 0.1), 0 14px 34px rgba(32, 30, 29, 0.16);
+  width: min(620px, 96vw);
+  max-height: min(92vh, 920px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 22px 20px;
+}
+
+/* --- header: progress pips + skip --- */
+.ob-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.ob-prog {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ob-pip {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--wc-ground-2);
+  border: 1px solid var(--wc-line);
+}
+.ob-pip.on {
+  background: var(--wc-sage-600);
+  border-color: var(--wc-sage-700);
+}
+.ob-count {
+  margin-left: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wc-muted);
+  letter-spacing: 0.4px;
+}
+.ob-topRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ob-esc {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wc-muted);
+  letter-spacing: 0.5px;
+}
+.ob-skip {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wc-ink-soft);
+  background: transparent;
+  border: 1px solid var(--wc-line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.ob-skip:hover {
+  background: var(--wc-ground);
+  border-color: var(--wc-terr-300, #edc7a1);
+  color: var(--wc-ink);
+}
+
+/* --- text --- */
+.ob-kicker {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--wc-terr-600);
+}
+.ob-title {
+  font-family: var(--wc-display);
+  margin: 4px 0 8px;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+.ob-sub {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--wc-ink-soft);
+}
+
+/* --- demo panel --- */
+.ob-demo.dark {
+  background: #14231b;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* --- mini pitch --- */
+.ob-pitch {
+  position: relative;
+  width: min(300px, 100%);
+  aspect-ratio: 9 / 7;
+  background: #1f4a24;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ob-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+.ob-line.ob-mid {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+}
+.ob-box {
+  position: absolute;
+  top: 50%;
+  width: 17%;
+  height: 55%;
+  transform: translateY(-50%);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+.ob-boxL { left: 0; border-left: 0; }
+.ob-boxR { right: 0; border-right: 0; }
+.ob-goal {
+  position: absolute;
+  top: 50%;
+  width: 9%;
+  height: 12%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+.ob-goalL { left: -6%; }
+.ob-goalR { right: -6%; }
+.ob-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 33.33%;
+  background: linear-gradient(90deg, rgba(255, 210, 77, 0), rgba(255, 210, 77, 0.22));
+  border-left: 1px dashed rgba(255, 210, 77, 0.6);
+  pointer-events: none;
+}
+.ob-zoneTag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffe9a8;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.ob-t {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.ob-t.h { background: #ffcf5c; }
+.ob-t.a { background: #e2604a; }
+.ob-t.hl { background: #ffe9a8; box-shadow: 0 0 8px rgba(255, 210, 77, 0.8); }
+.ob-ball {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- turns pill --- */
+.ob-pill {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  max-width: 360px;
+}
+.ob-cell {
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #e8f0e8;
+}
+.ob-cell.second {
+  background: rgba(255, 255, 255, 0.32);
+  color: #141d16;
+}
+.ob-ht {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffcf5c;
+  background: rgba(255, 207, 92, 0.12);
+  border: 1px solid rgba(255, 207, 92, 0.4);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin: 0 4px;
+}
+
+/* --- real cards, shrunk --- */
+.ob-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+.ob-shrink {
+  width: 79px;
+  height: 119px;
+  flex-shrink: 0;
+}
+.ob-shrink .action-card {
+  width: 110px;
+  height: 165px;
+  transform: scale(0.72);
+  transform-origin: 0 0;
+}
+.ob-shoot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* --- effect chips --- */
+.ob-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.ob-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 6px 10px;
+}
+.ob-cglyph {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+.ob-chip.amber .ob-cglyph { background: rgba(255, 210, 90, 0.22); }
+.ob-chip.sage .ob-cglyph { background: rgba(140, 200, 150, 0.2); }
+.ob-chip.blue .ob-cglyph { background: rgba(110, 160, 230, 0.22); }
+.ob-cbody {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.ob-cbody b {
+  font-size: 11px;
+  font-weight: 800;
+  color: #f2f7f2;
+}
+.ob-cbody small {
+  font-size: 9px;
+  color: #a9b8a9;
+}
+
+/* --- loop / knockout chains --- */
+.ob-chain {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+}
+.ob-chainCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 7px 11px;
+  min-width: 56px;
+}
+.ob-chainCell.gold {
+  background: rgba(255, 210, 77, 0.18);
+  border-color: rgba(255, 210, 77, 0.6);
+}
+.ob-chainCell.end {
+  background: rgba(124, 164, 90, 0.22);
+  border-color: rgba(150, 200, 110, 0.5);
+}
+.ob-chainIcon {
+  font-size: 15px;
+  line-height: 1;
+}
+.ob-chainTag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #f2f7f2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ob-chainSub {
+  font-size: 8.5px;
+  color: #a9b8a9;
+}
+.ob-chainArrow {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* --- WC setup mock --- */
+.ob-setup {
+  width: min(340px, 100%);
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--wc-ink);
+}
+.ob-setupCounter {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.ob-setupCounter b {
+  font-family: var(--wc-display);
+  font-size: 26px;
+  color: var(--wc-terr-600);
+}
+.ob-setupCounter span {
+  color: var(--wc-muted);
+}
+.ob-setupCounter em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--wc-sage-700);
+  font-weight: 800;
+}
+.ob-setupRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ob-setupRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.ob-setupRow b {
+  font-weight: 800;
+}
+.ob-setupRow em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--wc-sage-700);
+  background: var(--wc-sage-200);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.ob-setupRow em:last-of-type {
+  color: var(--wc-muted);
+  background: var(--wc-ground-2);
+}
+.ob-gob {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  border-radius: 6px;
+}
+.ob-gA { background: #c9a227; }
+.ob-gB { background: #2f5fc0; }
+.ob-gC { background: #75aadb; }
+.ob-setupToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: default;
+}
+.ob-knob {
+  width: 26px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--wc-ground-2);
+  border: 1px solid var(--wc-line);
+  position: relative;
+}
+.ob-knob::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wc-muted);
+}
+.ob-setupToggle small {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--wc-muted);
+}
+.ob-setupStart {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--wc-sage-600);
+  border-radius: 999px;
+  padding: 9px;
+}
+
+/* --- hub mock --- */
+.ob-hub {
+  width: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ob-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ob-tab {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c3cdc3;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.ob-tab.on {
+  background: var(--wc-sage-600);
+  color: #fff;
+  border-color: transparent;
+}
+.ob-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--wc-terr-700);
+  color: #fff7ef;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.ob-continue span {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* --- standings mock --- */
+.ob-standings {
+  width: min(360px, 100%);
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: 14px;
+  overflow: hidden;
+  color: var(--wc-ink);
+  font-size: 11px;
+}
+.ob-sHead,
+.ob-sRow {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(7, 24px) 32px 34px;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 10px;
+}
+.ob-sHead {
+  background: var(--wc-ground);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--wc-muted);
+}
+.ob-sRow {
+  border-top: 1px solid var(--wc-line);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+.ob-sTeam {
+  text-align: left;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ob-sPts {
+  font-weight: 900;
+  color: var(--wc-terr-700);
+}
+.ob-sBadge {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  font-style: normal;
+  font-size: 8.5px;
+  font-weight: 800;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.ob-sBadge.top {
+  color: #fff;
+  background: var(--wc-sage-600);
+}
+.ob-sBadge.third {
+  color: var(--wc-ink-soft);
+  background: var(--wc-sage-200);
+}
+.ob-sNote {
+  padding: 8px 10px;
+  border-top: 1px solid var(--wc-line);
+  font-size: 9.5px;
+  color: var(--wc-muted);
+  background: var(--wc-paper-2);
+}
+
+/* --- facts + actions --- */
+.ob-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 6px 0 16px;
+}
+.ob-fact {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wc-sage-800);
+  background: var(--wc-sage-100);
+  border: 1px solid var(--wc-sage-300, #c4cfab);
+  border-radius: 999px;
+  padding: 4px 11px;
+}
+.ob-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.ob-back {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wc-ink-soft);
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ob-back:hover {
+  background: var(--wc-ground);
+  border-color: var(--wc-terr-300, #edc7a1);
+}
+.ob-next {
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fff7ef;
+  background: var(--wc-terr-700);
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 26px;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(169, 84, 42, 0.22);
+  transition: background 0.15s, transform 0.15s;
+}
+.ob-next:hover {
+  background: var(--wc-terr-800);
+  transform: translateY(-1px);
+}
+.ob-next.sage {
+  background: var(--wc-sage-600);
+  box-shadow: 0 5px 14px rgba(99, 111, 75, 0.24);
+}
+.ob-next.sage:hover {
+  background: var(--wc-sage-700);
+}
+.ob-back:focus-visible,
+.ob-next:focus-visible,
+.ob-skip:focus-visible {
+  outline: 2px solid var(--wc-terr-600);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .ob-overlay { padding: 10px; }
+  .ob-sheet { padding: 14px 16px 16px; }
+  .ob-title { font-size: 22px; }
+  .ob-esc { display: none; }
+  .ob-sHead, .ob-sRow { grid-template-columns: 1.4fr repeat(7, 20px) 28px 30px; gap: 1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-overlay { backdrop-filter: none; }
+  .ob-next, .ob-back, .ob-skip { transition: none; }
+}
+
+/* ============================================================
+   MATCH SCREEN RESKIN — WC26 paper chrome on the dark pitch.
+   The pitch + stadium backdrop stay dark (see the tutorial /
+   modal-redesign catalogs: "lessons live on the dark pitch").
+   This block re-skins every panel around the board — scoreboard
+   pill, team rails, match log, hand plates, tooltips, status and
+   hints — to the warm-cream paper language used by the hub,
+   WC screens and modals. Scoped to #board & friends, so nothing
+   outside the live match is affected. Inline kit colors set by
+   ui.js are neutralized with !important (matches .wc-card-team).
+   ============================================================ */
+
+#board,
+#game-status,
+#hint,
+#match-screen,
+.player-tooltip,
+.action-card-tooltip,
+.team-effect-tooltip {
+  --wc-ink: #201e1d;
+  --wc-ink-soft: #4a423d;
+  --wc-muted: #7b716a;
+  --wc-ground: #f5ead8;
+  --wc-ground-2: #eee0c9;
+  --wc-paper: #fffaf3;
+  --wc-paper-2: #fdf3e3;
+  --wc-line: rgba(32, 30, 29, 0.14);
+  --wc-terr-100: #faf0e2;
+  --wc-terr-200: #f5dfc5;
+  --wc-terr-300: #edc7a1;
+  --wc-terr-400: #e2aa7b;
+  --wc-terr-500: #d58d58;
+  --wc-terr-600: #c67139;
+  --wc-terr-700: #a9542a;
+  --wc-terr-800: #863e1d;
+  --wc-terr-900: #612a11;
+  --wc-sage-100: #f0f1e6;
+  --wc-sage-200: #dfe4ce;
+  --wc-sage-300: #c4cfab;
+  --wc-sage-400: #a6b688;
+  --wc-sage-500: #8d9d70;
+  --wc-sage-600: #7a8a5e;
+  --wc-sage-700: #636f4b;
+  --wc-sage-800: #4a5438;
+  --wc-sage-900: #333b26;
+  --wc-gold: #ffd24d;
+  --wc-gold-ink: #8a6d00;
+  --wc-danger: #b22b1d;
+  --wc-display: 'Caprasimo', Georgia, serif;
+  --wc-sans: 'Figtree', system-ui, sans-serif;
+  --wc-r: 16px;
+  --wc-r-lg: 20px;
+  --wc-r-xl: 28px;
+  --wc-pill: 999px;
+  --wc-shadow: 0 1px 2px rgba(32, 30, 29, 0.08), 0 8px 24px rgba(32, 30, 29, 0.08);
+  --wc-shadow-lift: 0 2px 4px rgba(32, 30, 29, 0.1), 0 14px 34px rgba(32, 30, 29, 0.16);
+}
+
+/* ---- shared chrome font ---- */
+#match-screen {
+  width: min(1400px, 96vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--wc-ground);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r-xl);
+  box-shadow: var(--wc-shadow);
+  padding: 18px 22px 24px;
+  color: var(--wc-ink);
+}
+
+#match-screen:has(#board.hidden) {
+  display: none;
+}
+
+/* bare labels that sit on the off-white surround (not inside a
+   card, not over the pitch) keep their ink/muted tones */
+#match-screen .column-tick {
+  color: var(--wc-muted);
+}
+
+#match-screen .bench-header {
+  color: var(--wc-muted);
+}
+
+#scoreboard,
+.rail-team,
+#match-log,
+#rail-controls,
+#hands-area .hand-panel,
+#game-status,
+.player-tooltip,
+.action-card-tooltip,
+.team-effect-tooltip {
+  font-family: var(--wc-sans);
+}
+
+/* ---- #game-status: hidden until the flow fills it ---- */
+
+/* the rail sizes to the board row (content) instead of pinning the
+   panel to the full viewport height */
+#right-rail {
+  height: auto;
+  overflow: visible;
+}
+
+/* ---------- Scoreboard: paper pill on the off-white surround ---------- */
+#scoreboard {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  box-shadow: var(--wc-shadow-lift);
+  color: var(--wc-ink);
+}
+
+.scoreboard-side {
+  gap: 10px;
+}
+
+.scoreboard-team {
+  color: var(--wc-ink) !important;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.scoreboard-score {
+  color: #fff7ef;
+  background: var(--wc-terr-700);
+  border-radius: var(--wc-pill);
+  font-family: var(--wc-display);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 10px rgba(169, 84, 42, 0.25);
+}
+
+.scoreboard-center {
+  color: var(--wc-ink-soft);
+  font-weight: 700;
+}
+
+.scoreboard-penalties {
+  color: var(--wc-terr-700);
+}
+
+.scoreboard-match-effect {
+  color: var(--wc-gold-ink);
+}
+
+/* ---------- Right rail: paper team sheets ---------- */
+.rail-team {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  box-shadow: var(--wc-shadow);
+  color: var(--wc-ink);
+}
+
+.rail-team-header {
+  color: var(--wc-ink) !important;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.rail-team-name {
+  color: inherit;
+}
+
+.rail-ap-dot.empty {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+}
+
+.rail-ap-dot.filled {
+  border-color: var(--wc-gold);
+  box-shadow: 0 0 6px rgba(255, 210, 77, 0.45);
+}
+
+.rail-decks .deck-back {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- Rail controls: clock + primary End Turn ---------- */
+.rail-clock {
+  color: var(--wc-ink-soft);
+}
+
+.rail-playing {
+  color: var(--wc-ink) !important;
+  font-weight: 800;
+}
+
+.rail-end-turn {
+  background: var(--wc-terr-700);
+  color: #fff7ef;
+  border: 0;
+  border-radius: var(--wc-pill);
+  box-shadow: 0 6px 16px rgba(169, 84, 42, 0.28);
+  font-family: var(--wc-sans);
+}
+
+.rail-end-turn:hover {
+  background: var(--wc-terr-800);
+  border-color: transparent;
+}
+
+.rail-end-turn:active {
+  background: var(--wc-terr-900);
+}
+
+/* ---------- Hands: paper plates under the fanned cards ---------- */
+#hands-area .hand-panel {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  box-shadow: var(--wc-shadow);
+  padding: 10px 12px 8px;
+  color: var(--wc-ink);
+}
+
+#hands-area .hand-panel .panel-team {
+  color: var(--wc-terr-800) !important;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.panel-team-name {
+  color: var(--wc-ink-soft) !important;
+}
+
+.team-effect-badge {
+  background: var(--wc-paper-2);
+  border: 1px solid var(--wc-line);
+  color: var(--wc-ink-soft);
+}
+
+.team-effect-badge.team-artifact {
+  background: #fcf0cf;
+  border-color: rgba(255, 210, 77, 0.6);
+  color: #6d5500;
+}
+
+.team-effect-badge::after {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  color: var(--wc-ink);
+  box-shadow: var(--wc-shadow-lift);
+}
+
+/* ---------- Match log: paper sheet ---------- */
+#match-log {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  box-shadow: var(--wc-shadow);
+  color: var(--wc-ink);
+}
+
+.log-minute {
+  color: var(--wc-muted);
+}
+
+.log-team {
+  color: var(--wc-ink);
+  font-weight: 800;
+}
+
+.log-text {
+  color: var(--wc-ink-soft);
+}
+
+.log-entry.log-goal .log-text {
+  color: var(--wc-gold-ink);
+  font-weight: 700;
+}
+
+.log-entry.log-denied .log-text {
+  color: var(--wc-terr-700);
+}
+
+.log-entry.log-card .log-text {
+  color: var(--wc-terr-800);
+}
+
+.log-entry.log-injury .log-text,
+.log-entry.log-error .log-text {
+  color: var(--wc-danger);
+}
+
+.log-entry.log-sub .log-text {
+  color: var(--wc-sage-700);
+}
+
+/* ---------- Player tooltip: paper sheet ----------
+   Name/meta/star stay light: they sit on the team-colour header
+   band (ui sets header.style.backgroundColor = team.primaryColor).
+   Only the body below the band (stats + effects) is paper-ink. */
+.player-tooltip {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: 10px;
+  box-shadow: var(--wc-shadow-lift);
+  color: var(--wc-ink);
+}
+
+.player-tooltip.in-match-log {
+  background: transparent;
+  box-shadow: none;
+}
+
+.player-tooltip-avatar {
+  background: var(--wc-ground);
+  color: var(--wc-terr-800);
+}
+
+/* card + team-effect floating tooltips: paper sheets */
+.action-card-tooltip,
+.team-effect-tooltip {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: 10px;
+  color: var(--wc-ink-soft);
+  box-shadow: var(--wc-shadow-lift);
+}
+
+.stat-label {
+  color: var(--wc-muted);
+}
+
+.stat-bar {
+  background: var(--wc-ground-2);
+}
+
+.stat-fill {
+  background: var(--wc-sage-600);
+}
+
+.stat-value {
+  color: var(--wc-ink);
+}
+
+.player-tooltip-effects {
+  border-top: 1px solid var(--wc-line);
+}
+
+.player-tooltip-effects-title {
+  color: var(--wc-terr-700);
+}
+
+.effect-name {
+  color: var(--wc-ink);
+}
+
+.effect-desc {
+  color: var(--wc-muted);
+}
+
+.effect-turns {
+  color: var(--wc-terr-700);
+}
+
+/* ---------- Game status + hints ---------- */
+#game-status {
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r);
+  box-shadow: var(--wc-shadow);
+  color: var(--wc-ink);
+}
+
+.game-turn {
+  color: var(--wc-ink);
+}
+
+.game-turns-left {
+  color: var(--wc-muted);
+}
+
+.game-score {
+  color: var(--wc-terr-700);
+}
+
+.in-play-team-header {
+  color: var(--wc-ink);
+}
+
+.skip-btn {
+  background: var(--wc-terr-100);
+  color: var(--wc-terr-800);
+  border: 1px solid var(--wc-terr-300);
+  border-radius: var(--wc-pill);
+}
+
+.skip-btn:hover {
+  background: var(--wc-terr-200);
+}
+
+#hint {
+  background: var(--wc-gold);
+  color: var(--wc-ink);
+  border-radius: var(--wc-pill);
+  box-shadow: var(--wc-shadow);
+}
