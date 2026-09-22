@@ -3089,6 +3089,11 @@ function showMainMenu() {
   boardEl.classList.add('hidden');
   gameStatusEl.classList.add('hidden');
   hintEl.classList.add('hidden');
+  const resumeBtn = document.getElementById('menu-resume-wc');
+  if (resumeBtn) {
+    const hasResume = typeof WcSave !== 'undefined' && WcSave.resumeAvailable();
+    resumeBtn.classList.toggle('hidden', !hasResume);
+  }
 }
 function showGameRulesScreen() {
   menuScreen.classList.add('hidden');

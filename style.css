@@ -4,7 +4,11 @@
 
 body {
   font-family: system-ui, sans-serif;
-  background: #1c2b21;
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
+  background-attachment: fixed;
   color: #e8f0e8;
   display: flex;
   flex-direction: column;
@@ -25,7 +29,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #0e1710;
+  background: #18241b;
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   padding: 6px 18px;
@@ -169,7 +173,7 @@ h1 {
 }
 
 .rail-team {
-  background: #16231b;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 8px 10px;
@@ -328,7 +332,7 @@ h1 {
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 10px;
-  background: #202f25;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #e6f2e9;
   cursor: help;
@@ -400,7 +404,7 @@ h1 {
   max-height: 450px;
   min-height: 0;
   overflow-y: auto;
-  background: #0e1710;
+  background: #18241b;
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   padding: 8px 12px;
@@ -771,7 +775,7 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   width: 220px;
-  background: #16231b;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
@@ -957,7 +961,7 @@ h1 {
   width: 100%;
   margin-top: 20px;
   padding: 10px 16px;
-  background: #16231b;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   align-items: center;
@@ -1339,7 +1343,7 @@ h1 {
   width: 110px;
   height: 165px;
   flex-shrink: 0;
-  background: linear-gradient(165deg, #24382c, #16231b 70%);
+  background: linear-gradient(165deg, #24382c, #18241b 70%);
   border: 2px solid rgba(255, 255, 255, 0.45);
   border-radius: 9px;
   padding: 8px;
@@ -1725,7 +1729,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  background: #16231b;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 14px;
   padding: 24px;
@@ -2294,7 +2298,6 @@ h1 {
   pointer-events: none;
 }
 
-#menu-screen::after,
 #friendly-setup-screen::after {
   content: '';
   position: absolute;
@@ -2305,7 +2308,10 @@ h1 {
 }
 
 .menu-panel {
-  background: rgba(16, 26, 19, 0.88);
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
   backdrop-filter: blur(6px);
   border: 2px solid rgba(255, 200, 100, 0.35);
   border-radius: 12px;
@@ -2386,7 +2392,7 @@ h1 {
   padding: 8px 10px;
   font-size: 14px;
   color: #e8f0e8;
-  background: #1c2b21;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 3px;
 }
@@ -2421,7 +2427,10 @@ h1 {
 }
 
 .rules-panel {
-  background: rgba(16, 26, 19, 0.92);
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
   backdrop-filter: blur(6px);
   border: 2px solid rgba(255, 200, 100, 0.35);
   border-radius: 12px;
@@ -2541,7 +2550,10 @@ h1 {
 }
 
 .tournament-container {
-  background: #101a13;
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   padding: 36px 44px;
@@ -2636,7 +2648,7 @@ h1 {
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  background: #0e1710;
+  background: #18241b;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 14px;
@@ -2721,7 +2733,7 @@ h1 {
   width: 100%;
   max-height: 50vh;
   overflow-y: auto;
-  background: #0e1710;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 12px;
@@ -2743,7 +2755,10 @@ h1 {
 
 .world-cup-container {
   position: relative;
-  background: #101a13;
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   padding: 28px 32px;
@@ -3964,7 +3979,7 @@ h1 {
 }
 
 .world-cup-human-pick select {
-  background: #0e1710;
+  background: #18241b;
   color: #eaf3ea;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 3px;
@@ -4000,7 +4015,7 @@ h1 {
 }
 
 .world-cup-group {
-  background: #0e1710;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 14px;
@@ -4888,7 +4903,7 @@ h1 {
 .final .wc-match-card { flex: 0 1 480px; min-width: 0; }
 
 .wc-match-card {
-  background: #0e1710;
+  background: #18241b;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
   padding: 8px 10px;
@@ -4984,7 +4999,7 @@ h1 {
   padding: 16px 22px;
   border-radius: 14px;
   border-color: rgba(255, 210, 77, 0.55);
-  background: radial-gradient(140% 160% at 50% 0%, rgba(255, 210, 77, 0.16), #0e1710 70%);
+  background: radial-gradient(140% 160% at 50% 0%, rgba(255, 210, 77, 0.16), #18241b 70%);
   box-shadow: 0 0 0 1px rgba(255, 210, 77, 0.15);
 }
 .final .wc-card-team { font-size: 16px; gap: 12px; padding: 2px 0; }
@@ -5031,7 +5046,7 @@ h1 {
   justify-content: center;
   gap: 12px;
   padding: 12px;
-  background: #0e1710;
+  background: #18241b;
   border: 1px solid #ffd24d;
   border-radius: 10px;
   font-size: 15px;
@@ -5961,6 +5976,12 @@ body.screen-shake #board {
   background: #3d5a48;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 12px color-mix(in srgb, var(--accent, #ffd24d) 40%, transparent);
 }
+
+#menu-screen .menu-hud { order: -30; }
+#menu-screen .menu-title { order: -20; }
+#menu-screen .menu-subtitle { order: -10; }
+#menu-screen .menu-foot { order: 20; }
+#menu-screen #menu-resume-wc { order: -1; }
 
 /* --- Fireworks behind the victory modal --- */
 .fireworks-layer {
@@ -10931,4 +10952,211 @@ body.screen-shake #board {
   color: var(--wc-ink);
   border-radius: var(--wc-pill);
   box-shadow: var(--wc-shadow);
+}
+
+/* --- Main menu reskin: pitch room (Option 3) -----------------------
+   Warm paper board on a dark pitch-room, WC26 token palette.
+   Scoped to #menu-screen so setup screens keep their own chrome. */
+
+#menu-screen {
+  --wc-ink: #201e1d;
+  --wc-ink-soft: #4a423d;
+  --wc-muted: #7b716a;
+  --wc-ground: #f5ead8;
+  --wc-ground-2: #eee0c9;
+  --wc-paper: #fffaf3;
+  --wc-paper-2: #fdf3e3;
+  --wc-line: rgba(32, 30, 29, 0.14);
+  --wc-terr-100: #faf0e2;
+  --wc-terr-200: #f5dfc5;
+  --wc-terr-300: #edc7a1;
+  --wc-terr-400: #e2aa7b;
+  --wc-terr-500: #d58d58;
+  --wc-terr-600: #c67139;
+  --wc-terr-700: #a9542a;
+  --wc-sage-100: #f0f1e6;
+  --wc-sage-300: #c4cfab;
+  --wc-sage-500: #8d9d70;
+  --wc-sage-600: #7a8a5e;
+  --wc-gold: #ffd24d;
+  --wc-gold-ink: #8a6d00;
+  --wc-r-lg: 20px;
+  --wc-r-xl: 28px;
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
+  filter: none;
+}
+
+#menu-screen .menu-pitch {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(196, 207, 171, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 207, 171, 0.14) 1px, transparent 1px);
+  background-size: calc(100% / 9) calc(100% / 7);
+}
+#menu-screen .menu-pitch::before {
+  content: '';
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 50%;
+  height: 2px;
+  background: rgba(255, 210, 77, 0.22);
+}
+#menu-screen .menu-pitch::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(18vw, 140px);
+  height: min(18vw, 140px);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 210, 77, 0.22);
+  transform: translate(-50%, -50%);
+}
+#menu-screen .menu-box {
+  position: absolute;
+  top: 50%;
+  width: 16%;
+  height: 42%;
+  border: 2px solid rgba(255, 210, 77, 0.16);
+  transform: translateY(-50%);
+}
+#menu-screen .menu-box-l { left: calc(15% - 2px); border-right: none; }
+#menu-screen .menu-box-r { right: calc(15% - 2px); border-left: none; }
+#menu-screen .menu-six {
+  position: absolute;
+  top: 50%;
+  width: 46%;
+  height: 26%;
+  border: 2px solid rgba(255, 210, 77, 0.16);
+  transform: translateY(-50%);
+}
+#menu-screen .menu-box-l .menu-six { right: 0; border-right: none; }
+#menu-screen .menu-box-r .menu-six { left: 0; border-left: none; }
+
+#menu-screen .menu-panel {
+  z-index: 3;
+  width: 540px;
+  background: var(--wc-paper);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-r-xl);
+  padding: 0 30px;
+  align-items: stretch;
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.06) inset, 0 30px 70px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+#menu-screen .menu-panel::before {
+  content: '';
+  display: block;
+  height: 5px;
+  margin: 0 -30px 0;
+  background: linear-gradient(90deg, var(--wc-terr-600), var(--wc-gold) 55%, var(--wc-sage-600));
+}
+#menu-screen .menu-title {
+  color: var(--wc-ink);
+  font-size: 42px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+#menu-screen .menu-subtitle {
+  color: var(--wc-muted);
+  letter-spacing: 0.18em;
+  text-align: center;
+  padding: 0 8px;
+}
+
+#menu-screen .menu-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 2px 10px;
+  border-bottom: 1px solid var(--wc-line);
+  margin-bottom: 18px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+#menu-screen .menu-hud-name { color: var(--wc-muted); }
+#menu-screen .menu-hud-season { color: var(--wc-terr-600); }
+
+#menu-screen .menu-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--wc-paper-2);
+  border: 1.5px solid var(--wc-line);
+  border-radius: var(--wc-r-lg);
+  color: var(--wc-ink);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  overflow: hidden;
+}
+#menu-screen .menu-btn::before {
+  content: '';
+  position: static;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--acc, var(--wc-terr-600));
+  flex: 0 0 auto;
+}
+#menu-screen .menu-btn .menu-btn-t {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+#menu-screen .menu-btn small {
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--wc-muted);
+  text-transform: none;
+}
+#menu-screen .menu-btn:hover {
+  transform: translateX(3px);
+  background: var(--wc-paper-2);
+  box-shadow: 0 8px 18px rgba(32, 30, 29, 0.14);
+}
+
+#menu-screen .menu-btn:nth-of-type(1) { --acc: var(--wc-terr-600); }
+#menu-screen .menu-btn:nth-of-type(2) { --acc: var(--wc-sage-600); }
+#menu-screen .menu-btn:nth-of-type(3) { --acc: var(--wc-terr-400); }
+#menu-screen .menu-btn:nth-of-type(4) { --acc: var(--wc-gold); }
+#menu-screen .menu-btn:nth-of-type(5) { --acc: var(--wc-sage-500); }
+#menu-screen .menu-btn:nth-of-type(6) { --acc: var(--wc-sage-500); }
+#menu-screen .menu-btn:nth-of-type(7) { --acc: var(--wc-terr-300); }
+
+#menu-screen .menu-btn:nth-of-type(1):hover { background: #fff5f0; }
+#menu-screen .menu-btn:nth-of-type(2):hover { background: var(--wc-sage-100); }
+#menu-screen .menu-btn:nth-of-type(3):hover { background: var(--wc-terr-100); }
+#menu-screen .menu-btn:nth-of-type(4):hover { background: var(--wc-gold); border-color: var(--wc-gold); color: var(--wc-gold-ink); box-shadow: 0 10px 22px rgba(255, 210, 77, 0.25); }
+#menu-screen .menu-btn:nth-of-type(4) small { color: rgba(138, 109, 0, 0.72); }
+#menu-screen .menu-btn:nth-of-type(5):hover,
+#menu-screen .menu-btn:nth-of-type(6):hover { background: #edf7f4; }
+#menu-screen .menu-btn:nth-of-type(7):hover { background: var(--wc-paper); }
+
+#menu-screen .menu-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--wc-line);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wc-muted);
 }

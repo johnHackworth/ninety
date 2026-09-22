@@ -20,12 +20,19 @@
     window.DD_RUM.init({
         applicationId: 'df3f2e88-77f1-4435-869f-40158dbf8d3b',
         clientToken: 'pub83536f3da3bed2913e475de9e185406a',
+        remoteConfiguration: {
+            id: 'ff8c4e84-418d-49df-98c8-0fd8e6fa1cfc',
+        },
         site: 'datadoghq.com',
-        service: 'slay-the-umpire',
+        service: 'ninety-web',
         env: 'dev',        // e.g. 'prod', 'staging-1', 'dev'
         version: '0.1',  // e.g. '1.0.0'
         sessionSampleRate: 100,     // capture 100% of sessions
         sessionReplaySampleRate: 100,  // capture 20% of sessions with replay
+        telemetrySampleRate: 100,
+        telemetryConfigurationSampleRate:100,
+        telemetryUsageSampleRate:100,
+        metricSampleRate:100,
         trackResources: true,     // Enable Resource tracking
         trackUserInteractions: true,  // Enable Action tracking
         trackLongTasks: true,     // Enable Long Tasks tracking
@@ -64,15 +71,24 @@
 </head>
 <body>
   <div id="menu-screen">
+    <div class="menu-pitch" aria-hidden="true">
+      <span class="menu-box menu-box-l"><span class="menu-six"></span></span>
+      <span class="menu-box menu-box-r"><span class="menu-six"></span></span>
+    </div>
     <div class="menu-panel">
+      <div class="menu-hud">
+        <span class="menu-hud-name">Ninety</span>
+        <span class="menu-hud-season">Season one</span>
+      </div>
       <h1 class="menu-title">Ninety</h1>
       <p class="menu-subtitle">A tactical card-match game</p>
-      <button id="menu-friendly" class="menu-btn">Start a Friendly Match</button>
-      <button id="menu-simulate" class="menu-btn">Simulate a Match</button>
-      <button id="menu-tournament" class="menu-btn">Tournament</button>
-      <button id="menu-world-cup" class="menu-btn">World Cup 2026</button>
-      <button id="menu-load-wc" class="menu-btn">Load World Cup</button>
-      <button id="menu-rules" class="menu-btn">Game Rules</button>
+      <button id="menu-resume-wc" class="menu-btn hidden"><span class="menu-btn-t">Resume World Cup<small>Continue your campaign</small></span></button>
+      <button id="menu-load-wc" class="menu-btn"><span class="menu-btn-t">Load World Cup<small>Continue a saved campaign</small></span></button>
+      <button id="menu-world-cup" class="menu-btn"><span class="menu-btn-t">World Cup 2026<small>48 teams · the main event</small></span></button>
+      <button id="menu-tournament" class="menu-btn"><span class="menu-btn-t">Tournament<small>Build your own bracket</small></span></button>
+      <button id="menu-friendly" class="menu-btn"><span class="menu-btn-t">Friendly Match<small>Pick your kickoff teams</small></span></button>
+      <button id="menu-rules" class="menu-btn"><span class="menu-btn-t">Game Rules<small>Cards, turns &amp; tactics</small></span></button>
+      <div class="menu-foot"><span>Ninety</span><span>v0.9</span></div>
     </div>
   </div>
   <div id="rules-screen" class="hidden">

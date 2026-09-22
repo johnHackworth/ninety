@@ -27,6 +27,7 @@ let wcEventsScheduled = 0;
 let wcCoachPicksQueue = [];
 let wcCoachPicksActive = false;
 let wcGroupToKnockoutPending = false;
+let wcSaveModalOpen = false;
 const worldCupScreen = document.getElementById('world-cup-screen');
 const worldCupPhaseEl = document.getElementById('world-cup-phase');
 const worldCupContentEl = document.getElementById('world-cup-content');
@@ -36,6 +37,15 @@ const worldCupPlayNextBtn = document.getElementById('wc-continue');
 const wcBannerEl = document.getElementById('wc-banner');
 const wcTickerEl = document.getElementById('wc-ticker');
 const wcOverviewBodyEl = document.getElementById('wc-overview-body');
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  if (wcSaveModalOpen) return;
+  if (wcMatchMode || wcSimRunning || game) return;
+  if (worldCupScreen.classList.contains('hidden')) return;
+  if (document.querySelector('.modal-overlay')) return;
+  openWcSaveLoadModal();
+});
 const eventPhaseScreen = document.getElementById('event-phase-screen');
 const eventKickerEl = document.getElementById('event-kicker');
 const eventHeadingEl = document.getElementById('event-heading');
@@ -857,6 +867,12 @@ function wcCompleteMatch(m) {
         eventQueuedThisMatch = true;
       }
     }
+  }
+
+  const humanInvolved =
+    wcControllerForTeam(m.home).type === 'human' || wcControllerForTeam(m.away).type === 'human';
+  if (humanInvolved && typeof WcSave !== 'undefined') {
+    WcSave.save('autosave');
   }
 
   const award = wcMaybeAwardCoach(m);
@@ -5862,6 +5878,8 @@ function wcShowResultToast(m, onClose) {
 // ---- World Cup Save / Load modal ----
 
 function openWcSaveLoadModal() {
+  if (wcSaveModalOpen) return;
+  wcSaveModalOpen = true;
   const modal = document.createElement('div');
   modal.className = 'shot-modal wc-setup-modal wc-save-modal';
 
@@ -5875,7 +5893,25 @@ function openWcSaveLoadModal() {
   note.textContent = 'Saves are taken between matches. They restore the full tournament: bracket, teams, players, coaches, cards, buffs, penalties and formations.';
   modal.appendChild(note);
 
-  const close = showModalOverlay(modal, { closeKeys: ['Escape'], closeOnOverlay: true });
+  const backBtn = document.createElement('button');
+  backBtn.className = 'menu-btn';
+  backBtn.textContent = '← Back to Main Menu';
+  backBtn.addEventListener('click', () => {
+    close();
+    wcSimRunning = false;
+    if (worldCup && !worldCup.completed && typeof WcSave !== 'undefined') {
+      WcSave.save('autosave');
+    }
+    worldCup = null;
+    showMainMenu();
+  });
+  modal.appendChild(backBtn);
+
+  const close = showModalOverlay(modal, {
+    closeKeys: ['Escape'],
+    closeOnOverlay: true,
+    onClose: () => { wcSaveModalOpen = false; },
+  });
 
   const saveRow = document.createElement('div');
   saveRow.className = 'wc-save-row wc-save-new';

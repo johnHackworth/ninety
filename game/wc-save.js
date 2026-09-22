@@ -7,6 +7,7 @@
 // in progress is the job of the separate per-match auto-save (save-load.js).
 
 const WC_SAVE_KEY = 'slay-the-umpire-wc-saves';
+const WC_AUTOSAVE_NAME = 'autosave';
 
 const WcSave = {
   // ---- serialization helpers (Infinity/NaN safe + card/coach instances -> names) ----
@@ -254,6 +255,17 @@ const WcSave = {
       return true;
     }
     return false;
+  },
+
+  resumeAvailable() {
+    const store = this._readStore();
+    const s = store[WC_AUTOSAVE_NAME];
+    if (!s) return false;
+    return this._nextMatchLabel(s) !== 'Complete';
+  },
+
+  resume() {
+    return this.load(WC_AUTOSAVE_NAME);
   },
 
   load(name) {

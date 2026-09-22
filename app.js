@@ -1398,7 +1398,6 @@ document.getElementById('menu-friendly').addEventListener('click', showSetupScre
 document.getElementById('menu-back').addEventListener('click', showMainMenu);
 document.getElementById('menu-rules').addEventListener('click', showGameRulesScreen);
 document.getElementById('rules-back').addEventListener('click', showMainMenu);
-document.getElementById('menu-simulate').addEventListener('click', showSimSetupScreen);
 document.getElementById('menu-tournament').addEventListener('click', showTournamentSetup);
 document.getElementById('menu-world-cup').addEventListener('click', showWorldCupView);
 document.getElementById('menu-load-wc').addEventListener('click', openWcLoadModal);
@@ -1425,8 +1424,22 @@ document.getElementById('wc-save-load').addEventListener('click', openWcSaveLoad
 document.getElementById('wc-tabs-esc').addEventListener('click', openWcSaveLoadModal);
 document.getElementById('wc-back').addEventListener('click', () => {
   wcSimRunning = false;
+  if (worldCup && !worldCup.completed && typeof WcSave !== 'undefined') {
+    WcSave.save('autosave');
+  }
   worldCup = null;
   showMainMenu();
+});
+
+document.getElementById('menu-resume-wc').addEventListener('click', () => {
+  const res = WcSave.resume();
+  if (res && res.ok) {
+    showWorldCupScreen();
+    renderWorldCupView();
+    showToast(`Resumed World Cup "${res.name}".`, 'info');
+  } else {
+    showToast((res && res.reason) || 'Could not resume World Cup.', 'error');
+  }
 });
 
 
