@@ -193,7 +193,7 @@ const DEFENSE_STYLES = {
       if (tackle) return { play: tackle };
 
       const offsideTrap = pick(OffsideTrapAction);
-      if (offsideTrap) return { play: offsideTrap };
+      if (offsideTrap && OffsideTrapAction.isReady(team, board)) return { play: offsideTrap };
 
       const markThemUp = pick(MarkThemUpAction);
       if (markThemUp) return { play: markThemUp };
@@ -212,7 +212,7 @@ const DEFENSE_STYLES = {
         pick(MarkingAction) ||
         pick(PressAction) ||
         pick(TackleAction) ||
-        pick(OffsideTrapAction) ||
+        (pick(OffsideTrapAction) && OffsideTrapAction.isReady(team, board)) ||
         pick(FallbackAction) ||
         pick(RiskyTackleAction);
       if (
@@ -278,7 +278,7 @@ const DEFENSE_STYLES = {
       if (tackle) return { play: tackle };
 
       const offsideTrap = pick(OffsideTrapAction);
-      if (offsideTrap) return { play: offsideTrap };
+      if (offsideTrap && OffsideTrapAction.isReady(team, board)) return { play: offsideTrap };
 
       const markThemUp = pick(MarkThemUpAction);
       if (markThemUp) return { play: markThemUp };
@@ -352,7 +352,7 @@ const DEFENSE_STYLES = {
       if (hardTackle) return { play: hardTackle };
 
       const offsideTrap = pick(OffsideTrapAction);
-      if (offsideTrap) return { play: offsideTrap };
+      if (offsideTrap && OffsideTrapAction.isReady(team, board)) return { play: offsideTrap };
 
       // Only move to mark the ball carrier (not other runners).
       if (holder && holder.team !== team.name) {

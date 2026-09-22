@@ -53,6 +53,6 @@ class PlayerRumbleEvent {
 
   findReplacement(team, player) {
     const subs = team.availableSubstitutes();
-    return subs.find((p) => p.position === player.position) || subs[0] || null;
+    return subs.find((p) => p.position === player.position) || null;
   }
 }

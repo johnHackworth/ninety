@@ -10,12 +10,8 @@ class OffsideTrapAction extends Action {
     });
   }
 
-  play({ team, board }) {
-    const opponent = board.getOpponent(team);
-    const ballCell = board.ballCell();
-    const column = ballCell.x;
-
-    const backwardsDefender = team.currentPlayers
+  static deepestDefender(team, board) {
+    return team.currentPlayers
       .filter((p) => p.position !== 'GK')
       .reduce((best, p) => {
         const c = board.getPlayerCell(p);
@@ -24,6 +20,23 @@ class OffsideTrapAction extends Action {
         const deeper = team.side === 'left' ? c.x < best.cell.x : c.x > best.cell.x;
         return deeper ? { player: p, cell: c } : best;
       }, null);
+  }
+
+  // The trap only ever succeeds when the ball already sits on the deepest
+  // defender's column, so the AI must not pick this card unless that holds —
+  // otherwise it re-selects a guaranteed-failing action every tick forever.
+  static isReady(team, board) {
+    const backwardsDefender = OffsideTrapAction.deepestDefender(team, board);
+    const column = board.ballCell().x;
+    return Boolean(backwardsDefender && backwardsDefender.cell.x === column);
+  }
+
+  play({ team, board }) {
+    const opponent = board.getOpponent(team);
+    const ballCell = board.ballCell();
+    const column = ballCell.x;
+
+    const backwardsDefender = OffsideTrapAction.deepestDefender(team, board);
 
     if (!backwardsDefender || backwardsDefender.cell.x !== column) {
       return {

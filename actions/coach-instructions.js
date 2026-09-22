@@ -27,19 +27,24 @@ class CoachInstructionsAction extends Action {
 
     const hand = game.inPlay[team.name];
     const count = hand.length;
+    const heldSet = new Set(game.heldCards && game.heldCards[team.name] ? game.heldCards[team.name] : []);
 
+    const kept = [];
     for (const card of hand) {
-      if (card === this) continue;
+      if (card === this || card.hold || heldSet.has(card)) {
+        kept.push(card);
+        continue;
+      }
       team.useAction(card);
     }
     hand.length = 0;
-    hand.push(this);
+    hand.push(...kept);
 
-    const drawn = game.drawCards(team, count, { unique: this.unique });
+    const drawn = game.drawCards(team, count - (kept.length - 1), { unique: this.unique });
 
     logMatch(
       team.name,
-      `Coach direction: discards ${count - 1} card(s) and draws ${drawn.length} new card(s). +4 Press cards added to deck.`
+      `Coach direction: discards ${count - kept.length} card(s) and draws ${drawn.length} new card(s). +4 Press cards added to deck.`
     );
 
     const playResult = game.playAction(team, this);

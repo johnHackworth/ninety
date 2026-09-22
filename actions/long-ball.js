@@ -11,7 +11,11 @@ class LongBallAction extends Action {
   }
 
   play({ team, passer, target, board }) {
-    if (!passer || passer.passing < 3) {
+    const holder = board.getBallHolder();
+    if (!holder || holder !== passer) {
+      return { success: false, reason: 'only the player with the ball can play a long ball' };
+    }
+    if (passer.passing < 3) {
       return { success: false, reason: 'the passer needs a passing attribute of at least 3' };
     }
 

@@ -36,6 +36,10 @@ class Action {
     return true;
   }
 
+  static nextCardId() {
+    return ++_cardIdCounter;
+  }
+
   static markerFollows(marker, player, team) {
     if (marker.position === 'GK') return false;
     const markingStat = (team && team.hasTeamEffect && team.hasTeamEffect('triggerManMarking'))

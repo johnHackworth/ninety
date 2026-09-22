@@ -14,6 +14,14 @@ class LongPassAction extends Action {
   }
 
   play({ passer, team, target, board, maxRange = 4 }) {
+    const holder = board.getBallHolder();
+    if (!holder) {
+      return { success: false, reason: 'nobody has possession of the ball' };
+    }
+    if (holder !== passer) {
+      return { success: false, reason: 'only the player with the ball can play a long pass' };
+    }
+
     const ballCell = board.ballCell();
     const dx = target.x - ballCell.x;
 
