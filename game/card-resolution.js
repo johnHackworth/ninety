@@ -507,8 +507,7 @@ function resolveRunAndCross(target) {
 
   const result = action.play({ team, board, winger, target });
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(team, result.reason);
     return;
   }
 
@@ -1483,6 +1482,25 @@ function resolveHardTackle(tacklerEl) {
 }
 
 
+// If an AI resolution cannot complete (e.g. a player is cramped and cannot
+// move), skip the AI team so the game never retries the same impossible play
+// forever. Human mis/nullclicks just abort cleanly and stay on turn.
+function failToResolve(team, reason) {
+  logAlert(reason);
+  renderGame();
+  if (
+    game &&
+    team &&
+    team.controller &&
+    team.controller.type === 'ai' &&
+    game.currentTeam === team &&
+    !game.finished
+  ) {
+    const result = game.skip(team);
+    if (result.success) renderGame();
+  }
+}
+
 function resolveMove(x, y) {
   const pending = pendingMove;
   if (!pending) return;
@@ -1551,8 +1569,7 @@ function resolveSlip(x, y) {
   const result = action.play({ team, player, target: { x, y }, board });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(team, result.reason);
     return;
   }
 
@@ -1732,8 +1749,7 @@ function resolveOffBallPlay() {
   const result = p.action.play({ team: p.team, board, moves: p.moves });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(p.team, result.reason);
     return;
   }
 
@@ -1766,8 +1782,7 @@ async function resolveDribble(x, y) {
   const result = p.action.play({ team: p.team, player: p.player, board, target: { x, y } });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(p.team, result.reason);
     return;
   }
 
@@ -1827,8 +1842,7 @@ function resolveFeintTurn(x, y) {
   const result = p.action.play({ team: p.team, player: p.player, board, target: { x, y } });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(p.team, result.reason);
     return;
   }
 
@@ -2167,8 +2181,7 @@ function resolveUnderlap(player) {
 
   const result = p.action.play({ team: p.team, player, board });
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(p.team, result.reason);
     return;
   }
 
@@ -2202,8 +2215,7 @@ function resolveSprint(x, y) {
   const result = action.play({ team, player, board, target: { x, y } });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(team, result.reason);
     return;
   }
 
@@ -2249,8 +2261,7 @@ function resolveOverlap(player) {
   const result = action.play({ team, player, board });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(team, result.reason);
     return;
   }
 
@@ -2289,8 +2300,7 @@ function resolveSideAttack(side) {
   const result = p.action.play({ team: p.team, board, side });
 
   if (!result.success && result.reason) {
-    logAlert(result.reason);
-    renderGame();
+    failToResolve(p.team, result.reason);
     return;
   }
 

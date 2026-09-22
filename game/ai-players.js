@@ -121,6 +121,7 @@ function aiCountFlankPlayers(team, side) {
 function aiDribbleShootTarget(team, holder) {
   const c = getPlayerCell(holder);
   if (!c) return null;
+  if (board.isCramped && board.isCramped(holder)) return null;
   const marker = opponentInCell(c.x, c.y, team);
   if (!marker) return null;
   if (!(holder.dribbling > marker.marking)) return null;
