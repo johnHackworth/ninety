@@ -51,6 +51,7 @@ const _saveLoad = {
       yellowCards: p.yellowCards,
       sentOff: p.sentOff,
       carriedFatigue: Boolean(p.carriedFatigue),
+      injuryMatches: typeof p.injuryMatches === 'number' ? p.injuryMatches : undefined,
       effects: p.effects.map((e) => ({
         type: e.type,
         turns: e.turns,
@@ -248,6 +249,8 @@ const _saveLoad = {
         player.yellowCards = sp.yellowCards;
         player.sentOff = sp.sentOff;
         player.carriedFatigue = Boolean(sp.carriedFatigue);
+        if (typeof sp.injuryMatches === 'number') player.injuryMatches = sp.injuryMatches;
+        else if (player.injuryMatches !== undefined) player.injuryMatches = undefined;
         player.effects = [];
         for (const e of sp.effects) {
           player.addEffect(e.type, e.turns === Infinity ? Infinity : e.turns);

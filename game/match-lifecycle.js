@@ -171,8 +171,19 @@ function recordOutPlayers(homeName, awayName) {
     const fatigued = [];
     if (team) {
       for (const p of team.squad) {
-        if (p.hasEffect('injured')) out[p.name] = 'injured';
-        else if (p.hasEffect('matchExhausted')) out[p.name] = 'exhausted';
+        if (p.hasEffect('injured')) {
+          if (typeof p.injuryMatches === 'number') {
+            if (p.injuryMatches > 0) {
+              out[p.name] = { reason: 'injured', matches: p.injuryMatches };
+            } else {
+              p.injuryMatches = undefined;
+              p.removeEffect('injured');
+              logMatch(teamName, `${p.name} is fit again after shaking off the injury.`, 'sub');
+            }
+          } else {
+            out[p.name] = 'injured';
+          }
+        } else if (p.hasEffect('matchExhausted')) out[p.name] = 'exhausted';
         else if (p.sentOff) out[p.name] = 'red';
         if (p.hasEffect('matchFatigued')) fatigued.push(p.name);
       }
@@ -193,9 +204,20 @@ function applyOutPlayers() {
     for (const name of Object.keys(outMap)) {
       const player = team.squad.find((p) => p.name === name);
       if (!player) continue;
-      if (outMap[name] === 'injured') {
+      const outEntry = outMap[name];
+      const reason = outEntry && typeof outEntry === 'object' ? outEntry.reason : outEntry;
+      if (reason === 'injured') {
         if (!player.hasEffect('injured')) player.addEffect('injured', Infinity);
-      } else if (outMap[name] === 'exhausted') {
+        if (outEntry && typeof outEntry === 'object' && typeof outEntry.matches === 'number') {
+          if (outEntry.matches <= 1) {
+            player.injuryMatches = 0;
+            delete outMap[name];
+          } else {
+            player.injuryMatches = outEntry.matches - 1;
+            outEntry.matches = player.injuryMatches;
+          }
+        }
+      } else if (reason === 'exhausted') {
         // one-match ban: forced substitution below, no persistent state
       } else {
         player.sentOff = true;
@@ -422,7 +444,7 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
         const player = TEAMS[teamName].currentPlayers.find((p) => p.name === playerName);
         if (player) {
           const subs = TEAMS[teamName].availableSubstitutes();
-          const replacement = subs.find((p) => p.position === player.position) || subs[0];
+          const replacement = subs.find((p) => p.position === player.position);
           if (replacement) {
             const idx = TEAMS[teamName].currentPlayers.findIndex((p) => (p.__original || p).name === player.name);
             const slot = TEAMS[teamName].formation[player.name];
@@ -619,7 +641,11 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
     for (const teamName of [homeName, awayName]) {
       const entries = [];
       for (const [playerName, reason] of Object.entries(unavailableAtKickoff[teamName] || {})) {
-        entries.push(`${playerName} (${reasonLabels[reason] || reason})`);
+        const label =
+          reason && typeof reason === 'object'
+            ? `injured (${reason.matches} match${reason.matches === 1 ? '' : 'es'})`
+            : reasonLabels[reason] || reason;
+        entries.push(`${playerName} (${label})`);
       }
       for (const playerName of suspensionSnapshot[teamName] || []) {
         entries.push(`${playerName} (suspended)`);
@@ -631,7 +657,11 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
   }
 
   const kickoffTeam = Object.values(TEAMS).find((t) => t.side === 'left') || Object.values(TEAMS)[0];
+  game.lastKickoffTeam = kickoffTeam;
   await humanNotice('KICK OFF');
+  if (!tournament && typeof Onboarding !== 'undefined') {
+    await Onboarding.matchBasics();
+  }
   resetForRestart(kickoffTeam);
   logMatch(kickoffTeam.name, `${kickoffTeam.name} kick off.`);
   renderGame();
@@ -750,10 +780,11 @@ function simulateMatch(homeName, awayName) {
         console.log('[sim] iter', safety, 'turn', game.turn, 'finished', game.finished, 'halftime', game.halftimePending, 'team', game.currentTeam && game.currentTeam.name, 'pts', JSON.stringify(game.actionPoints), 'deferred', deferredPlayActive);
       }
       if (game.halftimePending) {
-        const kickoffTeam = board.getOpponent(Object.values(TEAMS)[0]);
+        const kickoffTeam = board.nextKickoffTeam();
         resetForRestart(kickoffTeam);
         game.halftimePending = false;
         if (!game.finished) game.currentTeam = kickoffTeam;
+        game.lastKickoffTeam = kickoffTeam;
         logMatch(kickoffTeam.name, `${kickoffTeam.name} kick off the second half.`);
         stalls = 0;
         continue;
@@ -796,5 +827,10 @@ function simulateMatch(homeName, awayName) {
     if (pitchEl) pitchEl.style.display = '';
     handEls.forEach((el) => (el.style.display = ''));
     panels.forEach((el) => (el.style.display = ''));
+    if (pitchEl) {
+      const toRemove = [...pitchEl.querySelectorAll('.player-token, .ball')];
+      if (typeof window.SIM_CLEAR_HOOK === 'function') window.SIM_CLEAR_HOOK(toRemove.length);
+      for (const el of toRemove) el.remove();
+    }
   }
 }

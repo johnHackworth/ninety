@@ -768,7 +768,9 @@ class GameController {
 
     if (team.hasTeamEffect('persistence') && !this.firstPlayedThisTurn[team.name]) {
       this.firstPlayedThisTurn[team.name] = true;
-      team.availableActions.push({ ...action });
+      const clone = Object.create(Object.getPrototypeOf(action), Object.getOwnPropertyDescriptors(action));
+      clone._id = Action.nextCardId();
+      team.availableActions.push(clone);
     }
 
     const isComboExtra = (this.comboExtraPlays[team.name] || 0) > 0;

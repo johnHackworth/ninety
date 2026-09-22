@@ -1,5 +1,6 @@
 function tickAi() {
   if (noticeOverlayActive) return;
+  if (typeof halftimeModalOpen !== 'undefined' && halftimeModalOpen) return;
   if (aiTurnTimeout) return;
   if (!game) return;
   if (typeof wcShootout !== 'undefined' && wcShootout && !wcShootout.done) return;
