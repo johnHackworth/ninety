@@ -5,103 +5,19 @@
   'use strict';
 
   // ============================================================
-  // Formation coordinate sets — stored as [x%, y%] pairs (11 each)
-  // x%: 0 (own goal line) → 100 (opponent goal line)
-  // y%: 0 (top touchline) → 100 (bottom touchline)
+  // Formation slot coordinates — single source of truth is
+  // FORMATION_TEMPLATES (ui/world-cup-ui.js), stored as own-goal-relative
+  // grid cells (x: 0→8, y: 0→6) grouped by position (GK/DF/MF/FW).
+  // This screen converts those grid cells to pitch percentages for display.
   // ============================================================
-  const FORMATIONS = {
-    '4-4-2': [
-      [0, 50],    // GK - at goal line (0%)
-      [22, 12],   // RB
-      [22, 35],   // RCB
-      [22, 65],   // LCB
-      [22, 88],   // LB
-      [48, 18],   // RM
-      [48, 42],   // RCM
-      [48, 58],   // LCM
-      [48, 82],   // LM
-      [75, 35],   // RS
-      [75, 65],   // LS
-    ],
-    '4-3-3': [
-      [0, 50],    // GK
-      [22, 12],   // RB
-      [22, 35],   // RCB
-      [22, 65],   // LCB
-      [22, 88],   // LB
-      [45, 25],   // RM
-      [48, 50],   // CM
-      [45, 75],   // LM
-      [75, 18],   // RW
-      [75, 50],   // ST
-      [75, 82],   // LW
-    ],
-    '3-5-2': [
-      [0, 50],    // GK
-      [24, 25],   // RCB
-      [24, 50],   // CB
-      [24, 75],   // LCB
-      [48, 12],   // RWB
-      [48, 35],   // RCM
-      [48, 50],   // CM
-      [48, 65],   // LCM
-      [48, 88],   // LWB
-      [75, 35],   // RS
-      [75, 65],   // LS
-    ],
-    '4-5-1': [
-      [0, 50],    // GK
-      [22, 12],   // RB
-      [22, 35],   // RCB
-      [22, 65],   // LCB
-      [22, 88],   // LB
-      [48, 15],   // RM
-      [48, 35],   // RCM
-      [48, 50],   // CM
-      [48, 65],   // LCM
-      [48, 85],   // LM
-      [75, 50],   // ST
-    ],
-    '3-4-3': [
-      [0, 50],    // GK
-      [24, 25],   // RCB
-      [24, 50],   // CB
-      [24, 75],   // LCB
-      [48, 15],   // RM
-      [48, 40],   // RCM
-      [48, 60],   // LCM
-      [48, 85],   // LM
-      [75, 20],   // RW
-      [75, 50],   // ST
-      [75, 80],   // LW
-    ],
-    '5-3-2': [
-      [0, 50],    // GK
-      [18, 10],   // RWB
-      [22, 25],   // RCB
-      [22, 50],   // CB
-      [22, 75],   // LCB
-      [18, 90],   // LWB
-      [48, 35],   // RCM
-      [48, 50],   // CM
-      [48, 65],   // LCM
-      [75, 35],   // RS
-      [75, 65],   // LS
-    ],
-    '4-2-3-1': [
-      [0, 50],    // GK
-      [22, 12],   // RB
-      [22, 35],   // RCB
-      [22, 65],   // LCB
-      [22, 88],   // LB
-      [48, 35],   // CDM (right)
-      [48, 65],   // CDM (left)
-      [45, 20],   // RAM
-      [48, 50],   // CAM
-      [45, 80],   // LAM
-      [75, 50],   // ST
-    ],
-  };
+  function teamSheetGridCoords(system) {
+    const tmpl = FORMATION_TEMPLATES[system] || FORMATION_TEMPLATES['4-4-2'];
+    const coords = [];
+    for (const pos of ['GK', 'DF', 'MF', 'FW']) {
+      for (const cell of tmpl[pos] || []) coords.push([cell[0], cell[1]]);
+    }
+    return coords;
+  }
 
   // ============================================================
   // Position colour mapping (shared with card/coach systems)
@@ -269,7 +185,6 @@
       .slice(0, 7);
 
     // Build order array: map each xi player to their formation slot index
-    const formationCoords = FORMATIONS[state.system];
     const order = xi.map((player, idx) => idx); // identity mapping initially
 
     // Build conditions strip
@@ -464,13 +379,35 @@
   }
 
   function threatTextForPlayer(player, homeTeam) {
-    const threats = {
-      GK: 'Every shot they face is 20% harder to save while he is on the pitch.',
-      DF: 'Every attacker they mark loses 1 dribbling and 1 speed while he is on the pitch.',
-      MF: 'Every Tactical card they play draws them an extra card while he is on the pitch.',
-      FW: 'Every shot they take gains +2 shooting while he is on the pitch.',
+    const labels = {
+      speed: 'pace',
+      marking: 'marking',
+      tackling: 'tackling',
+      shooting: 'shooting',
+      passing: 'passing',
+      dribbling: 'dribbling',
+      tacticalThinking: 'vision',
+      heading: 'heading',
+      goalkeeping: 'goalkeeping',
     };
-    return threats[player.position] || 'Their presence changes how the opposition must play.';
+    const stats = [
+      { key: 'goalkeeping', label: 'goalkeeping' },
+      { key: 'speed', label: 'pace' },
+      { key: 'marking', label: 'marking' },
+      { key: 'tackling', label: 'tackling' },
+      { key: 'shooting', label: 'shooting' },
+      { key: 'passing', label: 'passing' },
+      { key: 'dribbling', label: 'dribbling' },
+      { key: 'tacticalThinking', label: 'vision' },
+      { key: 'heading', label: 'heading' },
+    ];
+    const strongest = stats
+      .map((s) => ({ key: s.key, value: player[s.key] || 0 }))
+      .sort((a, b) => b.value - a.value)[0];
+    if (strongest && strongest.value > 0) {
+      return `${player.name}'s biggest threat is their ${labels[strongest.key]} (${strongest.value}).`;
+    }
+    return 'Their presence changes how the opposition must play.';
   }
 
   function counterTextForPlayer(player, homeTeam) {
@@ -523,7 +460,7 @@
   // ============================================================
   // Formation selector — system metadata + mini shapes
   // ============================================================
-  const SYSTEMS_ORDER = ['4-4-2', '4-3-3', '3-5-2', '4-5-1', '3-4-3', '5-3-2', '4-2-3-1'];
+  const SYSTEMS_ORDER = ['4-4-2', '4-3-3', '3-5-2', '4-5-1', '3-4-3', '5-3-2', '4-2-3-1', '4-1-4-1'];
   const SYSTEM_META = {
     '4-4-2':   { sub: 'Two banks of four, two strikers', lines: [1, 4, 4, 2] },
     '4-3-3':   { sub: 'Three midfielders, wingers high', lines: [1, 4, 3, 3] },
@@ -532,6 +469,7 @@
     '3-4-3':   { sub: 'Three at back, front three', lines: [1, 3, 4, 3] },
     '5-3-2':   { sub: 'Five defenders, two strikers', lines: [1, 5, 3, 2] },
     '4-2-3-1': { sub: 'Double pivot, three behind striker', lines: [1, 4, 2, 3, 1] },
+    '4-1-4-1': { sub: 'Sitting pivot, five-man midfield', lines: [1, 4, 5, 1] },
   };
   const MINI_COL_TINT = { 0: '#f2d06b', 1: '#a5e06f', 2: '#2f5bb7', 3: '#f0a35e', 4: '#f0a35e' };
 
@@ -691,7 +629,7 @@
     let coords;
     const editableTeam = state.editableIsHome ? state.homeTeamObj : state.awayTeamObj;
     const editableTeamSide = editableTeam.side; // 'left' or 'right'
-    const teamFormation = editableTeam.formation; // TeamClass.formation (already mirrored for side)
+    const teamFormation = editableTeam.formation; // player-keyed, absolute pitch coords
     
     if (state.useNatural) {
       // Use team's actual formation - convert from grid coords to percentages
@@ -712,11 +650,13 @@
         }
       }
     } else {
-      coords = FORMATIONS[state.system];
-      if (editableTeamSide === 'right') {
-        // Mirror x-coordinates: 0% <-> 100%, 22% <-> 78%, etc.
-        coords = coords.map(([x, y]) => [100 - x, y]);
-      }
+      // Selected system — mirror template grid to absolute coords (own goal at
+      // column 8 for a right-side team), then convert to percentages.
+      const slots = teamSheetGridCoords(state.system);
+      coords = slots.map(([gx, gy]) => {
+        const ax = editableTeamSide === 'right' ? 8 - gx : gx;
+        return [Math.round((ax / 8) * 100), Math.round(12 + (gy / 6) * 76)];
+      });
     }
 
     const tokensEl = EL.tokens;
@@ -1160,21 +1100,17 @@
 
     // Update formation coords based on current system and order
     if (!state.useNatural) {
-      // Custom formation selected - convert from percentages to grid
-      const coords = FORMATIONS[state.system];
+      // Custom formation selected — template grid cells (own-goal-relative)
+      const gridCoords = teamSheetGridCoords(state.system);
       const isRight = editableTeam.side === 'right';
       editableTeam.formation = {};
       for (let slotIdx = 0; slotIdx < 11; slotIdx++) {
         const xiIdx = state.order[slotIdx];
         const player = state.xi[xiIdx];
         if (player) {
-          // Convert percentage coordinates to grid coordinates (9x7 grid)
-          const [xPct, yPct] = coords[slotIdx];
-          let gridX = Math.round((xPct / 100) * 8);
-          const gridY = Math.round((yPct / 100) * 6);
           // Mirror to board space for a right-side team (own goal at column 8)
-          if (isRight) gridX = 8 - gridX;
-          editableTeam.formation[player.name] = [gridX, gridY];
+          const [gx, gy] = gridCoords[slotIdx] || [4, 3];
+          editableTeam.formation[player.name] = [isRight ? 8 - gx : gx, gy];
         }
       }
     }

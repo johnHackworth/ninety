@@ -45,7 +45,9 @@ const TEAM_CLASSES = {
   Scotland,
   Sweden,
   Turkey,
+  'Türkiye': Turkey,
   CzechRepublic,
+  'Czechia': CzechRepublic,
   'Bosnia and Herzegovina': BosniaandHerzegovina,
 };
 
@@ -97,18 +99,11 @@ const TEAM_FLAGS = {
   Sweden: '🇸🇪',
   Turkey: '🇹🇷',
   CzechRepublic: '🇨🇿',
+  Czechia: '🇨🇿',
   'Bosnia and Herzegovina': '🇧🇦',
 };
 
 const DEFAULT_MATCH = ['Spain', 'Argentina'];
-
-function mirrorFormation(formation) {
-  const mirrored = {};
-  for (const [name, [x, y]] of Object.entries(formation)) {
-    mirrored[name] = [8 - x, y];
-  }
-  return mirrored;
-}
 
 function buildTeams(teamNames = DEFAULT_MATCH) {
   const teams = {};
@@ -117,10 +112,15 @@ function buildTeams(teamNames = DEFAULT_MATCH) {
     if (!TeamClass) throw new Error(`No team registered for '${name}'`);
     const team = new TeamClass();
     team.side = index % 2 === 0 ? 'left' : 'right';
-    team.formation =
-      team.side === 'left'
-        ? { ...TeamClass.formation }
-        : mirrorFormation(TeamClass.formation);
+    const starters = team.startingXI.map((n) => team.squad.find((p) => p.name === n));
+    const subs = team.squad.filter((p) => !team.startingXI.includes(p.name));
+    const { map } = Team.resolveFormation(TeamClass.formation, {
+      starters,
+      subs,
+      side: team.side,
+      unavailable: new Set(),
+    });
+    team.formation = map;
     teams[name] = team;
   });
   return teams;

@@ -365,4 +365,85 @@ class Team {
       }
     }
   }
+
+  // ---- Formation resolver ----
+  // cellsByPos: { GK: [[0,3]], DF: [[2,0],...], MF: [...], FW: [...] }
+  //   coords are own-goal-relative (x=0 own goal, max x=6)
+  // starters/subs: arrays of Player objects
+  // side: 'left' | 'right'
+  // unavailable: Set of player names to skip
+  static resolveFormation(cellsByPos, { starters, subs, side, unavailable } = {}) {
+    unavailable = unavailable || new Set();
+    const map = {};
+    const placed = [];
+    const placedSet = new Set();
+    const _absX = (relX) => (side === 'left' ? relX : 8 - relX);
+
+    // 1. GK — always exactly one, at own-goal front
+    const gkCellX = side === 'left' ? 0 : 8;
+    const pickGk = [...starters, ...subs].find(
+      (p) => p.position === 'GK' && !unavailable.has(p.name)
+    );
+    if (pickGk) {
+      map[pickGk.name] = [gkCellX, 3];
+      placed.push(pickGk);
+      placedSet.add(pickGk.name);
+    }
+
+    // 2. Flatten non-GK cells in position order (DF → MF → FW)
+    const cells = [];
+    for (const pos of ['DF', 'MF', 'FW']) {
+      for (const coord of cellsByPos[pos] || []) {
+        cells.push({ pos, relX: coord[0], relY: coord[1] });
+      }
+    }
+
+    // 3. Available pools (non-GK, not yet placed, not unavailable)
+    const poolStarters = starters.filter(
+      (p) => !placedSet.has(p.name) && !unavailable.has(p.name) && p.position !== 'GK'
+    );
+    const poolSubs = subs.filter(
+      (p) => !placedSet.has(p.name) && !unavailable.has(p.name) && p.position !== 'GK'
+    );
+
+    // 4. Fill each cell: strict first, then flex, starters before subs
+    for (const cell of cells) {
+      if (placed.length >= 11) break;
+      const acx = _absX(cell.relX);
+
+      let pick =
+        poolStarters.find((p) => p.position === cell.pos) ||
+        poolStarters.find((p) => Team.canFlex(p.position, cell.pos, acx, cell.relY)) ||
+        poolSubs.find((p) => p.position === cell.pos) ||
+        poolSubs.find((p) => Team.canFlex(p.position, cell.pos, acx, cell.relY)) ||
+        poolStarters[0] ||
+        poolSubs[0];
+
+      if (pick) {
+        map[pick.name] = [acx, cell.relY];
+        placed.push(pick);
+        placedSet.add(pick.name);
+        const i1 = poolStarters.indexOf(pick);
+        if (i1 !== -1) poolStarters.splice(i1, 1);
+        const i2 = poolSubs.indexOf(pick);
+        if (i2 !== -1) poolSubs.splice(i2, 1);
+      }
+    }
+
+    return { map, placed };
+  }
+
+  static canFlex(pPos, slotPos, absX, relY) {
+    if (pPos === slotPos) return true;
+    if (slotPos === 'MF' && pPos === 'DF' && absX < 5) return true;
+    if (
+      slotPos === 'FW' &&
+      pPos === 'MF' &&
+      !(absX === 6 && (relY === 2 || relY === 3 || relY === 4))
+    )
+      return true;
+    if (slotPos === 'MF' && pPos === 'FW' && (relY === 0 || relY === 6) && absX >= 5)
+      return true;
+    return false;
+  }
 }
