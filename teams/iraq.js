@@ -1,23 +1,16 @@
 class Iraq extends AbstractTeam {
   static formation = {
-    'Fahad Talib': [0, 3],
-    'Rebin Sulaka': [2, 0],
-    'Hussein Ali': [2, 2],
-    'Zaid Tahseen': [2, 4],
-    'Akam Hashim': [2, 6],
-    'Youssef Amyn': [4, 0],
-    'Ibrahim Bayesh': [4, 2],
-    'Zidane Iqbal': [4, 4],
-    'Amir Al-Ammari': [4, 6],
-    'Ali Al-Hamadi': [6, 2],
-    'Mohanad Ali': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Iraq',
       level: 1,
-      starPlayers: ['Aymen Hussein', 'Mohanad Ali', 'Ibrahim Bayesh', 'Youssef Amyn', 'Ali Jasim'],
+      starPlayers: ['Zidane Iqbal', 'Amir Al-Ammari'],
       startingDeck: "defensive",
       extraActions: { 'underdog-bite': 1 },
       coach: 'Graham Arnold',
@@ -26,7 +19,7 @@ class Iraq extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#ffffff',
       awayShortsColor: '#000000',
-      startingXI: ['Fahad Talib', 'Rebin Sulaka', 'Hussein Ali', 'Zaid Tahseen', 'Akam Hashim', 'Youssef Amyn', 'Ibrahim Bayesh', 'Zidane Iqbal', 'Amir Al-Ammari', 'Ali Al-Hamadi', 'Mohanad Ali'],
+      startingXI: ['Jalal Hassan', 'Merchas Doski', 'Rebin Sulaka', 'Zaid Tahseen', 'Hussein Ali', 'Amir Al-Ammari', 'Ibrahim Bayesh', 'Youssef Amyn', 'Zidane Iqbal', 'Aymen Hussein', 'Mohanad Ali'],
       squad: [
         ['Fahad Talib', 31, 'GK', 'Iraq', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Rebin Sulaka', 34, 'DF', 'Iraq', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -41,9 +34,9 @@ class Iraq extends AbstractTeam {
         ['Ahmed Qasem', 22, 'FW', 'Iraq', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Jalal Hassan', 35, 'GK', 'Iraq', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Ali Yousif', 30, 'FW', 'Iraq', 5, 2, 2, 7, 4, 4, 4, 6, 1],
-        ['Zidane Iqbal', 23, 'MF', 'Iraq', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Zidane Iqbal', 23, 'MF', 'Iraq', 7, 5, 5, 6, 7, 7, 6, 4, 1],
         ['Ahmed Maknzi', 24, 'DF', 'Iraq', 5, 6, 6, 3, 3, 2, 5, 6, 1],
-        ['Amir Al-Ammari', 28, 'MF', 'Iraq', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Amir Al-Ammari', 28, 'MF', 'Iraq', 6, 6, 6, 6, 7, 6, 6, 5, 1],
         ['Ali Jasim', 22, 'FW', 'Iraq', 8, 3, 4, 8, 10, 8, 9, 9, 1],
         ['Aymen Hussein', 30, 'FW', 'Iraq', 8, 3, 6, 8, 8, 9, 10, 9, 2],
         ['Kevin Yakob', 25, 'MF', 'Iraq', 5, 4, 6, 5, 5, 4, 6, 4, 1],

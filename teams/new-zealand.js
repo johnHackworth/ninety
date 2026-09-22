@@ -1,23 +1,16 @@
 class NewZealand extends AbstractTeam {
   static formation = {
-    'Max Crocombe': [0, 3],
-    'Tim Payne': [2, 0],
-    'Francis de Vries': [2, 2],
-    'Tyler Bindon': [2, 4],
-    'Michael Boxall': [2, 6],
-    'Joe Bell': [4, 0],
-    'Marko Stamenić': [4, 2],
-    'Sarpreet Singh': [4, 4],
-    'Elijah Just': [4, 6],
-    'Logan Rogerson': [6, 2],
-    'Chris Wood': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'New Zealand',
       level: 1,
-      starPlayers: ['Chris Wood', 'Tyler Bindon', 'Elijah Just'],
+      starPlayers: ['Chris Wood', 'Liberato Cacace'],
       startingDeck: "defensive",
       extraActions: { 'header-finish': 1, 'knockdown-finish': 1 },
       coach: 'Darren Bazeley',
@@ -26,7 +19,7 @@ class NewZealand extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#000000',
       awayShortsColor: '#ffffff',
-      startingXI: ['Max Crocombe', 'Tim Payne', 'Francis de Vries', 'Tyler Bindon', 'Michael Boxall', 'Joe Bell', 'Marko Stamenić', 'Sarpreet Singh', 'Elijah Just', 'Logan Rogerson', 'Chris Wood'],
+      startingXI: ['Max Crocombe', 'Tim Payne', 'Tyler Bindon', 'Michael Boxall', 'Liberato Cacace', 'Joe Bell', 'Marko Stamenić', 'Sarpreet Singh', 'Elijah Just', 'Chris Wood', 'Ben Waine'],
       squad: [
         ['Max Crocombe', 32, 'GK', 'New Zealand', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Tim Payne', 32, 'DF', 'New Zealand', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -36,11 +29,11 @@ class NewZealand extends AbstractTeam {
         ['Joe Bell', 27, 'MF', 'New Zealand', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Logan Rogerson', 28, 'FW', 'New Zealand', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Marko Stamenić', 24, 'MF', 'New Zealand', 5, 4, 6, 5, 5, 4, 6, 4, 1],
-        ['Chris Wood', 34, 'FW', 'New Zealand', 9, 6, 6, 8, 8, 10, 7, 9, 1],
+        ['Chris Wood', 34, 'FW', 'New Zealand', 6, 4, 4, 8, 6, 6, 7, 9, 1],
         ['Sarpreet Singh', 27, 'MF', 'New Zealand', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Elijah Just', 26, 'MF', 'New Zealand', 8, 10, 9, 9, 8, 8, 8, 8, 3],
         ['Alex Paulsen', 23, 'GK', 'New Zealand', 2, 4, 4, 2, 4, 1, 4, 5, 6],
-        ['Liberato Cacace', 25, 'DF', 'New Zealand', 5, 6, 6, 3, 3, 2, 5, 6, 1],
+        ['Liberato Cacace', 25, 'DF', 'New Zealand', 7, 7, 7, 4, 6, 6, 6, 5, 1],
         ['Alex Rufer', 29, 'MF', 'New Zealand', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Nando Pijnaker', 27, 'DF', 'New Zealand', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Finn Surman', 22, 'DF', 'New Zealand', 5, 6, 6, 3, 3, 2, 5, 6, 1],

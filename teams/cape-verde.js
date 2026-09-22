@@ -1,23 +1,16 @@
 class CapeVerde extends AbstractTeam {
   static formation = {
-    'Vozinha': [0, 3],
-    'Stopira': [2, 0],
-    'Diney': [2, 2],
-    'Pico': [2, 4],
-    'Logan Costa': [2, 6],
-    'Kevin Pina': [4, 0],
-    'Jovane Cabral': [4, 2],
-    'João Paulo': [4, 4],
-    'Jamiro Monteiro': [4, 6],
-    'Gilson Benchimol': [6, 2],
-    'Dailon Livramento': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4]],
+    MF: [[2, 6], [4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Cape Verde',
       level: 1,
-      starPlayers: ['Ryan Mendes', 'Pico', 'Willy Semedo', 'Jamiro Monteiro', 'Gilson Benchimol'],
+      starPlayers: ['Gilson Benchimol', 'Ryan Mendes'],
       startingDeck: "defensive",
       extraActions: { 'underdog-bite': 1 },
       coach: 'Bubista',
@@ -26,7 +19,7 @@ class CapeVerde extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#003893',
       awayShortsColor: '#ffffff',
-      startingXI: ['Vozinha', 'Stopira', 'Diney', 'Pico', 'Logan Costa', 'Kevin Pina', 'Jovane Cabral', 'João Paulo', 'Jamiro Monteiro', 'Gilson Benchimol', 'Dailon Livramento'],
+      startingXI: ['Vozinha', 'Pico', 'Logan Costa', 'Stopira', 'Deroy Duarte', 'Jamiro Monteiro', 'Jovane Cabral', 'Kevin Pina', 'Willy Semedo', 'Gilson Benchimol', 'Ryan Mendes'],
       squad: [
         ['Vozinha', 40, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Stopira', 38, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -36,7 +29,7 @@ class CapeVerde extends AbstractTeam {
         ['Kevin Pina', 29, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Jovane Cabral', 27, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['João Paulo', 28, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
-        ['Gilson Benchimol', 24, 'FW', 'Cape Verde', 8, 2, 5, 8, 10, 8, 9, 9, 1],
+        ['Gilson Benchimol', 24, 'FW', 'Cape Verde', 8, 4, 4, 7, 6, 7, 6, 6, 1],
         ['Jamiro Monteiro', 32, 'MF', 'Cape Verde', 9, 8, 7, 5, 8, 9, 8, 10, 1],
         ['Garry Rodrigues', 35, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Márcio Rosa', 29, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6],
@@ -47,7 +40,7 @@ class CapeVerde extends AbstractTeam {
         ['Willy Semedo', 32, 'MF', 'Cape Verde', 10, 9, 7, 8, 8, 9, 8, 8, 1],
         ['Telmo Arcanjo', 24, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Dailon Livramento', 25, 'FW', 'Cape Verde', 5, 2, 2, 7, 4, 4, 4, 6, 1],
-        ['Ryan Mendes', 36, 'FW', 'Cape Verde', 8, 5, 6, 8, 10, 8, 9, 9, 1],
+        ['Ryan Mendes', 36, 'FW', 'Cape Verde', 7, 4, 4, 7, 6, 7, 6, 4, 1],
         ['Nuno da Costa', 35, 'MF', 'Cape Verde', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Steven Moreira', 31, 'DF', 'Cape Verde', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['CJ dos Santos', 25, 'GK', 'Cape Verde', 2, 4, 4, 2, 4, 1, 4, 5, 6],

@@ -1,23 +1,16 @@
 class Scotland extends AbstractTeam {
   static formation = {
-    'Angus Gunn': [0, 3],
-    'Aaron Hickey': [2, 0],
-    'Andy Robertson': [2, 2],
-    'Grant Hanley': [2, 4],
-    'Kieran Tierney': [2, 6],
-    'Scott McTominay': [4, 0],
-    'John McGinn': [4, 2],
-    'Tyler Fletcher': [4, 4],
-    'Ryan Christie': [4, 6],
-    'Lyndon Dykes': [6, 2],
-    'Ché Adams': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Scotland',
       level: 1,
-      starPlayers: ['John McGinn', 'Scott McTominay', 'Ché Adams', 'Lyndon Dykes'],
+      starPlayers: ['Scott McTominay', 'Andy Robertson'],
       startingDeck: "defensive",
       coach: 'Steve Clarke',
       artifacts: ["graniteWall"],
@@ -25,12 +18,12 @@ class Scotland extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#0065bd',
       awayShortsColor: '#ffffff',
-      startingXI: ['Angus Gunn', 'Aaron Hickey', 'Andy Robertson', 'Grant Hanley', 'Kieran Tierney', 'Scott McTominay', 'John McGinn', 'Tyler Fletcher', 'Ryan Christie', 'Lyndon Dykes', 'Ché Adams'],
+      startingXI: ['Angus Gunn', 'Aaron Hickey', 'Grant Hanley', 'Scott McKenna', 'Andy Robertson', 'John McGinn', 'Scott McTominay', 'Tyler Fletcher', 'Ryan Christie', 'Ché Adams', 'Lawrence Shankland'],
       squad: [
         ['Angus Gunn', 30, 'GK', 'Scotland', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Aaron Hickey', 24, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
-        ['Andy Robertson', 32, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
-        ['Scott McTominay', 29, 'MF', 'Scotland', 9, 9, 10, 8, 8, 8, 8, 5, 2],
+        ['Andy Robertson', 32, 'DF', 'Scotland', 8, 7, 7, 5, 8, 7, 8, 5, 1],
+        ['Scott McTominay', 29, 'MF', 'Scotland', 7, 7, 7, 8, 7, 6, 7, 8, 1],
         ['Grant Hanley', 34, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Kieran Tierney', 29, 'DF', 'Scotland', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['John McGinn', 31, 'MF', 'Scotland', 10, 7, 9, 8, 8, 9, 8, 7, 1],

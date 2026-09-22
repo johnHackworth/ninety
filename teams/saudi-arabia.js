@@ -1,23 +1,16 @@
 class SaudiArabia extends AbstractTeam {
   static formation = {
-    'Nawaf Al-Aqidi': [0, 3],
-    'Ali Majrashi': [2, 0],
-    'Ali Lajami': [2, 2],
-    'Abdulelah Al-Amri': [2, 4],
-    'Hassan Al-Tambakti': [2, 6],
-    'Nasser Al-Dawsari': [4, 0],
-    'Musab Al-Juwayr': [4, 2],
-    'Abdullah Al-Khaibari': [4, 4],
-    'Ziyad Al-Johani': [4, 6],
-    'Ayman Yahya': [6, 2],
-    'Firas Al-Buraikan': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4]],
+    FW: [[4, 6], [6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Saudi Arabia',
       level: 1,
-      starPlayers: ['Musab Al-Juwayr', 'Saleh Al-Shehri', 'Firas Al-Buraikan', 'Abdullah Al-Hamdan', 'Salem Al-Dawsari'],
+      starPlayers: ['Salem Al-Dawsari', 'Mohamed Kanno'],
       startingDeck: "counter",
       extraActions: {"teranga-roar":1},
       coach: 'Georgios Donis',
@@ -25,7 +18,7 @@ class SaudiArabia extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#006c35',
       awayShortsColor: '#ffffff',
-      startingXI: ['Nawaf Al-Aqidi', 'Ali Majrashi', 'Ali Lajami', 'Abdulelah Al-Amri', 'Hassan Al-Tambakti', 'Nasser Al-Dawsari', 'Musab Al-Juwayr', 'Abdullah Al-Khaibari', 'Ziyad Al-Johani', 'Ayman Yahya', 'Firas Al-Buraikan'],
+      startingXI: ['Mohammed Al-Owais', 'Ali Majrashi', 'Ali Lajami', 'Hassan Al-Tambakti', 'Abdulelah Al-Amri', 'Mohamed Kanno', 'Musab Al-Juwayr', 'Nasser Al-Dawsari', 'Salem Al-Dawsari', 'Firas Al-Buraikan', 'Saleh Al-Shehri'],
       squad: [
         ['Nawaf Al-Aqidi', 26, 'GK', 'Saudi Arabia', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Ali Majrashi', 26, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -36,7 +29,7 @@ class SaudiArabia extends AbstractTeam {
         ['Musab Al-Juwayr', 22, 'MF', 'Saudi Arabia', 8, 10, 7, 9, 8, 8, 8, 9, 1],
         ['Ayman Yahya', 25, 'FW', 'Saudi Arabia', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Firas Al-Buraikan', 26, 'FW', 'Saudi Arabia', 8, 4, 5, 8, 10, 8, 9, 9, 1],
-        ['Salem Al-Dawsari', 34, 'FW', 'Saudi Arabia', 8, 2, 5, 8, 10, 9, 8, 9, 1],
+        ['Salem Al-Dawsari', 34, 'FW', 'Saudi Arabia', 8, 4, 4, 8, 7, 8, 7, 4, 1],
         ['Saleh Al-Shehri', 32, 'FW', 'Saudi Arabia', 8, 5, 8, 8, 8, 9, 10, 9, 1],
         ['Saud Abdulhamid', 26, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Nawaf Boushal', 26, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -49,7 +42,7 @@ class SaudiArabia extends AbstractTeam {
         ['Sultan Mandash', 31, 'FW', 'Saudi Arabia', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Mohammed Al-Owais', 34, 'GK', 'Saudi Arabia', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Ahmed Al-Kassar', 35, 'GK', 'Saudi Arabia', 2, 4, 4, 2, 4, 1, 4, 5, 6],
-        ['Mohamed Kanno', 31, 'MF', 'Saudi Arabia', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Mohamed Kanno', 31, 'MF', 'Saudi Arabia', 6, 7, 7, 6, 7, 6, 7, 6, 1],
         ['Moteb Al-Harbi', 26, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Jehad Thakri', 24, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Mohammed Abu Al-Shamat', 23, 'DF', 'Saudi Arabia', 5, 6, 6, 3, 3, 2, 5, 6, 1],

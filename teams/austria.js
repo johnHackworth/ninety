@@ -1,23 +1,16 @@
 class Austria extends AbstractTeam {
   static formation = {
-    'Alexander Schlager': [0, 3],
-    'David Affengruber': [2, 0],
-    'Kevin Danso': [2, 2],
-    'Stefan Posch': [2, 4],
-    'David Alaba': [2, 6],
-    'Xaver Schlager': [4, 0],
-    'Nicolas Seiwald': [4, 2],
-    'Marcel Sabitzer': [4, 4],
-    'Florian Grillitsch': [4, 6],
-    'Marko Arnautović': [6, 2],
-    'Michael Gregoritsch': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Austria',
       level: 1,
-      starPlayers: ['Marcel Sabitzer', 'Marko Arnautović', 'David Alaba', 'Michael Gregoritsch', 'Xaver Schlager'],
+      starPlayers: ['David Alaba', 'Marcel Sabitzer', 'Konrad Laimer'],
       startingDeck: "attacking",
       extraActions: { eureka: 1, 'switch-gears': 1 },
       coach: 'Ralf Rangnick',
@@ -26,7 +19,7 @@ class Austria extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#ed1c24',
       awayShortsColor: '#ffffff',
-      startingXI: ['Alexander Schlager', 'David Affengruber', 'Kevin Danso', 'Stefan Posch', 'David Alaba', 'Xaver Schlager', 'Nicolas Seiwald', 'Marcel Sabitzer', 'Florian Grillitsch', 'Marko Arnautović', 'Michael Gregoritsch'],
+      startingXI: ['Patrick Pentz', 'Stefan Posch', 'Kevin Danso', 'David Alaba', 'David Affengruber', 'Konrad Laimer', 'Marcel Sabitzer', 'Nicolas Seiwald', 'Xaver Schlager', 'Marko Arnautović', 'Michael Gregoritsch'],
       squad: [
         ['Alexander Schlager', 30, 'GK', 'Austria', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['David Affengruber', 25, 'DF', 'Austria', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -35,8 +28,8 @@ class Austria extends AbstractTeam {
         ['Stefan Posch', 29, 'DF', 'Austria', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Nicolas Seiwald', 25, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Marko Arnautović', 37, 'FW', 'Austria', 8, 3, 5, 8, 10, 9, 9, 8, 1],
-        ['David Alaba', 33, 'DF', 'Austria', 8, 8, 9, 4, 9, 10, 8, 8, 1],
-        ['Marcel Sabitzer', 32, 'MF', 'Austria', 8, 10, 7, 9, 8, 9, 8, 8, 2],
+        ['David Alaba', 33, 'DF', 'Austria', 7, 8, 8, 6, 8, 7, 8, 7, 1],
+        ['Marcel Sabitzer', 32, 'MF', 'Austria', 7, 6, 6, 8, 8, 7, 7, 5, 1],
         ['Florian Grillitsch', 30, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Michael Gregoritsch', 32, 'FW', 'Austria', 8, 2, 4, 8, 10, 8, 9, 9, 1],
         ['Florian Wiegele', 25, 'GK', 'Austria', 2, 4, 4, 2, 4, 1, 4, 5, 6],
@@ -47,7 +40,7 @@ class Austria extends AbstractTeam {
         ['Carney Chukwuemeka', 22, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Romano Schmid', 26, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Dejan Ljubičić', 28, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
-        ['Konrad Laimer', 29, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Konrad Laimer', 29, 'MF', 'Austria', 8, 7, 7, 6, 7, 7, 7, 5, 1],
         ['Patrick Wimmer', 25, 'FW', 'Austria', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Alexander Prass', 25, 'MF', 'Austria', 5, 4, 6, 5, 5, 4, 6, 4, 1],
         ['Marco Friedl', 28, 'DF', 'Austria', 5, 6, 6, 3, 3, 2, 5, 6, 1],

@@ -1,23 +1,16 @@
 class Iran extends AbstractTeam {
   static formation = {
-    'Alireza Beiranvand': [0, 3],
-    'Saleh Hardani': [2, 0],
-    'Ehsan Hajsafi': [2, 2],
-    'Shojae Khalilzadeh': [2, 4],
-    'Milad Mohammadi': [2, 6],
-    'Saeid Ezatolahi': [4, 0],
-    'Alireza Jahanbakhsh': [4, 2],
-    'Mohammad Mohebi': [4, 4],
-    'Saman Ghoddos': [4, 6],
-    'Mehdi Taremi': [6, 2],
-    'Mehdi Ghayedi': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6]],
+    MF: [[4, 0], [4, 2], [4, 4], [4, 6]],
+    FW: [[6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Iran',
       level: 1,
-      starPlayers: ['Mehdi Taremi', 'Alireza Jahanbakhsh', 'Saeid Ezatolahi', 'Mohammad Mohebi'],
+      starPlayers: ['Mehdi Taremi', 'Mehdi Ghayedi', 'Alireza Jahanbakhsh'],
       startingDeck: "defensive",
       extraActions: { eureka: 1, ouch: 1, 'fortress-mentality': 1 },
       coach: 'Amir Ghalenoei',
@@ -26,7 +19,7 @@ class Iran extends AbstractTeam {
       reserveColor: '#ffffff',
       shortsColor: '#2354a2',
       awayShortsColor: '#ffffff',
-      startingXI: ['Alireza Beiranvand', 'Saleh Hardani', 'Ehsan Hajsafi', 'Shojae Khalilzadeh', 'Milad Mohammadi', 'Saeid Ezatolahi', 'Alireza Jahanbakhsh', 'Mohammad Mohebi', 'Saman Ghoddos', 'Mehdi Taremi', 'Mehdi Ghayedi'],
+      startingXI: ['Alireza Beiranvand', 'Milad Mohammadi', 'Shojae Khalilzadeh', 'Saleh Hardani', 'Ramin Rezaeian', 'Saeid Ezatolahi', 'Saman Ghoddos', 'Mohammad Mohebi', 'Alireza Jahanbakhsh', 'Mehdi Taremi', 'Mehdi Ghayedi'],
       squad: [
         ['Alireza Beiranvand', 33, 'GK', 'Iran', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Saleh Hardani', 27, 'DF', 'Iran', 5, 6, 6, 3, 3, 2, 5, 6, 1],
@@ -34,10 +27,10 @@ class Iran extends AbstractTeam {
         ['Shojae Khalilzadeh', 37, 'DF', 'Iran', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Milad Mohammadi', 32, 'DF', 'Iran', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Saeid Ezatolahi', 29, 'MF', 'Iran', 8, 9, 10, 8, 8, 8, 8, 9, 3],
-        ['Alireza Jahanbakhsh', 32, 'MF', 'Iran', 9, 6, 9, 6, 8, 8, 8, 10, 3],
+        ['Alireza Jahanbakhsh', 32, 'MF', 'Iran', 8, 5, 5, 7, 7, 8, 7, 5, 1],
         ['Mohammad Mohebi', 27, 'MF', 'Iran', 9, 10, 7, 8, 8, 8, 9, 6, 3],
-        ['Mehdi Taremi', 33, 'FW', 'Iran', 8, 6, 4, 8, 8, 9, 10, 9, 1],
-        ['Mehdi Ghayedi', 27, 'FW', 'Iran', 5, 2, 2, 7, 4, 4, 4, 6, 1],
+        ['Mehdi Taremi', 33, 'FW', 'Iran', 8, 4, 4, 8, 7, 8, 7, 7, 1],
+        ['Mehdi Ghayedi', 27, 'FW', 'Iran', 8, 4, 4, 8, 6, 7, 7, 8, 1],
         ['Ali Alipour', 30, 'FW', 'Iran', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Payam Niazmand', 31, 'GK', 'Iran', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Hossein Kanaanizadegan', 32, 'DF', 'Iran', 5, 6, 6, 3, 3, 2, 5, 6, 1],

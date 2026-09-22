@@ -41,6 +41,6 @@ class AbstractTeam extends Team {
     });
     this.startingDeck = deck;
     this.extraActions = extraActions;
-    this.formation = { ...(this.constructor.formation || {}) };
+    this.formation = {};
   }
 }

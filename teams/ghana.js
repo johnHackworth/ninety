@@ -1,23 +1,16 @@
 class Ghana extends AbstractTeam {
   static formation = {
-    'Lawrence Ati-Zigi': [0, 3],
-    'Alidu Seidu': [2, 0],
-    'Jonas Adjetey': [2, 2],
-    'Abdul Mumin': [2, 4],
-    'Gideon Mensah': [2, 6],
-    'Caleb Yirenkyi': [4, 0],
-    'Thomas Partey': [4, 2],
-    'Kwasi Sibo': [4, 4],
-    'Antoine Semenyo': [4, 6],
-    'Abdul Fatawu': [6, 2],
-    'Jordan Ayew': [6, 4],
+    GK: [[0, 3]],
+    DF: [[2, 0], [2, 2], [2, 4], [2, 6], [4, 2]],
+    MF: [[4, 0], [4, 4]],
+    FW: [[4, 6], [6, 2], [6, 4]],
   };
 
   constructor() {
     super({
       name: 'Ghana',
       level: 1,
-      starPlayers: ['Jordan Ayew', 'Thomas Partey', 'Abdul Rahman Baba'],
+      starPlayers: ['Caleb Yirenkyi', 'Thomas Partey'],
       startingDeck: "counter",
       extraActions: {"total-football":1},
       coach: 'Carlos Queiroz',
@@ -26,13 +19,13 @@ class Ghana extends AbstractTeam {
       reserveColor: '#009e60',
       shortsColor: '#ffffff',
       awayShortsColor: '#ffcd00',
-      startingXI: ['Lawrence Ati-Zigi', 'Alidu Seidu', 'Jonas Adjetey', 'Abdul Mumin', 'Gideon Mensah', 'Caleb Yirenkyi', 'Thomas Partey', 'Kwasi Sibo', 'Antoine Semenyo', 'Abdul Fatawu', 'Jordan Ayew'],
+      startingXI: ['Lawrence Ati-Zigi', 'Alidu Seidu', 'Jonas Adjetey', 'Abdul Mumin', 'Gideon Mensah', 'Thomas Partey', 'Abdul Rahman Baba', 'Caleb Yirenkyi', 'Abdul Fatawu', 'Iñaki Williams', 'Jordan Ayew'],
       squad: [
         ['Lawrence Ati-Zigi', 29, 'GK', 'Ghana', 2, 4, 4, 2, 4, 1, 4, 5, 6],
         ['Alidu Seidu', 26, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
-        ['Caleb Yirenkyi', 20, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
+        ['Caleb Yirenkyi', 20, 'MF', 'Ghana', 8, 5, 5, 8, 7, 9, 8, 4, 1],
         ['Jonas Adjetey', 22, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
-        ['Thomas Partey', 32, 'MF', 'Ghana', 9, 9, 10, 8, 8, 8, 8, 6, 2],
+        ['Thomas Partey', 32, 'MF', 'Ghana', 7, 7, 8, 6, 8, 7, 8, 6, 1],
         ['Abdul Mumin', 28, 'DF', 'Ghana', 5, 6, 6, 3, 3, 2, 5, 6, 1],
         ['Abdul Fatawu', 22, 'FW', 'Ghana', 5, 2, 2, 7, 4, 4, 4, 6, 1],
         ['Kwasi Sibo', 27, 'MF', 'Ghana', 5, 4, 6, 5, 5, 4, 6, 4, 1],
