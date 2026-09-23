@@ -1044,6 +1044,38 @@ function renderRailControls() {
 }
 
 
+function subCondition(p) {
+  const has = (t) => p.hasEffect(t);
+  if (has('injured')) return { label: 'Injured', cls: 'sub-fat-injured' };
+  if (has('matchExhausted')) return { label: 'Worn out', cls: 'sub-fat-exhausted' };
+  if (has('matchFatigued')) return { label: 'Drained', cls: 'sub-fat-tired' };
+  if (has('fatigued')) return { label: 'Fatigued', cls: 'sub-fat-tired' };
+  if (has('exhausted')) return { label: 'Exhausted', cls: 'sub-fat-tired' };
+  if (has('cramped')) return { label: 'Cramped', cls: 'sub-fat-tired' };
+  return { label: 'Fit', cls: 'sub-fat-fit' };
+}
+
+function buildSubPlayerButton(p, role) {
+  const cond = subCondition(p);
+  const btn = document.createElement('button');
+  btn.className = 'bench-slot-button sub-player-btn';
+  const pos = document.createElement('span');
+  pos.className = 'sub-pos';
+  pos.textContent = p.position;
+  const name = document.createElement('span');
+  name.className = 'sub-name';
+  name.textContent = p.name;
+  const badge = document.createElement('span');
+  badge.className = `sub-fatigue ${cond.cls}`;
+  badge.textContent = cond.label;
+  btn.appendChild(pos);
+  btn.appendChild(name);
+  btn.appendChild(badge);
+  btn._player = p;
+  btn.dataset.role = role;
+  return btn;
+}
+
 function openSubstitutionModal(team) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -1052,7 +1084,7 @@ function openSubstitutionModal(team) {
   modal.className = 'shot-modal';
 
   const content = document.createElement('div');
-  content.className = 'shot-modal-content halftime-content';
+  content.className = 'shot-modal-content halftime-content sub-dialog-content';
 
   const title = document.createElement('div');
   title.className = 'shot-modal-label';
@@ -1072,48 +1104,52 @@ function openSubstitutionModal(team) {
   const onPitch = team.currentPlayers.filter((p) => !p.sentOff);
   const bench = team.availableSubstitutes();
 
+  const columns = document.createElement('div');
+  columns.className = 'sub-two-col';
+
+  const pitchCol = document.createElement('div');
+  pitchCol.className = 'sub-col';
+
   const outLabel = document.createElement('div');
   outLabel.className = 'shot-modal-label';
-  outLabel.textContent = 'On the pitch (coming off):';
-  rows.appendChild(outLabel);
+  outLabel.textContent = 'On the pitch';
+  pitchCol.appendChild(outLabel);
 
-  const outRow = document.createElement('div');
-  outRow.className = 'hard-tackle-sub-row';
-  outRow.style.flexWrap = 'wrap';
+  const outList = document.createElement('div');
+  outList.className = 'sub-player-list';
   for (const p of onPitch) {
-    const btn = document.createElement('button');
-    btn.className = 'bench-slot-button';
-    btn.textContent = `${p.name} (${p.position})`;
-    btn._player = p;
-    btn.dataset.role = 'out';
+    const btn = buildSubPlayerButton(p, 'out');
     btn.addEventListener('click', () => pickSub(btn, p, 'out'));
-    outRow.appendChild(btn);
+    outList.appendChild(btn);
   }
-  rows.appendChild(outRow);
+  pitchCol.appendChild(outList);
+  columns.appendChild(pitchCol);
+
+  const benchCol = document.createElement('div');
+  benchCol.className = 'sub-col';
 
   const inLabel = document.createElement('div');
   inLabel.className = 'shot-modal-label';
-  inLabel.textContent = 'Substitute coming on:';
-  rows.appendChild(inLabel);
+  inLabel.textContent = 'Bench';
+  benchCol.appendChild(inLabel);
 
-  const inRow = document.createElement('div');
-  inRow.className = 'hard-tackle-sub-row';
-  inRow.style.flexWrap = 'wrap';
+  const inList = document.createElement('div');
+  inList.className = 'sub-player-list';
   if (bench.length === 0) {
     const label = document.createElement('div');
+    label.className = 'sub-empty';
     label.textContent = 'No substitutes available.';
-    inRow.appendChild(label);
+    inList.appendChild(label);
   }
   for (const p of bench) {
-    const btn = document.createElement('button');
-    btn.className = 'bench-slot-button';
-    btn.textContent = `${p.name} (${p.position})`;
-    btn._player = p;
-    btn.dataset.role = 'in';
+    const btn = buildSubPlayerButton(p, 'in');
     btn.addEventListener('click', () => pickSub(btn, p, 'in'));
-    inRow.appendChild(btn);
+    inList.appendChild(btn);
   }
-  rows.appendChild(inRow);
+  benchCol.appendChild(inList);
+  columns.appendChild(benchCol);
+
+  rows.appendChild(columns);
 
   const pendingLabel = document.createElement('div');
   pendingLabel.className = 'shot-modal-label';

@@ -194,6 +194,27 @@ function recordOutPlayers(homeName, awayName) {
   recordStarPromotions();
 }
 
+const MAX_INJURED_PER_TEAM = 4;
+
+function enforceInjuryCap() {
+  for (const team of Object.values(TEAMS)) {
+    const injured = team.squad.filter((p) => p.hasEffect('injured'));
+    if (injured.length <= MAX_INJURED_PER_TEAM) continue;
+    injured
+      .sort((a, b) => (a.injuryMatches || 0) - (b.injuryMatches || 0))
+      .slice(0, injured.length - MAX_INJURED_PER_TEAM)
+      .forEach((p) => {
+        p.injuryMatches = undefined;
+        p.removeEffect('injured');
+        logMatch(
+          team.name,
+          `${p.name} shakes off the knock before kickoff — only ${MAX_INJURED_PER_TEAM} players can be injured at once.`,
+          'sub'
+        );
+      });
+  }
+}
+
 function applyOutPlayers() {
   applyStarPromotions();
   const target = outPlayersState();
@@ -253,6 +274,7 @@ function applyOutPlayers() {
     }
     team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
   }
+  enforceInjuryCap();
 }
 
 function normalizeKickoffFormationFrame(formation, team) {

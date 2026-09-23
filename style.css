@@ -6402,6 +6402,8 @@ body.screen-shake #board {
 #world-cup-screen .wc-box-r .wc-six { left: 0; border-left: none; }
 
 .wc-screen {
+  position: relative;
+  z-index: 3;
   width: min(1280px, 96vw);
   background: var(--wc-ground);
   color: var(--wc-ink);
@@ -9607,6 +9609,87 @@ body.screen-shake #board {
 .modal-overlay .bench-slot-button.disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* --- substitution dialog: two-column pitch/bench --- */
+.sub-dialog-content,
+.modal-overlay .sub-dialog-content {
+  max-width: 720px;
+  width: min(720px, 92vw);
+}
+
+.sub-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  width: 100%;
+}
+
+.sub-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sub-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sub-player-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.sub-pos {
+  flex-shrink: 0;
+  width: 26px;
+  height: 21px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--wc-ink-soft, #cfdbcF);
+}
+
+.sub-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-fatigue {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 2px 7px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sub-fat-fit { color: #86c98a; }
+.sub-fat-tired { color: #e8c05a; }
+.sub-fat-exhausted { color: #e8923d; }
+.sub-fat-injured { color: #ff6b6b; }
+
+.sub-empty {
+  font-size: 12px;
+  color: var(--wc-ink-soft, #cfdbcF);
+  padding: 6px 2px;
 }
 
 /* --- event phase option cards (deck pick, staff picks) --- */

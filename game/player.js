@@ -806,6 +806,10 @@ class Player {
     if (!spec) throw new Error(`unknown effect: ${type}`);
     const duration = turns === undefined ? spec.turns : turns;
 
+    if (type === 'injured' && !(typeof this.injuryMatches === 'number' && this.injuryMatches > 0)) {
+      this.injuryMatches = 1;
+    }
+
     const existing = this.effects.find((e) => e.type === type);
     if (existing) {
       existing.turns = duration;

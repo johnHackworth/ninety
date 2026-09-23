@@ -1750,9 +1750,9 @@ function renderWcBody() {
 
   const rail = document.createElement('div');
   rail.className = 'wc-overview-rail';
-  rail.appendChild(renderWcUnavailableCard(human));
+  const unavailCard = renderWcUnavailableCard(human);
+  if (unavailCard) rail.appendChild(unavailCard);
   rail.appendChild(renderWcInEffectCard(human));
-  rail.appendChild(renderWcGoldenBootCard(human));
   grid.appendChild(rail);
 
   wcOverviewBodyEl.appendChild(grid);
@@ -1927,6 +1927,11 @@ function wcUnavailableItems(teamName) {
 }
 
 function renderWcUnavailableCard(teamName) {
+  const items = wcUnavailableItems(teamName);
+  if (items.length === 0) {
+    return null;
+  }
+
   const card = document.createElement('section');
   card.className = 'wc-rail-card';
   const head = document.createElement('div');
@@ -1934,14 +1939,6 @@ function renderWcUnavailableCard(teamName) {
   head.textContent = 'Unavailable';
   card.appendChild(head);
 
-  const items = wcUnavailableItems(teamName);
-  if (items.length === 0) {
-    const li = document.createElement('div');
-    li.className = 'wc-rail-row';
-    li.textContent = 'Full squad available.';
-    card.appendChild(li);
-    return card;
-  }
   for (const item of items) {
     const row = document.createElement('div');
     row.className = 'wc-rail-row';
@@ -2096,56 +2093,6 @@ function renderWcInEffectCard(teamName) {
     ? 'A staff pick is coming in this round.'
     : 'No staff pick expected this round.';
   card.appendChild(foot);
-  return card;
-}
-
-function wcGoldenBootTop() {
-  return wcTopPlayersAggregate()
-    .filter((p) => (p.weightedGoals || 0) > 0)
-    .sort(
-      (a, b) =>
-        (b.weightedGoals || 0) - (a.weightedGoals || 0) ||
-        (b.assists || 0) - (a.assists || 0)
-    )
-    .slice(0, 3);
-}
-
-function renderWcGoldenBootCard(teamName) {
-  const card = document.createElement('section');
-  card.className = 'wc-rail-card';
-  const head = document.createElement('div');
-  head.className = 'wc-rail-title';
-  head.textContent = 'Golden Boot';
-  card.appendChild(head);
-
-  const top = wcGoldenBootTop();
-  if (top.length === 0) {
-    const li = document.createElement('div');
-    li.className = 'wc-rail-row';
-    li.textContent = 'No goals scored yet.';
-    card.appendChild(li);
-    return card;
-  }
-  for (let i = 0; i < top.length; i++) {
-    const p = top[i];
-    const row = document.createElement('div');
-    row.className = 'wc-rail-row ' + (top.length > i ? 'wc-gb' : '');
-    const med = document.createElement('span');
-    med.className = 'wc-gb-medal';
-    med.textContent = ['🥇', '🥈', '🥉'][i] || '';
-    const info = document.createElement('span');
-    info.className = 'wc-gb-info';
-    info.textContent = `${p.name} — ${p.team || '?'} (${p.weightedGoals})`;
-    row.appendChild(med);
-    row.appendChild(info);
-    if (p.team === teamName) {
-      const badge = document.createElement('span');
-      badge.className = 'wc-badge wc-badge-you';
-      badge.textContent = 'You';
-      row.appendChild(badge);
-    }
-    card.appendChild(row);
-  }
   return card;
 }
 
