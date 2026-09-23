@@ -1437,7 +1437,7 @@ function renderGameStatus() {
 
   const turn = document.createElement('span');
   turn.className = 'game-turn';
-  turn.textContent = `Turn ${game.turn}/${game.maxTurns}${game.finished ? ' · GAME OVER' : ''}`;
+  turn.textContent = `Turn ${game.turn}/${game.maxTurns}`;
 
   const playing = document.createElement('span');
   playing.className = 'game-playing';

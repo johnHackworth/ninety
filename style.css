@@ -6271,7 +6271,135 @@ body.screen-shake #board {
   display: flex;
   justify-content: center;
   padding: 20px 0;
+  position: relative;
+  background:
+    radial-gradient(110% 70% at 50% -5%, rgba(196, 207, 171, 0.22), transparent 55%),
+    radial-gradient(140% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
+    #18241b;
+  filter: none;
+  min-height: 100vh;
 }
+
+#world-cup-screen .wc-pitch {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(196, 207, 171, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 207, 171, 0.14) 1px, transparent 1px);
+  background-size: calc(100% / 9) calc(100% / 7);
+}
+
+#world-cup-screen .wc-pitch::before {
+  content: '';
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 50%;
+  height: 2px;
+  background: rgba(255, 210, 77, 0.22);
+}
+
+#world-cup-screen .wc-pitch::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(18vw, 140px);
+  height: min(18vw, 140px);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 210, 77, 0.22);
+  transform: translate(-50%, -50%);
+}
+
+#world-cup-screen .wc-light {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 1;
+  filter: blur(2px);
+  will-change: transform;
+}
+
+#world-cup-screen #wc-light-a {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 210, 77, 0.85) 15%, rgba(255, 140, 30, 0.5) 30%, transparent 60%);
+  animation: wc-light-a-h 15s ease-in-out infinite alternate;
+}
+
+#world-cup-screen #wc-light-b {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(30, 180, 255, 0.8) 15%, rgba(100, 60, 220, 0.45) 30%, transparent 60%);
+  animation: wc-light-b-v 14s ease-in-out infinite alternate;
+}
+
+#world-cup-screen #wc-light-c {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 80, 200, 0.8) 15%, rgba(220, 40, 160, 0.45) 30%, transparent 60%);
+  animation: wc-light-c-h 16s ease-in-out infinite alternate;
+}
+
+#world-cup-screen #wc-light-d {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(80, 255, 180, 0.8) 15%, rgba(40, 220, 100, 0.45) 30%, transparent 60%);
+  animation: wc-light-d-v 18s ease-in-out infinite alternate;
+}
+
+#world-cup-screen #wc-light-e {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 180, 40, 0.85) 15%, rgba(240, 140, 20, 0.5) 30%, transparent 60%);
+  animation: wc-light-e-h 13.5s ease-in-out infinite alternate;
+}
+
+#world-cup-screen #wc-light-f {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(180, 80, 255, 0.8) 15%, rgba(140, 40, 220, 0.45) 30%, transparent 60%);
+  animation: wc-light-f-v 15.5s ease-in-out infinite alternate;
+}
+
+@keyframes wc-light-a-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes wc-light-b-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+@keyframes wc-light-c-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes wc-light-d-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+@keyframes wc-light-e-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes wc-light-f-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+
+#world-cup-screen .wc-box {
+  position: absolute;
+  top: 50%;
+  width: 16%;
+  height: 42%;
+  border: 2px solid rgba(255, 210, 77, 0.16);
+  transform: translateY(-50%);
+}
+#world-cup-screen .wc-box-l { left: calc(15% - 2px); border-right: none; }
+#world-cup-screen .wc-box-r { right: calc(15% - 2px); border-left: none; }
+#world-cup-screen .wc-six {
+  position: absolute;
+  top: 50%;
+  width: 46%;
+  height: 26%;
+  border: 2px solid rgba(255, 210, 77, 0.16);
+  transform: translateY(-50%);
+}
+#world-cup-screen .wc-box-l .wc-six { right: 0; border-right: none; }
+#world-cup-screen .wc-box-r .wc-six { left: 0; border-left: none; }
 
 .wc-screen {
   width: min(1280px, 96vw);
@@ -10959,6 +11087,7 @@ body.screen-shake #board {
    Scoped to #menu-screen so setup screens keep their own chrome. */
 
 #menu-screen {
+  position: relative;
   --wc-ink: #201e1d;
   --wc-ink-soft: #4a423d;
   --wc-muted: #7b716a;
@@ -11019,6 +11148,74 @@ body.screen-shake #board {
   border: 2px solid rgba(255, 210, 77, 0.22);
   transform: translate(-50%, -50%);
 }
+
+#menu-screen .menu-light {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 1;
+  filter: blur(2px);
+  will-change: transform;
+}
+
+#menu-screen #menu-light-a {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 210, 77, 0.85) 15%, rgba(255, 140, 30, 0.5) 30%, transparent 60%);
+  animation: light-a-h 15s ease-in-out infinite alternate;
+}
+
+#menu-screen #menu-light-b {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(30, 180, 255, 0.8) 15%, rgba(100, 60, 220, 0.45) 30%, transparent 60%);
+  animation: light-b-v 14s ease-in-out infinite alternate;
+}
+
+#menu-screen #menu-light-c {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 80, 200, 0.8) 15%, rgba(220, 40, 160, 0.45) 30%, transparent 60%);
+  animation: light-c-h 16s ease-in-out infinite alternate;
+}
+
+#menu-screen #menu-light-d {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(80, 255, 180, 0.8) 15%, rgba(40, 220, 100, 0.45) 30%, transparent 60%);
+  animation: light-d-v 18s ease-in-out infinite alternate;
+}
+
+#menu-screen #menu-light-e {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 180, 40, 0.85) 15%, rgba(240, 140, 20, 0.5) 30%, transparent 60%);
+  animation: light-e-h 13.5s ease-in-out infinite alternate;
+}
+
+#menu-screen #menu-light-f {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0));
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(180, 80, 255, 0.8) 15%, rgba(140, 40, 220, 0.45) 30%, transparent 60%);
+  animation: light-f-v 15.5s ease-in-out infinite alternate;
+}
+
+@keyframes light-a-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes light-b-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+@keyframes light-c-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes light-d-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+@keyframes light-e-h { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(-44vw); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateX(44vw); } }
+@keyframes light-f-v { 0% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(-40vh); } 100% { transform: translate(-50%, -50%) translate(var(--start-x, 0), var(--start-y, 0)) translateY(40vh); } }
+
 #menu-screen .menu-box {
   position: absolute;
   top: 50%;
@@ -11116,6 +11313,7 @@ body.screen-shake #board {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  text-align: left
 }
 #menu-screen .menu-btn small {
   font-weight: 600;
@@ -11152,7 +11350,7 @@ body.screen-shake #board {
   align-items: center;
   justify-content: space-between;
   margin-top: 18px;
-  padding-top: 12px;
+  padding: 12px 0px;
   border-top: 1px solid var(--wc-line);
   font-size: 9px;
   font-weight: 800;
