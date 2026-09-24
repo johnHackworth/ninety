@@ -195,10 +195,10 @@
     return row;
   }
 
-  function progHtml(pipsTotal, onCount, countLabel) {
+  function progHtml(pipsTotal, onCount) {
     var p = '';
     for (var i = 0; i < pipsTotal; i++) p += '<span class="ob-pip' + (i < onCount ? ' on' : '') + '"></span>';
-    return '<div class="ob-prog">' + p + '<span class="ob-count">' + countLabel + '</span></div>';
+    return '<div class="ob-prog">' + p + '</div>';
   }
 
   // --------------------------------------------------------- pitch demo -----
@@ -393,7 +393,6 @@
   function openSheet(opts) {
     return new Promise(function (resolve) {
       var pipsTotal = opts.phase === 'match' ? 7 : 5;
-      var countLabel = opts.phase === 'match' ? 'Lesson ' + (opts.idx + 1) + ' · 7' : 'Lesson ' + (8 + opts.idx) + ' · 12';
 
       var ov = el('div', 'ob-overlay');
       ov.setAttribute('role', 'dialog');
@@ -401,7 +400,7 @@
       ov.setAttribute('aria-label', opts.title);
 
       var sheet = el('div', 'ob-sheet');
-      var top = el('div', 'ob-top', progHtml(pipsTotal, opts.idx + 1, countLabel));
+      var top = el('div', 'ob-top', progHtml(pipsTotal, opts.idx + 1));
       var topRight = el('div', 'ob-topRight');
       topRight.appendChild(el('span', 'ob-esc', 'Esc · next'));
       var skip = el('button', 'ob-skip', 'Skip tutorial');
