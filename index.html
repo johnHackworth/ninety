@@ -10,35 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=match-tags-2">
-<script>
-  (function(h,o,u,n,d) {
-    h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
-    d=o.createElement(u);d.async=1;d.src=n;d.crossOrigin=''
-    n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
-  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js','DD_RUM')
-  window.DD_RUM.onReady(function() {
-    window.DD_RUM.init({
-        applicationId: 'df3f2e88-77f1-4435-869f-40158dbf8d3b',
-        clientToken: 'pub83536f3da3bed2913e475de9e185406a',
-        remoteConfiguration: {
-            id: 'ff8c4e84-418d-49df-98c8-0fd8e6fa1cfc',
-        },
-        site: 'datadoghq.com',
-        service: 'ninety-web',
-        env: 'dev',        // e.g. 'prod', 'staging-1', 'dev'
-        version: '0.1',  // e.g. '1.0.0'
-        sessionSampleRate: 100,     // capture 100% of sessions
-        sessionReplaySampleRate: 100,  // capture 20% of sessions with replay
-        telemetrySampleRate: 100,
-        telemetryConfigurationSampleRate:100,
-        telemetryUsageSampleRate:100,
-        metricSampleRate:100,
-        trackResources: true,     // Enable Resource tracking
-        trackUserInteractions: true,  // Enable Action tracking
-        trackLongTasks: true,     // Enable Long Tasks tracking
-    });
-  })
-</script>
+<!-- Deployment can set these tags to its environment and release identifier. -->
+<meta name="datadog-env" content="">
+<meta name="datadog-version" content="">
+<script src="game/telemetry.js"></script>
 <script src="game/logger.js"></script>
 <script>
   // Global error surfacing — log and visually surface uncaught errors
@@ -884,6 +859,7 @@
   <script src="ui/training-mode.js"></script>
   <script src="game/perf.js"></script>
   <script src="app.js"></script>
+  <script src="game/rum-views.js"></script>
   <script src="game/onboarding.js"></script>
   <script>
     if (window.Perf) { try { window.Perf.wire(); } catch (e) { console.warn('[perf] wire failed', e); } }
