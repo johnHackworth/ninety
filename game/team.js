@@ -186,7 +186,10 @@ class Team {
     const slot = this.formation && this.formation[player.name];
     if (!slot) return 0;
     const attackingX = this.side === 'left' ? slot[0] : (WIDTH - 1 - slot[0]);
-    const pos = player.position;
+    return Team.positionPenalty(player.position, attackingX);
+  }
+
+  static positionPenalty(pos, attackingX) {
     if (pos === 'FW') return attackingX >= 5 ? 0 : (attackingX >= 3 ? -1 : -3);
     if (pos === 'MF') return (attackingX >= 3 && attackingX <= 5) ? 0 : -1;
     if (pos === 'DF') return attackingX <= 3 ? 0 : (attackingX <= 4 ? -1 : -3);
@@ -342,83 +345,122 @@ class Team {
     }
   }
 
-  // ---- Formation resolver ----
-  // cellsByPos: { GK: [[0,3]], DF: [[2,0],...], MF: [...], FW: [...] }
-  //   coords are own-goal-relative (x=0 own goal, max x=6)
-  // starters/subs: arrays of Player objects
-  // side: 'left' | 'right'
-  // unavailable: Set of player names to skip
-  static resolveFormation(cellsByPos, { starters, subs, side, unavailable } = {}) {
-    unavailable = unavailable || new Set();
+  // Rate the skills used in this slot, including its actual position penalty.
+  // Wide slots favor mobility; central slots favor defending or finishing.
+  static formationScore(player, pos, relX, relY) {
+    const wide = relY <= 1 || relY >= 5;
+    let weights;
+    if (pos === 'GK') weights = { goalkeeping: 8, tacticalThinking: 1, passing: 1 };
+    else if (pos === 'DF') weights = wide
+      ? { marking: 3, tackling: 3, speed: 3, passing: 1 }
+      : { marking: 3, tackling: 3, heading: 3, tacticalThinking: 1 };
+    else if (pos === 'FW') weights = wide
+      ? { shooting: 3, dribbling: 3, speed: 3, passing: 1 }
+      : { shooting: 5, heading: 2, dribbling: 2, tacticalThinking: 1 };
+    else if (relX <= 3) weights = { tackling: 3, marking: 2, passing: 3, tacticalThinking: 2 };
+    else if (relX >= 5) weights = { shooting: 3, passing: 3, dribbling: 3, speed: 1 };
+    else weights = wide
+      ? { passing: 3, dribbling: 3, speed: 3, tacticalThinking: 1 }
+      : { passing: 4, tacticalThinking: 3, dribbling: 2, tackling: 1 };
+
+    const delta = Team.positionPenalty(player.position, relX) - (player._outOfPositionDelta || 0);
+    let score = 0;
+    for (const [stat, weight] of Object.entries(weights)) {
+      score += ((player[stat] || 0) + delta) * weight / 10;
+    }
+    // A small familiarity bonus allows a much stronger flexible player to win.
+    if (player.position === pos) score += 1;
+    else if (Team.canFlex(player.position, pos, relX, relY)) score += 0.5;
+    return score;
+  }
+
+  // Coordinates are own-goal-relative. Starters win equal-score ties, but the
+  // entire available squad competes for the strongest overall assignment.
+  static resolveFormation(cellsByPos, { starters = [], subs = [], side = 'left', unavailable = new Set() } = {}) {
     const map = {};
     const placed = [];
-    const placedSet = new Set();
-    const _absX = (relX) => (side === 'left' ? relX : 8 - relX);
+    const seen = new Set();
+    const players = [...starters, ...subs].filter((p) => {
+      if (!p || seen.has(p.name) || unavailable.has(p.name) || p.injured || p.sentOff) return false;
+      seen.add(p.name);
+      return true;
+    });
+    const absX = (relX) => side === 'right' ? 8 - relX : relX;
 
-    // 1. GK — always exactly one, at own-goal front
-    const gkCellX = side === 'left' ? 0 : 8;
-    const pickGk = [...starters, ...subs].find(
-      (p) => p.position === 'GK' && !unavailable.has(p.name)
-    );
-    if (pickGk) {
-      map[pickGk.name] = [gkCellX, 3];
-      placed.push(pickGk);
-      placedSet.add(pickGk.name);
+    let goalkeeper = null;
+    for (const player of players) {
+      if (player.position !== 'GK') continue;
+      if (!goalkeeper || Team.formationScore(player, 'GK', 0, 3) > Team.formationScore(goalkeeper, 'GK', 0, 3)) {
+        goalkeeper = player;
+      }
+    }
+    if (goalkeeper) {
+      map[goalkeeper.name] = [absX(0), 3];
+      placed.push(goalkeeper);
     }
 
-    // 2. Flatten non-GK cells in position order (DF → MF → FW)
     const cells = [];
     for (const pos of ['DF', 'MF', 'FW']) {
-      for (const coord of cellsByPos[pos] || []) {
-        cells.push({ pos, relX: coord[0], relY: coord[1] });
+      for (const [relX, relY] of cellsByPos[pos] || []) {
+        if (cells.length >= 11 - placed.length) break;
+        cells.push({ pos, relX, relY });
       }
     }
 
-    // 3. Available pools (non-GK, not yet placed, not unavailable)
-    const poolStarters = starters.filter(
-      (p) => !placedSet.has(p.name) && !unavailable.has(p.name) && p.position !== 'GK'
-    );
-    const poolSubs = subs.filter(
-      (p) => !placedSet.has(p.name) && !unavailable.has(p.name) && p.position !== 'GK'
-    );
-
-    // 4. Fill each cell: strict first, then flex, starters before subs
-    for (const cell of cells) {
-      if (placed.length >= 11) break;
-      const acx = _absX(cell.relX);
-
-      let pick =
-        poolStarters.find((p) => p.position === cell.pos) ||
-        poolStarters.find((p) => Team.canFlex(p.position, cell.pos, acx, cell.relY)) ||
-        poolSubs.find((p) => p.position === cell.pos) ||
-        poolSubs.find((p) => Team.canFlex(p.position, cell.pos, acx, cell.relY)) ||
-        poolStarters[0] ||
-        poolSubs[0];
-
-      if (pick) {
-        map[pick.name] = [acx, cell.relY];
-        placed.push(pick);
-        placedSet.add(pick.name);
-        const i1 = poolStarters.indexOf(pick);
-        if (i1 !== -1) poolStarters.splice(i1, 1);
-        const i2 = poolSubs.indexOf(pick);
-        if (i2 !== -1) poolSubs.splice(i2, 1);
+    // Each bit is a filled slot. Process each player once, visiting masks in
+    // descending order so the player cannot fill two slots. With ten outfield
+    // slots this needs only 1024 states, avoiding a greedy assignment that can
+    // use a versatile player before their strongest slot is considered.
+    const states = new Array(1 << cells.length);
+    states[0] = { score: 0, picks: [] };
+    for (const player of players) {
+      if (player.position === 'GK') continue;
+      const scores = cells.map((c) => Team.formationScore(player, c.pos, c.relX, c.relY));
+      for (let mask = states.length - 1; mask >= 0; mask--) {
+        const state = states[mask];
+        if (!state) continue;
+        for (let i = 0; i < cells.length; i++) {
+          if (mask & (1 << i)) continue;
+          const next = mask | (1 << i);
+          const score = state.score + scores[i];
+          if (states[next] && score <= states[next].score + 1e-9) continue;
+          const picks = state.picks.slice();
+          picks[i] = player;
+          states[next] = { score, picks };
+        }
       }
     }
 
+    // Short squads still field as many players as possible, even when their
+    // scores are negative because they must play far out of position.
+    let best = states[0];
+    let bestCount = 0;
+    for (const state of states) {
+      if (!state) continue;
+      const count = state.picks.filter(Boolean).length;
+      if (count > bestCount || (count === bestCount && state.score > best.score + 1e-9)) {
+        best = state;
+        bestCount = count;
+      }
+    }
+    best.picks.forEach((player, i) => {
+      if (!player) return;
+      map[player.name] = [absX(cells[i].relX), cells[i].relY];
+      placed.push(player);
+    });
     return { map, placed };
   }
 
-  static canFlex(pPos, slotPos, absX, relY) {
+  static canFlex(pPos, slotPos, relX, relY) {
     if (pPos === slotPos) return true;
-    if (slotPos === 'MF' && pPos === 'DF' && absX < 5) return true;
+    if (slotPos === 'MF' && pPos === 'DF' && relX < 5) return true;
     if (
       slotPos === 'FW' &&
       pPos === 'MF' &&
-      !(absX === 6 && (relY === 2 || relY === 3 || relY === 4))
+      !(relX === 6 && (relY === 2 || relY === 3 || relY === 4))
     )
       return true;
-    if (slotPos === 'MF' && pPos === 'FW' && (relY === 0 || relY === 6) && absX >= 5)
+    if (slotPos === 'MF' && pPos === 'FW' && (relY === 0 || relY === 6) && relX >= 5)
       return true;
     return false;
   }
