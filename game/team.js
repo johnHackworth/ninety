@@ -28,8 +28,8 @@ class Team {
     this.substitutedOut = [];
     this.substitutionsUsed = 0;
     this.subWindowsUsed = 0;
-    this._headsInTheCloudsActive = false;
-    this._originalPlayers = null;
+    this._handPenaltiesActive = false;
+    this._handPenaltyProxies = new WeakMap();
 
     this.activateArtifacts(artifacts);
 
@@ -60,74 +60,50 @@ class Team {
     return player && player.__original ? player.__original : player;
   }
 
-  syncHandPenalties(inPlay) {
-    const hasHeads = inPlay.some((c) => c instanceof HeadsInTheCloudsAction);
-    const hasRedMist = inPlay.some((c) => c instanceof RedMistAction);
-    const hasMoraleCollapse = inPlay.some((c) => c instanceof MoraleCollapseAction);
-    const hasGKBlunder = inPlay.some((c) => c instanceof GoalkeeperBlunderAction);
-    const anyActive = hasHeads || hasRedMist || hasMoraleCollapse || hasGKBlunder;
+  _handPenaltyFor(stat) {
+    if (!BOOSTABLE_STATS.includes(stat)) return 0;
+    let penalty = this._headsInPlay ? 3 : 0;
+    if (this._redMistInPlay && (stat === 'marking' || stat === 'tackling')) penalty += 2;
+    if (this._moraleCollapseInPlay && stat === 'tacticalThinking') penalty += 3;
+    if (this._gkBlunderInPlay && stat === 'goalkeeping') penalty += 4;
+    return penalty;
+  }
 
-    if (anyActive && !this._handPenaltiesActive) {
-      this._originalPlayers = this.currentPlayers.slice();
-      const STAT_KEYS = ['speed', 'marking', 'tackling', 'shooting', 'passing', 'dribbling', 'tacticalThinking', 'heading', 'goalkeeping'];
-      this.currentPlayers = this._originalPlayers.map((p) => {
-        const handler = {
-          get(target, prop, receiver) {
-            if (STAT_KEYS.includes(prop)) {
-              let v = Reflect.get(target, prop, receiver);
-              if (typeof v === 'number') {
-                if (hasHeads) v -= 3;
-                if (hasRedMist && (prop === 'marking' || prop === 'tackling')) v -= 2;
-                if (hasMoraleCollapse && prop === 'tacticalThinking') v -= 3;
-                if (hasGKBlunder && prop === 'goalkeeping') v -= 4;
-              }
-              return v;
-            }
-            return Reflect.get(target, prop, receiver);
-          },
-        };
-        const proxy = new Proxy(p, handler);
-        proxy.__original = p;
-        return proxy;
+  _handPenaltyPlayer(player) {
+    player = this._unwrapPlayer(player);
+    if (!this._handPenaltiesActive) return player;
+    let proxy = this._handPenaltyProxies.get(player);
+    if (!proxy) {
+      const team = this;
+      proxy = new Proxy(player, {
+        get(target, prop, receiver) {
+          if (prop === '__original') return target;
+          const value = Reflect.get(target, prop, receiver);
+          return typeof value === 'number' ? value - team._handPenaltyFor(prop) : value;
+        },
+        set(target, prop, value, receiver) {
+          // Writes use the same effective attributes as reads, so +=/-= do
+          // not bake a temporary hand penalty into the player's base stats.
+          const baseValue = typeof value === 'number' ? value + team._handPenaltyFor(prop) : value;
+          return Reflect.set(target, prop, baseValue, receiver);
+        },
       });
-      this._handPenaltiesActive = true;
-    } else if (!anyActive && this._handPenaltiesActive && this._originalPlayers) {
-      this.currentPlayers = this._originalPlayers;
-      this._originalPlayers = null;
-      this._handPenaltiesActive = false;
-    } else if (anyActive && this._handPenaltiesActive && this._originalPlayers) {
-      const hasHeadsChanged = hasHeads !== this._headsInPlay;
-      const hasRedMistChanged = hasRedMist !== this._redMistInPlay;
-      const hasMoraleChanged = hasMoraleCollapse !== this._moraleCollapseInPlay;
-      const hasGKBlunderChanged = hasGKBlunder !== this._gkBlunderInPlay;
-      if (hasHeadsChanged || hasRedMistChanged || hasMoraleChanged || hasGKBlunderChanged) {
-        this.currentPlayers = this._originalPlayers.map((p) => {
-          const handler = {
-            get(target, prop, receiver) {
-              if (STAT_KEYS.includes(prop)) {
-                let v = Reflect.get(target, prop, receiver);
-                if (typeof v === 'number') {
-                  if (hasHeads) v -= 3;
-                  if (hasRedMist && (prop === 'marking' || prop === 'tackling')) v -= 2;
-                  if (hasMoraleCollapse && prop === 'tacticalThinking') v -= 3;
-                  if (hasGKBlunder && prop === 'goalkeeping') v -= 4;
-                }
-                return v;
-              }
-              return Reflect.get(target, prop, receiver);
-            },
-          };
-          const proxy = new Proxy(p, handler);
-          proxy.__original = p;
-          return proxy;
-        });
-      }
+      this._handPenaltyProxies.set(player, proxy);
     }
+    return proxy;
+  }
 
-    this._headsInPlay = hasHeads;
-    this._redMistInPlay = hasRedMist;
-    this._moraleCollapseInPlay = hasMoraleCollapse;
-    this._gkBlunderInPlay = hasGKBlunder;
+  syncHandPenalties(inPlay) {
+    this._headsInPlay = inPlay.some((c) => c instanceof HeadsInTheCloudsAction);
+    this._redMistInPlay = inPlay.some((c) => c instanceof RedMistAction);
+    this._moraleCollapseInPlay = inPlay.some((c) => c instanceof MoraleCollapseAction);
+    this._gkBlunderInPlay = inPlay.some((c) => c instanceof GoalkeeperBlunderAction);
+    this._handPenaltiesActive = this._headsInPlay || this._redMistInPlay ||
+      this._moraleCollapseInPlay || this._gkBlunderInPlay;
+
+    // Keep the current lineup, including substitutions and player removals.
+    // Cached proxies read the current flags even through retained references.
+    this.currentPlayers = this.currentPlayers.map((p) => this._handPenaltyPlayer(p));
   }
 
   syncHeadsInTheClouds(inPlay) {
@@ -190,7 +166,7 @@ class Team {
     if (this.formation && this.formation[outPlayer.name]) {
       slot = this.formation[outPlayer.name];
     }
-    this.currentPlayers[index] = inPlayer;
+    this.currentPlayers[index] = this._handPenaltyPlayer(inPlayer);
     if (outPlayer.position === 'GK') this.currentGoalkeeper = inPlayer;
     this.substitutionsUsed += 1;
     this.substitutedOut.push(outPlayer);
