@@ -2156,7 +2156,7 @@ function resolveSwitchPlay(x, y) {
 
   if (result.intercepted && result.interceptor) {
     shakeScreen();
-    matchState.possession = tk(result.interceptor);
+    matchState.possession = tokenElForPlayer(result.interceptor);
     updatePossession();
   }
 
