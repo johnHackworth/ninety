@@ -61,6 +61,7 @@ class Team {
   }
 
   syncHandPenalties(inPlay) {
+    const STAT_KEYS = BOOSTABLE_STATS;
     const hasHeads = inPlay.some((c) => c instanceof HeadsInTheCloudsAction);
     const hasRedMist = inPlay.some((c) => c instanceof RedMistAction);
     const hasMoraleCollapse = inPlay.some((c) => c instanceof MoraleCollapseAction);
@@ -69,7 +70,6 @@ class Team {
 
     if (anyActive && !this._handPenaltiesActive) {
       this._originalPlayers = this.currentPlayers.slice();
-      const STAT_KEYS = ['speed', 'marking', 'tackling', 'shooting', 'passing', 'dribbling', 'tacticalThinking', 'heading', 'goalkeeping'];
       this.currentPlayers = this._originalPlayers.map((p) => {
         const handler = {
           get(target, prop, receiver) {

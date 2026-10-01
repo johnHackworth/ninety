@@ -231,7 +231,9 @@ class GameController {
       const state = this.doOrDie[teamName];
       if (state.stage === 'primed') {
         state.stage = 'active';
-        for (const p of team.currentPlayers) p.shooting += 4;
+        // Track the actual players so substitutions do not leave the bonus behind.
+        state.buffed = team.currentPlayers.map((p) => p.__original || p);
+        for (const p of state.buffed) p.shooting += 4;
         logMatch(teamName, 'DO OR DIE! Desperation fuels every shot (+4 shooting this turn).', 'goal');
       } else {
         delete this.doOrDie[teamName];
@@ -423,8 +425,12 @@ class GameController {
         logMatch(team.name, `Magic Spray at half-time: ${restored.name} returns from the Exhaust pile.`);
       }
       const held = this.heldCards[team.name] || [];
+      const retained = [];
       for (const action of this.inPlay[team.name] || []) {
-        if (held.includes(action) || action.hold) continue;
+        if (held.includes(action) || action.hold) {
+          retained.push(action);
+          continue;
+        }
         if (action instanceof InjuryRiskAction) {
           const candidates = team.currentPlayers.filter((p) => !p.injured);
           if (candidates.length > 0) {
@@ -438,7 +444,8 @@ class GameController {
           team.discardedActions.push(action);
         }
       }
-      this.inPlay[team.name] = [];
+      this.inPlay[team.name] = retained;
+      this.heldCards[team.name] = held.filter((card) => retained.includes(card));
       this._wrapInPlayProxies();
       this.actionPoints[team.name] = this.pointsPerTurn;
       const matchEffect = this.matchEffect;
