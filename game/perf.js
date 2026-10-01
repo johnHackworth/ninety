@@ -1,6 +1,6 @@
 // game/perf.js — Lightweight in-match performance diagnostics.
-// Reports via console (forwarded to Browser Logs by logger.js) and, when
-// available, RUM custom actions. All hooks are guarded and never throw.
+// Reports via the local console and, when available, RUM custom actions.
+// All hooks are guarded and never throw.
 (function () {
   const q = (typeof location !== 'undefined' && location.search) ? location.search : '';
   const params = new URLSearchParams(q);

@@ -1,4 +1,4 @@
-// Shared deployment tags and RUM lifecycle for this static application.
+// Deployment tags and RUM lifecycle for this static application.
 (function () {
   function meta(name) {
     const element = document.querySelector('meta[name="' + name + '"]');
@@ -15,15 +15,15 @@
   const version = meta('datadog-version');
   if (version) config.version = version;
 
-  function loadSdk(globalName, file) {
-    window[globalName] = window[globalName] || {
+  function loadSdk() {
+    window.DD_RUM = window.DD_RUM || {
       q: [],
       onReady(callback) { this.q.push(callback); },
     };
     const script = document.createElement('script');
     script.async = true;
     script.crossOrigin = '';
-    script.src = 'https://www.datadoghq-browser-agent.com/us1/v7/' + file;
+    script.src = 'https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js';
     document.head.appendChild(script);
   }
 
@@ -38,8 +38,8 @@
     } catch (_) {}
   }
 
-  window.NinetyTelemetry = { config, loadSdk, trackView };
-  loadSdk('DD_RUM', 'datadog-rum.js');
+  window.NinetyTelemetry = { trackView };
+  loadSdk();
   window.DD_RUM.onReady(function () {
     try {
       window.DD_RUM.init({

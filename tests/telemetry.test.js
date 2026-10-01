@@ -157,13 +157,12 @@ function telemetryHarness({ hostname = 'localhost', env = '', version = '' } = {
   const console = { log() {}, info() {}, warn() {}, error() {} };
   const context = vm.createContext({ window, document, location: { hostname, protocol: 'https:' }, MutationObserver, console });
   run('game/telemetry.js', context);
-  run('game/logger.js', context);
   return {
     window, scripts, configs, views, elements, watchers, context, console,
     startScreens() { listeners.DOMContentLoaded(); },
     update() { watchers[0].callback(); },
     ready() {
-      for (const name of ['DD_RUM', 'DD_LOGS']) {
+      for (const name of ['DD_RUM']) {
         const queued = window[name].q;
         window[name] = { init: config => { configs[name] = config; }, onReady: callback => callback(), startView: view => views.push(view.name) };
         queued.forEach(callback => callback());
@@ -172,7 +171,7 @@ function telemetryHarness({ hostname = 'localhost', env = '', version = '' } = {
   };
 }
 
-test('RUM and Logs share deployment tags with 20 percent replay sampling', () => {
+test('loads only RUM with deployment tags and 20 percent replay sampling', () => {
   const h = telemetryHarness({ hostname: 'staging.example.com', env: 'staging', version: 'abc123' });
   h.ready();
   for (const config of Object.values(h.configs)) {
@@ -182,10 +181,12 @@ test('RUM and Logs share deployment tags with 20 percent replay sampling', () =>
   }
   assert.equal(h.configs.DD_RUM.sessionReplaySampleRate, 20);
   assert.equal(h.configs.DD_RUM.trackViewsManually, true);
-  assert.equal(h.configs.DD_LOGS.forwardErrorsToLogs, true);
-  assert.deepEqual(Array.from(h.configs.DD_LOGS.forwardConsoleLogs), ['log', 'info', 'warn', 'error']);
-  assert.equal(h.scripts.length, 2);
-  assert.ok(h.scripts.every(script => script.async && script.src.startsWith('https://www.datadoghq-browser-agent.com/us1/v7/')));
+  assert.equal(h.window.DD_LOGS, undefined);
+  assert.equal(h.scripts.length, 1);
+  assert.equal(h.scripts[0].async, true);
+  assert.equal(h.scripts[0].src, 'https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js');
+  const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.equal(html.includes('game/logger.js'), false);
 });
 
 test('defaults local environment to dev, hosted environment to prod, omits unknown version', () => {
