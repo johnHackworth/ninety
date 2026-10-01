@@ -155,11 +155,11 @@ function telemetryHarness({ hostname = 'localhost', env = '', version = '' } = {
     observe(element, options) { this.options = options; }
   }
   const console = { log() {}, info() {}, warn() {}, error() {} };
-  const context = vm.createContext({ window, document, location: { hostname, protocol: 'https:' }, MutationObserver, console });
+  const context = vm.createContext({ window, document, location: { hostname, protocol: 'https:' }, MutationObserver, queueMicrotask: callback => callback(), console });
   run('game/telemetry.js', context);
   return {
     window, scripts, configs, views, elements, watchers, context, console,
-    startScreens() { listeners.DOMContentLoaded(); },
+    startScreens() { run('game/rum-views.js', context); },
     update() { watchers[0].callback(); },
     ready() {
       for (const name of ['DD_RUM']) {
@@ -206,7 +206,8 @@ test('screen views queue before SDK readiness, deduplicate and restore underlyin
   h.update();
   h.update();
   h.ready();
-  assert.deepEqual(h.views, ['menu', 'match-setup']);
+  assert.deepEqual(h.views, ['menu', 'friendly/setup']);
+  assert.equal(h.watchers.length, 1);
   h.elements['friendly-setup-screen'].hidden = true;
   h.elements.board.hidden = false;
   h.update();
@@ -221,7 +222,7 @@ test('screen views queue before SDK readiness, deduplicate and restore underlyin
   h.update();
   h.elements['training-phase-screen'].hidden = true;
   h.update();
-  assert.deepEqual(h.views, ['menu', 'match-setup', 'match', 'team-sheet', 'match', 'world-cup', 'world-cup-training', 'world-cup']);
+  assert.deepEqual(h.views, ['menu', 'friendly/setup', 'match', 'team-sheet', 'match', 'world-cup', 'world-cup/training', 'world-cup']);
   assert.equal(h.watchers[0].options.subtree, undefined);
 });
 
@@ -229,7 +230,9 @@ test('RUM bootstrap does not patch console or require SDKs to load for screen na
   const h = telemetryHarness();
   const originalError = h.console.error;
   h.startScreens();
-  h.window.NinetyTelemetry.trackView('rules');
+  h.elements['menu-screen'].hidden = true;
+  h.elements['friendly-setup-screen'].hidden = false;
+  h.update();
   assert.equal(h.console.error, originalError);
   assert.deepEqual(h.views, []);
 });

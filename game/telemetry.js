@@ -27,18 +27,6 @@
     document.head.appendChild(script);
   }
 
-  let currentView = 'menu';
-  function trackView(name) {
-    if (!name || name === currentView) return;
-    currentView = name;
-    try {
-      window.DD_RUM.onReady(function () {
-        try { window.DD_RUM.startView({ name }); } catch (_) {}
-      });
-    } catch (_) {}
-  }
-
-  window.NinetyTelemetry = { trackView };
   loadSdk();
   window.DD_RUM.onReady(function () {
     try {
@@ -53,40 +41,8 @@
         trackLongTasks: true,
         trackViewsManually: true,
       });
-      window.DD_RUM.startView({ name: 'menu' });
     } catch (_) { /* Observability must not interrupt the game. */ }
   });
 
-  function watchScreens() {
-    // Phase screens cover the underlying match or World Cup screen, so check
-    // them first. Observe only screen classes, never the changing game DOM.
-    const screens = [
-      ['team-sheet-screen', 'team-sheet'],
-      ['event-phase-screen', 'world-cup-event'],
-      ['training-phase-screen', 'world-cup-training'],
-      ['staff-picks-screen', 'world-cup-staff'],
-      ['wc-setup-screen', 'world-cup-setup'],
-      ['menu-screen', 'menu'],
-      ['rules-screen', 'rules'],
-      ['friendly-setup-screen', 'match-setup'],
-      ['sim-setup-screen', 'simulation-setup'],
-      ['tournament-setup-screen', 'tournament-setup'],
-      ['tournament-screen', 'tournament'],
-      ['world-cup-screen', 'world-cup'],
-      ['board', 'match'],
-    ].map(([id, name]) => ({ element: document.getElementById(id), name }))
-      .filter(({ element }) => element);
-    function update() {
-      const visible = screens.find(({ element }) => !element.classList.contains('hidden'));
-      if (visible) trackView(visible.name);
-    }
-    update();
-    if (typeof MutationObserver === 'undefined') return;
-    const observer = new MutationObserver(update);
-    screens.forEach(({ element }) => observer.observe(element, {
-      attributes: true,
-      attributeFilter: ['class'],
-    }));
-  }
-  document.addEventListener('DOMContentLoaded', watchScreens, { once: true });
+  // game/rum-views.js owns manual view tracking after the screen DOM loads.
 })();
