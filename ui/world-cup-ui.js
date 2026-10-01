@@ -2817,7 +2817,7 @@ function wcMtFormationAssignment(team, mirrorX) {
     // team.formation is stored in absolute pitch coords (own goal at x=0 for a
     // left team, x=8 for a right team) — match it to the slot's absolute x.
     const idx = slots.findIndex(
-      (s) => !used.has(s) && s.rawTy === pos[1] && s.role === (p.position === 'GK' ? 'GK' : p.position)
+      (s) => !used.has(s) && s.rawTy === pos[1]
         && (mirrorX ? 8 - s.rawTx : s.rawTx) === pos[0]
     );
     if (idx !== -1) {
@@ -2831,9 +2831,8 @@ function wcMtFormationAssignment(team, mirrorX) {
   const remaining = team.currentPlayers.filter((p) => !placed.has(p.name) && !unavail.has(p.name));
   for (const s of slots) {
     if (used.has(s)) continue;
-    const cx = mirrorX ? 8 - s.rawTx : s.rawTx;
     let picked = remaining.find(
-      (p) => !placed.has(p.name) && wcMtCanFlex(p.position, s.role, cx, s.rawTy)
+      (p) => !placed.has(p.name) && wcMtCanFlex(p.position, s.role, s.rawTx, s.rawTy)
     );
     if (!picked) picked = remaining.find((p) => !placed.has(p.name));
     if (picked) {
@@ -2868,6 +2867,7 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   team.currentPlayers.push(...placed);
   team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
 
+  team.formation = map;
   wcSelectedFormation = key;
   wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
   wcPendingFormationCoords[teamName] = { ...map };
