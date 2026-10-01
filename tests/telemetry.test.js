@@ -186,7 +186,7 @@ test('loads only RUM with deployment tags and 20 percent replay sampling', () =>
   assert.equal(h.scripts[0].async, true);
   assert.equal(h.scripts[0].src, 'https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js');
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.equal(html.includes('game/logger.js'), false);
+  assert.equal(html.includes('<script src="game/logger.js"></script>'), true);
 });
 
 test('defaults local environment to dev, hosted environment to prod, omits unknown version', () => {
@@ -225,7 +225,7 @@ test('screen views queue before SDK readiness, deduplicate and restore underlyin
   assert.equal(h.watchers[0].options.subtree, undefined);
 });
 
-test('bootstrap does not patch console or require SDKs to load for screen navigation', () => {
+test('RUM bootstrap does not patch console or require SDKs to load for screen navigation', () => {
   const h = telemetryHarness();
   const originalError = h.console.error;
   h.startScreens();
