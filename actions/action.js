@@ -40,6 +40,12 @@ class Action {
     return ++_cardIdCounter;
   }
 
+  static reserveCardId(id) {
+    if (Number.isSafeInteger(id) && id > 0) {
+      _cardIdCounter = Math.max(_cardIdCounter, id);
+    }
+  }
+
   static markerFollows(marker, player, team) {
     if (marker.position === 'GK') return false;
     const markingStat = (team && team.hasTeamEffect && team.hasTeamEffect('triggerManMarking'))

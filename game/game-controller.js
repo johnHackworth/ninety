@@ -1,5 +1,5 @@
 class GameController {
-  constructor({ teams, turns = 10, cardsPerTurn = 3, pointsPerTurn = 3 }) {
+  constructor({ teams, turns = 10, cardsPerTurn = 3, pointsPerTurn = 3, start = true }) {
     this.teams = teams;
     this.turn = 0;
     this.maxTurns = turns;
@@ -76,7 +76,7 @@ class GameController {
       };
     }
 
-    this.startTurn();
+    if (start) this.startTurn();
   }
 
   _wrapInPlayProxies() {

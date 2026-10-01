@@ -2,12 +2,13 @@
 
 
 
-function setupGame() {
+function setupGame({ start = true } = {}) {
   game = new GameController({
     teams: Object.values(TEAMS),
     turns: typeof trainingActive !== 'undefined' && trainingActive ? 3 : 20,
     cardsPerTurn: 6,
     pointsPerTurn: 3,
+    start,
   });
 
   game.onTurnEnd = () => {
