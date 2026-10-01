@@ -548,23 +548,6 @@ h1 {
   background: radial-gradient(circle, rgba(255, 210, 77, 0.18), transparent 70%);
 }
 
-.cell.duel::after {
-  content: '1 v 1';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: rgba(255, 210, 77, 0.7);
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 999px;
-  padding: 1px 5px;
-  pointer-events: none;
-  z-index: 9;
-}
-
 .cell.pass-target {
   outline: 3px solid #ffd24d;
   outline-offset: -3px;
