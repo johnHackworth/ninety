@@ -27,18 +27,6 @@ if (pitchWrapper) {
     colTicks.appendChild(tick);
   }
   pitchWrapper.insertBefore(colTicks, pitch);
-
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = WIDTH - 2; x < WIDTH; x++) {
-      const cellEl = pitch.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
-      if (!cellEl) continue;
-      if (y !== Math.floor(HEIGHT / 2)) continue;
-      const label = document.createElement('div');
-      label.className = 'shooting-zone-label';
-      label.textContent = 'SHOOT';
-      cellEl.appendChild(label);
-    }
-  }
 }
 
 const marks = [
@@ -1649,7 +1637,7 @@ function refreshCellLayout(cellEl) {
     tokens[0].classList.add('alone');
   }
   const teams = new Set(tokens.map((el) => el._token && el._token.player.team).filter((t) => t && TEAMS[t]));
-  cellEl.classList.toggle('duel', tokens.length >= 2 && teams.size >= 2);
+  cellEl.classList.toggle('contested', tokens.length >= 2 && teams.size >= 2);
 }
 
 function nearestEmptyCellFor(player, x, y) {
