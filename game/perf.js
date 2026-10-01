@@ -1,16 +1,24 @@
 // game/perf.js — Lightweight in-match performance diagnostics.
-// Reports via console (forwarded to Datadog RUM by logger.js) and, when
+// Reports via console (forwarded to Browser Logs by logger.js) and, when
 // available, RUM custom actions. All hooks are guarded and never throw.
 (function () {
   const q = (typeof location !== 'undefined' && location.search) ? location.search : '';
-  const off = /noperf|\bperf=0\b/i.test(q);
+  const params = new URLSearchParams(q);
+  const off = params.has('noperf') || params.get('perf') === '0';
   const Perf = window.Perf = {
     enabled: !off,
     _stats: {},
   };
 
+  let active = false;
+  let generation = 0;
+  let pendingActions = [];
+  let waitingForRum = false;
+  const restoreProbes = [];
   function setEnabled(v) {
     Perf.enabled = !!v;
+    if (Perf.enabled) wire();
+    else stop();
     return Perf.enabled;
   }
   Perf.setEnabled = setEnabled;
@@ -20,8 +28,26 @@
   function now() { return performance.now(); }
 
   function rum(name, attrs) {
-    if (typeof window === 'undefined' || !window.DD_RUM) return;
-    try { window.DD_RUM.addAction(name || 'perf', attrs || {}); } catch (_) {}
+    if (!Perf.enabled || !window.DD_RUM) return;
+    // Bound retained context if the CDN is blocked or never becomes ready.
+    if (pendingActions.length >= 100) return;
+    pendingActions.push({ name: name || 'perf', attrs: attrs || {}, epoch: generation });
+    if (waitingForRum) return;
+    waitingForRum = true;
+    try {
+      window.DD_RUM.onReady(function () {
+        waitingForRum = false;
+        const queued = pendingActions;
+        pendingActions = [];
+        for (const action of queued) {
+          if (!Perf.enabled || action.epoch !== generation) continue;
+          try { window.DD_RUM.addAction(action.name, action.attrs); } catch (_) {}
+        }
+      });
+    } catch (_) {
+      waitingForRum = false;
+      pendingActions = [];
+    }
   }
 
   function log(msg) {
@@ -35,111 +61,114 @@
     return (root || document).querySelectorAll('*').length;
   }
 
-  // ---- 4. Forced-reflow detector --------------------------------------
-  // Wraps the read APIs that trigger synchronous layout. Counts reads and
-  // flags write-read interleavings within a single render as layout thrash.
+  // ---- Layout-read diagnostics ---------------------------------------
+  // A layout read can cause synchronous layout, but does not prove a reflow.
+  // Capture one stack per reporting interval and preserve native descriptors.
 
-  let reflowReads = 0;
-  let reflowFlagged = false;
-  let reflowCapture = '';
+  let layoutReads = 0;
+  let layoutReadStack = '';
 
-  function wrapRead(obj, prop, key) {
-    const orig = obj[prop];
-    if (typeof orig !== 'function') return;
-    if (obj[prop].__perfWrapped) return;
-    obj[prop] = function () {
-      reflowReads += 1;
-      if (!reflowFlagged) {
-        reflowFlagged = true;
-        try {
-          reflowCapture = new Error().stack || '';
-        } catch (_) { reflowCapture = ''; }
-      }
-      const r = orig.apply(this, arguments);
-      return r;
-    };
-    obj[prop].__perfWrapped = true;
-    void key;
-  }
-
-  function installReflowProbe() {
-    if (typeof Element === 'undefined') return;
-    const proto = Element.prototype;
-    wrapRead(proto, 'getBoundingClientRect', 'getBoundingClientRect');
-    wrapRead(proto, 'getClientRects', 'getClientRects');
-    wrapRead(proto, 'getComputedStyle', 'getComputedStyle');
-    const readOnlyProps = ['offsetWidth', 'offsetHeight', 'offsetTop', 'offsetLeft', 'clientWidth', 'clientHeight', 'clientTop', 'clientLeft', 'scrollWidth', 'scrollHeight'];
-    for (const p of readOnlyProps) {
-      const desc = Object.getOwnPropertyDescriptor(proto, p);
-      if (!desc || !desc.get || desc.get.__perfWrapped) continue;
-      const g = desc.get;
-      const wrappedGet = function () {
-        reflowReads += 1;
-        if (!reflowFlagged) {
-          reflowFlagged = true;
-          try {
-            reflowCapture = new Error().stack || '';
-          } catch (_) { reflowCapture = ''; }
-        }
-        return g.call(this);
-      };
-      wrappedGet.__perfWrapped = true;
-      try { Object.defineProperty(proto, p, { get: wrappedGet, configurable: true }); } catch (_) {}
+  function recordRead() {
+    if (!Perf.enabled) return;
+    layoutReads += 1;
+    if (!layoutReadStack) {
+      try { layoutReadStack = new Error().stack || ''; } catch (_) {}
     }
   }
 
-  function takeReflowReads() {
-    const n = reflowReads;
-    reflowReads = 0;
+  function wrapRead(obj, prop) {
+    const desc = Object.getOwnPropertyDescriptor(obj, prop);
+    if (!desc || typeof desc.value !== 'function') return;
+    const original = desc.value;
+    const wrapped = function () {
+      recordRead();
+      return original.apply(this, arguments);
+    };
+    try {
+      Object.defineProperty(obj, prop, { ...desc, value: wrapped });
+      restoreProbes.push(() => {
+        if (obj[prop] === wrapped) Object.defineProperty(obj, prop, desc);
+      });
+    } catch (_) {}
+  }
+
+  function installLayoutProbe() {
+    if (typeof Element === 'undefined') return;
+    wrapRead(Element.prototype, 'getBoundingClientRect');
+    wrapRead(Element.prototype, 'getClientRects');
+    wrapRead(window, 'getComputedStyle');
+    const props = ['offsetWidth', 'offsetHeight', 'offsetTop', 'offsetLeft', 'clientWidth', 'clientHeight', 'clientTop', 'clientLeft', 'scrollWidth', 'scrollHeight'];
+    for (const p of props) {
+      let owner = typeof HTMLElement === 'undefined' ? Element.prototype : HTMLElement.prototype;
+      while (owner && !Object.getOwnPropertyDescriptor(owner, p)) owner = Object.getPrototypeOf(owner);
+      if (!owner) continue;
+      const desc = Object.getOwnPropertyDescriptor(owner, p);
+      if (!desc.get) continue;
+      const wrappedGet = function () {
+        recordRead();
+        return desc.get.call(this);
+      };
+      try {
+        Object.defineProperty(owner, p, { ...desc, get: wrappedGet });
+        restoreProbes.push(() => {
+          if (Object.getOwnPropertyDescriptor(owner, p).get === wrappedGet) {
+            Object.defineProperty(owner, p, desc);
+          }
+        });
+      } catch (_) {}
+    }
+  }
+
+  function takeLayoutReads() {
+    const n = layoutReads;
+    layoutReads = 0;
     return n;
   }
 
-  function takeReflowFlag() {
-    const f = reflowFlagged;
-    reflowFlagged = false;
-    const capture = f ? reflowCapture : '';
-    reflowCapture = '';
-    return { flagged: f, capture };
+  function takeLayoutStack() {
+    const capture = layoutReadStack;
+    layoutReadStack = '';
+    return { flagged: !!capture, capture };
   }
 
-  // ---- 2. Long-task / long-animation-frame observer --------------------
-  // Reports the slow frame: duration, invoker script line, and how many
-  // layout reads happened inside it.
+  // ---- Long-task / long-animation-frame observer ----------------------
 
   function installTaskObservers() {
     if (typeof PerformanceObserver === 'undefined') return;
-    try {
-      const cb = (list) => {
-        for (const e of list.getEntries()) {
-          const threshold = typeof e.duration === 'number' ? Math.round(e.duration) : 0;
-          let where = '';
-          const attr = (e.attribution && e.attribution[0]) || null;
-          if (attr && attr.containerType) {
-            const name = attr.containerName || attr.containerId || attr.containerSrc || '';
-            where = (name ? name + ' ' : '') + (attr.containerScript && attr.containerScript.name ? attr.containerScript.name : '') +
-              (attr.containerScript && attr.containerScript.startCol ? (':' + attr.containerScript.startLine + ':' + attr.containerScript.startCol) : '');
-          }
-          const reads = takeReflowReads();
-          const flag = takeReflowFlag();
-          const snap = snapshotCounts();
-          log('longframe ' + threshold + 'ms' + (where ? ' @ ' + where : '') + ' reads=' + reads + ' | ' + summarize(snap));
-          const attrs = { durationMs: threshold, where, reads, ...snap };
-          if (flag.flagged) {
-            attrs.reflowCapture = String(flag.capture).split('\n').slice(0, 6).join(' | ');
-          }
-          rum('perf.longframe', attrs);
+    const cb = (list) => {
+      if (!Perf.enabled) return;
+      for (const e of list.getEntries()) {
+        const durationMs = Math.round(e.duration || 0);
+        const script = e.scripts && e.scripts[0];
+        const attribution = e.attribution && e.attribution[0];
+        const where = script
+          ? (script.sourceURL || script.invoker || '') + ':' + (script.sourceCharPosition || 0)
+          : (attribution && (attribution.containerSrc || attribution.containerName || attribution.containerId)) || '';
+        const reads = takeLayoutReads();
+        const stack = takeLayoutStack();
+        const snap = snapshotCounts();
+        log('longframe ' + durationMs + 'ms' + (where ? ' @ ' + where : '') + ' layoutReads=' + reads + ' | ' + summarize(snap));
+        const attrs = { durationMs, entryType: e.entryType, where, layoutReads: reads, ...snap };
+        if (script) {
+          attrs.forcedStyleAndLayoutDurationMs = (e.scripts || []).reduce((sum, item) => sum + (item.forcedStyleAndLayoutDuration || 0), 0);
         }
-      };
-      const obs = new PerformanceObserver(cb);
-      obs.observe({ type: 'long-animation-frame', buffered: false });
-      // Fall back to longtask where LoAF is unavailable.
-      let legacy = null;
+        if (stack.flagged) attrs.layoutReadStack = String(stack.capture).split('\n').slice(0, 6).join(' | ');
+        rum('perf.longframe', attrs);
+      }
+    };
+    const supported = PerformanceObserver.supportedEntryTypes;
+    for (const type of ['long-animation-frame', 'longtask']) {
+      if (supported && !supported.includes(type)) continue;
+      let observer;
       try {
-        legacy = new PerformanceObserver(cb);
-        legacy.observe({ type: 'longtask', buffered: false });
-      } catch (_) {}
-      window.__perfObservers = [obs, legacy].filter(Boolean);
-    } catch (_) {}
+        observer = new PerformanceObserver(cb);
+        observer.observe({ type, buffered: false });
+        window.__perfObservers = [observer];
+        return;
+      } catch (_) {
+        if (observer) observer.disconnect();
+      }
+    }
   }
 
   // ---- DOM-leak census --------------------------------------------------
@@ -215,6 +244,7 @@
   let countLogTicks = 0;
 
   function reportCounts(label) {
+    if (!Perf.enabled) return;
     const counts = snapshotCounts();
     countLogTicks += 1;
     if (!lastCounts) {
@@ -225,6 +255,7 @@
     const deltas = {};
     let changed = false;
     for (const k in counts) {
+      if (typeof counts[k] !== 'number' || typeof lastCounts[k] !== 'number') continue;
       const d = counts[k] - lastCounts[k];
       deltas[k] = d;
       if (d !== 0) changed = true;
@@ -294,12 +325,12 @@
       const r = fn.apply(this, arguments);
       const ms = now() - t0;
       if (ms > 1) {
-        const reads = takeReflowReads();
+        const reads = takeLayoutReads();
         if (ms >= 50 || reads >= 50) {
           const snap = snapshotCounts();
-          const label = name + ' ' + ms.toFixed(1) + 'ms reads=' + reads + ' | ' + summarize(snap);
+          const label = name + ' ' + ms.toFixed(1) + 'ms layoutReads=' + reads + ' | ' + summarize(snap);
           log(label);
-          rum('perf.hot', { fn: name, ms: Math.round(ms * 10) / 10, reads, ...snap });
+          rum('perf.hot', { fn: name, ms: Math.round(ms * 10) / 10, layoutReads: reads, ...snap });
         }
         Perf._stats[name] = { ms, reads };
       }
@@ -308,10 +339,28 @@
   }
 
   function start() {
-    if (!Perf.enabled) return;
-    installReflowProbe();
+    if (!Perf.enabled || active) return;
+    active = true;
+    installLayoutProbe();
     installTaskObservers();
     log('instrumentation active');
+  }
+
+  function stop() {
+    generation += 1;
+    pendingActions = [];
+    active = false;
+    for (const observer of window.__perfObservers || []) {
+      try { observer.disconnect(); } catch (_) {}
+    }
+    window.__perfObservers = [];
+    while (restoreProbes.length) {
+      try { restoreProbes.pop()(); } catch (_) {}
+    }
+    layoutReads = 0;
+    layoutReadStack = '';
+    lastCounts = null;
+    countLogTicks = 0;
   }
 
   // ---- Public API ------------------------------------------------------
@@ -350,11 +399,14 @@
 
   Perf.wire = wire;
   Perf.time = time;
-  Perf.takeReflowReads = takeReflowReads;
-  Perf.takeReflowFlag = takeReflowFlag;
+  Perf.takeLayoutReads = takeLayoutReads;
+  Perf.takeReflowReads = takeLayoutReads; // Legacy diagnostic API.
+  Perf.takeLayoutStack = takeLayoutStack;
+  Perf.takeReflowFlag = takeLayoutStack; // Legacy diagnostic API.
   Perf.reportCounts = reportCounts;
   Perf.snapshotCounts = snapshotCounts;
   Perf.start = start;
+  Perf.stop = () => setEnabled(false);
   Perf.rum = rum;
   Perf.log = log;
 })();

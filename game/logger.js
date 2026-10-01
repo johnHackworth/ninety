@@ -1,20 +1,17 @@
-// game/logger.js — Intercept console output and forward to Datadog RUM
-(function() {
-  const origLog   = console.log.bind(console);
-  const origWarn  = console.warn.bind(console);
-  const origError = console.error.bind(console);
-  const origInfo  = console.info.bind(console);
-
-  function fwd(level, args) {
-    if (!window.DD_RUM || !window.DD_RUM.logger) return;
+// Use Browser Logs' native console capture, including Error objects and stacks.
+// RUM has no logger API; its automatic error capture remains separate.
+(function () {
+  const telemetry = window.NinetyTelemetry;
+  if (!telemetry) return;
+  telemetry.loadSdk('DD_LOGS', 'datadog-logs.js');
+  window.DD_LOGS.onReady(function () {
     try {
-      const msg = args.map(a => (typeof a === 'string') ? a : JSON.stringify(a)).join(' ');
-      window.DD_RUM.logger[level](msg);
-    } catch (_) { /* swallow */ }
-  }
-
-  console.log = function() { origLog.apply(console, arguments);   fwd('info',  Array.from(arguments)); };
-  console.info = function() { origInfo.apply(console, arguments);  fwd('info',  Array.from(arguments)); };
-  console.warn = function() { origWarn.apply(console, arguments);  fwd('warn',  Array.from(arguments)); };
-  console.error = function() { origError.apply(console, arguments); fwd('error', Array.from(arguments)); };
+      window.DD_LOGS.init({
+        ...telemetry.config,
+        sessionSampleRate: 100,
+        forwardErrorsToLogs: true,
+        forwardConsoleLogs: ['log', 'info', 'warn', 'error'],
+      });
+    } catch (_) { /* Observability must not interrupt the game. */ }
+  });
 })();
