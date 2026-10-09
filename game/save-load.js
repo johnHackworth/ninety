@@ -1,5 +1,9 @@
 // game/save-load.js — Serialize/deserialize game state for page reload persistence
 const SAVE_KEY = 'slay-the-umpire-save';
+const SAVE_EFFECT_MAPS = [
+  'muscleMemory', 'timeWall', 'ghostRun', 'fortressMentality',
+  'blindEyeUsed', 'squadDepthPlays', 'cardsPlayedByPlayer', 'matchHeldCards',
+];
 
 const _saveLoad = {
   _lastSave: 0,
@@ -60,7 +64,23 @@ const _saveLoad = {
   },
 
   _serializeCard(card) {
-    return { name: card.name, _id: card._id };
+    return {
+      name: card.name, _id: card._id,
+      hold: card.hold, free: card.free, ephemeral: card.ephemeral, exhaust: card.exhaust,
+    };
+  },
+
+  _restoreCard(saved) {
+    const card = resolveCard(saved.name);
+    if (!card) return null;
+    if (saved._id) {
+      card._id = saved._id;
+      Action.reserveCardId(saved._id);
+    }
+    for (const flag of ['hold', 'free', 'ephemeral', 'exhaust']) {
+      if (typeof saved[flag] === 'boolean') card[flag] = saved[flag];
+    }
+    return card;
   },
 
   _serializeTeam(team) {
@@ -161,7 +181,19 @@ const _saveLoad = {
           suspensionShadowActive: game.suspensionShadowActive,
           firstPlayedThisTurn: { ...game.firstPlayedThisTurn },
           comboExtraPlays: { ...game.comboExtraPlays },
+          heldCards: Object.fromEntries(Object.entries(game.heldCards).map(([name, cards]) =>
+            [name, cards.map((c) => c._id)])),
+          doOrDie: Object.fromEntries(Object.entries(game.doOrDie).map(([name, state]) =>
+            [name, { stage: state.stage, buffed: (state.buffed || []).map((p) => p.name) }])),
+          videoSession: Object.fromEntries(Object.entries(game.videoSession).map(([name, Ctor]) =>
+            [name, new Ctor().name])),
+          pendingPenalty: game.pendingPenalty,
+          freeKickProtection: game.freeKickProtection ? { ...game.freeKickProtection } : null,
+          ballStasisTurns: game.ballStasisTurns,
+          lastBallCell: game._lastBallCell,
+          dogRolledThisTurn: Boolean(game._dogRolledThisTurn),
           matchEffectName: game.matchEffect ? game.matchEffect.name : null,
+          matchEffectState: game.matchEffect ? { ...game.matchEffect } : null,
           pendingMatchEffectName: game.pendingMatchEffect ? game.pendingMatchEffect.name : null,
           currentTeamName: game.currentTeam && game.currentTeam.name,
         },
@@ -182,6 +214,7 @@ const _saveLoad = {
         tournamentMode: typeof tournamentMode !== 'undefined' ? tournamentMode : false,
       };
 
+      for (const key of SAVE_EFFECT_MAPS) snapshot.game[key] = game[key];
       for (const teamName of Object.keys(TEAMS)) {
         snapshot.inPlay[teamName] = game.inPlay[teamName].map((c) => this._serializeCard(c));
         snapshot.teams[teamName] = this._serializeTeam(TEAMS[teamName]);
@@ -253,7 +286,13 @@ const _saveLoad = {
         else if (player.injuryMatches !== undefined) player.injuryMatches = undefined;
         player.effects = [];
         for (const e of sp.effects) {
-          player.addEffect(e.type, e.turns === Infinity ? Infinity : e.turns);
+          // Saved stats already contain these modifiers. Restore metadata only.
+          const spec = PLAYER_EFFECTS[e.type];
+          if (!spec) throw new Error(`unknown effect: ${e.type}`);
+          player.effects.push({
+            type: e.type, turns: e.turns,
+            char: spec.char, label: spec.label, explanation: spec.explanation,
+          });
         }
       }
 
@@ -274,13 +313,7 @@ const _saveLoad = {
         explanation: TEAM_EFFECTS[e.type] ? TEAM_EFFECTS[e.type].explanation : '',
       }));
 
-      function rebuildPile(savedCards) {
-        return savedCards.map((sc) => {
-          const card = resolveCard(sc.name);
-          if (card && sc._id) card._id = sc._id;
-          return card;
-        }).filter(Boolean);
-      }
+      const rebuildPile = (savedCards) => savedCards.map((sc) => this._restoreCard(sc)).filter(Boolean);
 
       team.actions = rebuildPile(saved.actions);
       team.availableActions = rebuildPile(saved.availableActions);
@@ -292,7 +325,7 @@ const _saveLoad = {
       team.exhaustedGoalkeeping = rebuildPile(saved.exhaustedGoalkeeping);
     }
 
-    setupGame();
+    setupGame({ start: false });
 
     const g = snapshot.game;
     game.turn = g.turn;
@@ -327,6 +360,26 @@ const _saveLoad = {
     game.suspensionShadowActive = g.suspensionShadowActive || null;
     game.firstPlayedThisTurn = g.firstPlayedThisTurn || {};
     game.comboExtraPlays = g.comboExtraPlays || {};
+    for (const key of SAVE_EFFECT_MAPS) game[key] = g[key] || {};
+    game.pendingPenalty = g.pendingPenalty || null;
+    game.freeKickProtection = g.freeKickProtection || null;
+    game.ballStasisTurns = g.ballStasisTurns || 0;
+    game._lastBallCell = g.lastBallCell ?? null;
+    game._dogRolledThisTurn = Boolean(g.dogRolledThisTurn);
+    game.doOrDie = {};
+    for (const [teamName, state] of Object.entries(g.doOrDie || {})) {
+      const team = TEAMS[teamName];
+      if (!team) continue;
+      game.doOrDie[teamName] = {
+        stage: state.stage,
+        buffed: (state.buffed || []).map((name) => team.squad.find((p) => p.name === name)).filter(Boolean),
+      };
+    }
+    game.videoSession = {};
+    for (const [teamName, name] of Object.entries(g.videoSession || {})) {
+      const card = resolveCard(name);
+      if (card) game.videoSession[teamName] = card.constructor;
+    }
     game.freeActions = [];
 
     if (g.currentTeamName && TEAMS[g.currentTeamName]) {
@@ -343,15 +396,19 @@ const _saveLoad = {
     if (g.matchEffectName) {
       const restored = resolveMatchEffect(g.matchEffectName);
       if (restored) {
+        if (g.matchEffectState) Object.assign(restored, g.matchEffectState);
         game.matchEffect = restored;
       }
+    }
+    if (g.pendingMatchEffectName) {
+      game.pendingMatchEffect = game.matchEffect && game.matchEffect.name === g.pendingMatchEffectName
+        ? game.matchEffect : resolveMatchEffect(g.pendingMatchEffectName);
     }
 
     const cardById = {};
     for (const teamName of Object.keys(TEAMS)) {
       game.inPlay[teamName] = (snapshot.inPlay[teamName] || []).map((sc) => {
-        const card = resolveCard(sc.name);
-        if (card && sc._id) card._id = sc._id;
+        const card = this._restoreCard(sc);
         if (card) cardById[sc._id] = card;
         return card;
       }).filter(Boolean);
@@ -359,6 +416,14 @@ const _saveLoad = {
     game.freeActions = (snapshot.freeActions || [])
       .map((id) => cardById[id])
       .filter(Boolean);
+    game.heldCards = {};
+    for (const teamName of savedTeamNames) {
+      const hand = game.inPlay[teamName];
+      const ids = (g.heldCards || {})[teamName] || [];
+      game.heldCards[teamName] = hand.filter((card) => ids.includes(card._id));
+      for (const card of game.heldCards[teamName]) card.hold = true;
+      TEAMS[teamName].syncHandPenalties(hand);
+    }
 
     matchState = snapshot.matchState ? {
       possession: null,

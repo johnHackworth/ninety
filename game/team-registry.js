@@ -114,13 +114,15 @@ function buildTeams(teamNames = DEFAULT_MATCH) {
     team.side = index % 2 === 0 ? 'left' : 'right';
     const starters = team.startingXI.map((n) => team.squad.find((p) => p.name === n));
     const subs = team.squad.filter((p) => !team.startingXI.includes(p.name));
-    const { map } = Team.resolveFormation(TeamClass.formation, {
+    const { map, placed } = Team.resolveFormation(TeamClass.formation, {
       starters,
       subs,
       side: team.side,
       unavailable: new Set(),
     });
     team.formation = map;
+    team.currentPlayers = placed;
+    team.currentGoalkeeper = placed.find((p) => p.position === 'GK') || null;
     teams[name] = team;
   });
   return teams;

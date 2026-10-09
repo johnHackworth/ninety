@@ -816,6 +816,61 @@ function createActionCard(action) {
 }
 
 
+function showMatchDeckModal(team, label, actions, trigger) {
+  const modal = document.createElement('div');
+  modal.className = 'shot-modal match-deck-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'match-deck-title');
+
+  const header = document.createElement('div');
+  header.className = 'match-deck-header';
+  const title = document.createElement('h2');
+  title.id = 'match-deck-title';
+  title.className = 'halftime-title';
+  title.textContent = `${team.name} — ${label} (${actions.length} cards)`;
+  header.appendChild(title);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'shot-modal-close';
+  closeBtn.textContent = 'Close';
+  header.appendChild(closeBtn);
+  modal.appendChild(header);
+
+  const cards = document.createElement('div');
+  cards.className = 'match-deck-cards';
+  cards.tabIndex = 0;
+  cards.setAttribute('role', 'region');
+  cards.setAttribute('aria-label', `${label} cards`);
+  if (actions.length) {
+    for (const action of actions) cards.appendChild(createActionCard(action));
+  } else {
+    const empty = document.createElement('p');
+    empty.className = 'match-deck-empty';
+    empty.textContent = 'No cards in this deck.';
+    cards.appendChild(empty);
+  }
+  modal.appendChild(cards);
+
+  const close = showModalOverlay(modal, {
+    closeOnOverlay: true,
+    onClose: () => {
+      ensureCardTooltip().style.display = 'none';
+      if (trigger.isConnected) trigger.focus();
+    },
+  });
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    // Keep keyboard focus on the close control and scrollable cards.
+    event.preventDefault();
+    (document.activeElement === closeBtn ? cards : closeBtn).focus();
+  });
+  closeBtn.focus();
+}
+
+
 function renderActionDeck(team) {
   const deck = document.createElement('div');
   deck.className = 'deck';
@@ -835,19 +890,14 @@ function renderActionDeck(team) {
   back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
-  const cards = document.createElement('div');
-  cards.className = 'deck-cards';
-
-  for (const action of team.availableActions) {
-    cards.appendChild(createActionCard(action));
-  }
-
+  back.type = 'button';
+  back.setAttribute('aria-haspopup', 'dialog');
+  back.setAttribute('aria-label', `${team.name} — Playable deck`);
   back.addEventListener('click', () => {
-    cards.classList.toggle('open');
+    showMatchDeckModal(team, 'Playable deck', team.availableActions, back);
   });
 
   deck.appendChild(back);
-  deck.appendChild(cards);
   return deck;
 }
 
@@ -870,19 +920,14 @@ function renderGoalkeepingDeck(team) {
   back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
-  const cards = document.createElement('div');
-  cards.className = 'deck-cards';
-
-  for (const card of team.availableGoalkeeping) {
-    cards.appendChild(createActionCard(card));
-  }
-
+  back.type = 'button';
+  back.setAttribute('aria-haspopup', 'dialog');
+  back.setAttribute('aria-label', `${team.name} — Goalkeeper deck`);
   back.addEventListener('click', () => {
-    cards.classList.toggle('open');
+    showMatchDeckModal(team, 'Goalkeeper deck', team.availableGoalkeeping, back);
   });
 
   deck.appendChild(back);
-  deck.appendChild(cards);
   return deck;
 }
 
@@ -905,19 +950,14 @@ function renderExhaustedDeck(team) {
   back.appendChild(typeLabel);
   back.appendChild(countLabel);
 
-  const cards = document.createElement('div');
-  cards.className = 'deck-cards';
-
-  for (const card of team.exhaustedActions) {
-    cards.appendChild(createActionCard(card));
-  }
-
+  back.type = 'button';
+  back.setAttribute('aria-haspopup', 'dialog');
+  back.setAttribute('aria-label', `${team.name} — Exhausted deck`);
   back.addEventListener('click', () => {
-    cards.classList.toggle('open');
+    showMatchDeckModal(team, 'Exhausted deck', team.exhaustedActions, back);
   });
 
   deck.appendChild(back);
-  deck.appendChild(cards);
   return deck;
 }
 

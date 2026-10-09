@@ -2843,6 +2843,7 @@ function wcMtApplyFormation(team, teamName, mirrorX, key) {
   team.currentPlayers.push(...placed);
   team.currentGoalkeeper = team.currentPlayers.find((p) => p.position === 'GK') || null;
 
+  team.formation = map;
   wcSelectedFormation = key;
   wcPendingLineup[teamName] = team.currentPlayers.map((p) => p.name);
   wcPendingFormationCoords[teamName] = { ...map };
