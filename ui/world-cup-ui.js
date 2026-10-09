@@ -1,4 +1,4 @@
-// World Cup UI layer — extracted from app.js
+// World Cup UI layer
 
 // ---- World Cup state ----
 let worldCup = null;
@@ -2768,10 +2768,6 @@ function wcMtCaptain(team) {
   return sorted[0] || null;
 }
 
-function wcMtCanFlex(pPos, slotPos, cx, cy) {
-  return Team.canFlex(pPos, slotPos, cx, cy);
-}
-
 function wcMtToPercent(tx, ty, mirrorX) {
   const vx = ty;
   const az = mirrorX ? 8 - tx : tx;
@@ -2779,18 +2775,6 @@ function wcMtToPercent(tx, ty, mirrorX) {
     x: 7 + (vx / 6) * 86,
     y: 9 + (az / 8) * 78,
   };
-}
-
-function wcMtTemplateSlots(key, mirrorX) {
-  const tmpl = FORMATION_TEMPLATES[key] || FORMATION_TEMPLATES['4-4-2'];
-  const slots = [];
-  for (const [pos, coords] of Object.entries(tmpl)) {
-    for (const coord of coords) {
-      const pct = wcMtToPercent(coord[0], coord[1], mirrorX);
-      slots.push({ role: pos, rawTx: coord[0], rawTy: coord[1], x: pct.x, y: pct.y });
-    }
-  }
-  return slots;
 }
 
 // The side the team's natural formation should face: current match if one is
@@ -2803,44 +2787,35 @@ function wcMtMirrorXFor(teamName, team) {
   return !!(team && team.side === 'right');
 }
 
+function wcMtShapeOf(team) {
+  let df = 0;
+  let mf = 0;
+  let fw = 0;
+  for (const p of team.currentPlayers || []) {
+    if (p.position === 'DF') df++;
+    else if (p.position === 'MF') mf++;
+    else if (p.position === 'FW') fw++;
+  }
+  const label = `${df}-${mf}-${fw}`;
+  return { key: FORMATION_TEMPLATES[label] ? label : null, label };
+}
+
 function wcMtFormationAssignment(team, mirrorX) {
-  const slots = wcMtTemplateSlots(wcSelectedFormation, mirrorX);
-  const used = new Set();
   const out = [];
-  const placed = new Set();
+  const used = new Set();
   const unavail = (typeof wcMatchUnavailableNames === 'function') ? wcMatchUnavailableNames(team.name, team) : new Set();
+  const fallback = [
+    [4, 3], [2, 0], [2, 2], [2, 4], [2, 6],
+    [4, 0], [4, 2], [4, 4], [4, 6], [6, 2], [6, 4],
+  ];
 
   for (const p of team.currentPlayers) {
     if (unavail.has(p.name)) continue;
-    const pos = team.formation && team.formation[p.name];
-    if (!pos) continue;
-    // team.formation is stored in absolute pitch coords (own goal at x=0 for a
-    // left team, x=8 for a right team) — match it to the slot's absolute x.
-    const idx = slots.findIndex(
-      (s) => !used.has(s) && s.rawTy === pos[1] && s.role === (p.position === 'GK' ? 'GK' : p.position)
-        && (mirrorX ? 8 - s.rawTx : s.rawTx) === pos[0]
-    );
-    if (idx !== -1) {
-      const s = slots[idx];
-      used.add(s);
-      out.push({ player: p, x: s.x, y: s.y, rawTx: s.rawTx, rawTy: s.rawTy });
-      placed.add(p.name);
-    }
-  }
-
-  const remaining = team.currentPlayers.filter((p) => !placed.has(p.name) && !unavail.has(p.name));
-  for (const s of slots) {
-    if (used.has(s)) continue;
-    const cx = mirrorX ? 8 - s.rawTx : s.rawTx;
-    let picked = remaining.find(
-      (p) => !placed.has(p.name) && wcMtCanFlex(p.position, s.role, cx, s.rawTy)
-    );
-    if (!picked) picked = remaining.find((p) => !placed.has(p.name));
-    if (picked) {
-      used.add(s);
-      placed.add(picked.name);
-      out.push({ player: picked, x: s.x, y: s.y, rawTx: s.rawTx, rawTy: s.rawTy });
-    }
+    let c = team.formation ? team.formation[p.name] : null;
+    if (!c) c = fallback.find((s) => !used.has(s[0] + ':' + s[1])) || [4, 3];
+    used.add(c[0] + ':' + c[1]);
+    const pct = wcMtToPercent(c[0], c[1], mirrorX);
+    out.push({ player: p, x: pct.x, y: pct.y, rawTx: c[0], rawTy: c[1] });
   }
 
   return out;
@@ -3299,7 +3274,7 @@ function renderWcMtHeader(team, teamName) {
   sub.className = 'wc-mt-sub';
   const captain = wcMtCaptain(team);
   const caps = captain ? wcMtSurname(captain.name) : 'No captain';
-  sub.textContent = `${team.squad.length} players · ${wcSelectedFormation} · ${caps} captains`;
+  sub.textContent = `${team.squad.length} players · ${wcMtShapeOf(team).label} · ${caps} captains`;
   nameCol.appendChild(name);
   nameCol.appendChild(sub);
 
@@ -3334,13 +3309,13 @@ function renderWcMtPitch(team, teamName, mirrorX) {
 
   const pills = document.createElement('div');
   pills.className = 'wc-mt-form-pills';
+  const activeShape = wcMtShapeOf(team).label;
   for (const key of Object.keys(FORMATION_TEMPLATES)) {
     const pill = document.createElement('button');
-    pill.className = 'wc-mt-form-pill' + (key === wcSelectedFormation ? ' active' : '');
+    pill.className = 'wc-mt-form-pill' + (key === activeShape ? ' active' : '');
     pill.textContent = key;
     pill.type = 'button';
     pill.addEventListener('click', () => {
-      if (key === wcSelectedFormation) return;
       wcMtApplyFormation(team, teamName, mirrorX, key);
       wcMyTeamSelected = null;
       renderWorldCupView();
@@ -3578,7 +3553,6 @@ function renderWcMyTeam(opts) {
     }
   }
 
-  if (!wcSelectedFormation) wcSelectedFormation = Object.keys(FORMATION_TEMPLATES)[0] || '4-4-2';
   const mirrorX = wcMtMirrorXFor(teamName, team);
   wcMyTeam = team;
   wcMyTeamName = teamName;
@@ -4164,12 +4138,11 @@ function wcQueueEvent(teamName) {
   wcEventQueue.push({ teamName, event, eventType: event ? event.constructor.name : null });
 }
 
-function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
+function wcRunEventForTeam(teamName, queuedEvent) {
   return new Promise(async (resolve) => {
     wcEventActive = true;
     wcEventTargetTeam = teamName;
-    const progressLabel = eventTotal > 0 ? ` (${eventIndex}/${eventTotal})` : '';
-    await showNotice('EVENT PHASE' + progressLabel);
+    await showNotice('EVENT PHASE');
     const savedTeams = TEAMS;
     if (!TEAMS || !TEAMS[teamName]) {
       TEAMS = buildTeams([teamName]);
@@ -4182,7 +4155,7 @@ function wcRunEventForTeam(teamName, eventIndex, eventTotal, queuedEvent) {
         wcEventActive = false;
         wcEventTargetTeam = null;
         resolve();
-      }, eventIndex, eventTotal);
+      });
     } else {
       TEAMS = savedTeams;
       wcEventActive = false;
@@ -4197,12 +4170,9 @@ async function wcProcessEventQueue(callback) {
     callback();
     return;
   }
-  const total = wcEventQueue.length;
-  let index = 0;
   while (wcEventQueue.length > 0) {
     const next = wcEventQueue.shift();
-    index += 1;
-    await wcRunEventForTeam(next.teamName, index, total, next.event);
+    await wcRunEventForTeam(next.teamName, next.event);
   }
   callback();
 }
@@ -5226,7 +5196,7 @@ function renderWcEventFooter(teamName) {
   }
 }
 
-function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal) {
+function wcShowEventPhaseModal(teamName, event, callback) {
   if (!eventPhaseScreen) return { close: () => {} };
   eventPhaseScreen.classList.remove('hidden');
 
@@ -5238,7 +5208,7 @@ function wcShowEventPhaseModal(teamName, event, callback, eventIndex, eventTotal
   kicker1.textContent = 'Event';
   const kicker2 = document.createElement('span');
   kicker2.className = 'event-kicker-sub';
-  kicker2.textContent = `before ${wcNextStageLabel(teamName)}${eventIndex && eventTotal ? ` · ${eventIndex} of ${eventTotal}` : ''}`;
+  kicker2.textContent = `before ${wcNextStageLabel(teamName)}`;
   eventKickerEl.appendChild(kicker1);
   eventKickerEl.appendChild(kicker2);
 

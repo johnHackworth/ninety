@@ -127,31 +127,6 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-.cell.shooting-zone::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.06);
-  pointer-events: none;
-}
-
-.shooting-zone-label {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 7px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 999px;
-  padding: 1px 5px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
 #hands-area {
   display: flex;
   flex-direction: column;
@@ -542,27 +517,6 @@ h1 {
   height: 80px;
   background: transparent;
   position: relative;
-}
-
-.cell.duel {
-  background: radial-gradient(circle, rgba(255, 210, 77, 0.18), transparent 70%);
-}
-
-.cell.duel::after {
-  content: '1 v 1';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: rgba(255, 210, 77, 0.7);
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 999px;
-  padding: 1px 5px;
-  pointer-events: none;
-  z-index: 9;
 }
 
 .cell.pass-target {
@@ -5701,7 +5655,7 @@ h1 {
 
 /* ===================== UI polish ===================== */
 
-/* --- #8 Pitch styling: mown stripes, vignette, stadium border --- */
+/* --- Pitch styling: mown stripes, vignette, stadium border --- */
 #pitch {
   background:
     repeating-linear-gradient(
@@ -5721,7 +5675,7 @@ h1 {
   background: transparent;
 }
 
-/* --- #4 Hand card hover lift + glow --- */
+/* --- Hand card hover lift + glow --- */
 .in-play-hand .action-card {
   flex: 0 0 110px;
   width: 110px;
@@ -5782,7 +5736,7 @@ h1 {
   transform: rotate(var(--fan-angle, 0deg)) translateY(-14px) scale(1.12);
 }
 
-/* --- #4 Pulsing action points for the active team --- */
+/* --- Pulsing action points for the active team --- */
 .rail-team .rail-ap-dot.filled {
   animation: pointStarPulse 1.6s ease-in-out infinite;
 }
@@ -5799,7 +5753,7 @@ h1 {
   }
 }
 
-/* --- #1 Screen shake on goals / fouls --- */
+/* --- Screen shake on goals / fouls --- */
 @keyframes screenShake {
   0%,
   100% {
@@ -5823,7 +5777,7 @@ body.screen-shake #board {
   animation: screenShake 0.45s ease;
 }
 
-/* --- #2 Goal celebration overlay --- */
+/* --- Goal celebration overlay --- */
 .goal-celebration-overlay {
   position: fixed;
   inset: 0;
@@ -5897,7 +5851,7 @@ body.screen-shake #board {
   }
 }
 
-/* --- #3 Ball trail --- */
+/* --- Ball trail --- */
 .ball-trail-dot {
   position: fixed;
   width: 14px;
@@ -5921,7 +5875,7 @@ body.screen-shake #board {
   }
 }
 
-/* --- #11 Menu screens: button accents --- */
+/* --- Menu screens: button accents --- */
 
 .menu-panel {
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);

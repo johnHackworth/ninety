@@ -47,7 +47,7 @@
     sel: null, // null | { from: 'xi'|'bench', idx: number }
     order: [], // array of 11 roster indices → pitch slots
     xi: [],    // mutable copy of starting XI (11 Player objects)
-    bench: [], // mutable copy of bench (7 Player objects)
+    bench: [], // mutable copy of bench (all eligible substitutes)
     homeTeam: null,
     awayTeam: null,
     matchday: 1,
@@ -181,8 +181,7 @@
     backfill(null);
     const bench = editableTeam.squad
       .filter((p) => !used.has(p.name))
-      .filter((p) => !unavailable.has(p.name))
-      .slice(0, 7);
+      .filter((p) => !unavailable.has(p.name));
 
     // Build order array: map each xi player to their formation slot index
     const order = xi.map((player, idx) => idx); // identity mapping initially

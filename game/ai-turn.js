@@ -37,7 +37,6 @@ function runAiTurn() {
 
   const action = decision.play;
   if (!action) return;
-  if (simulationMode) lastSimAction = action;
 
   executeAction(team, action, () => {
     if (action instanceof PassAction) {

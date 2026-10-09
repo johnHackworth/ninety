@@ -323,6 +323,9 @@ async function startMatch(homeName, awayName, homeController, awayController, pr
     wcApplyKnockoutPowerups([homeName, awayName]);
   }
 
+  // Injured players and players sent off (red card) in one match are unavailable
+  // for the team's NEXT match. They are kept on the bench but ineligible to be
+  // used as a substitute, and are replaced in the starting XI by a substitute.
   const unavailableAtKickoff = {};
   if (worldCup) {
     const preState = outPlayersState();
@@ -777,7 +780,7 @@ function setPlayerPosition(player, teamName, x, y) {
 function simulateMatch(homeName, awayName) {
   simulationMode = true;
   const nativeAlert = window.alert;
-  window.alert = (msg) => console.warn('[sim] alert suppressed:', msg);
+  window.alert = () => {};
   try {
     startMatch(
       homeName,
@@ -798,9 +801,6 @@ function simulateMatch(homeName, awayName) {
     let stalls = 0;
     while (!game.finished && safety < maxSteps) {
       safety++;
-      if (safety % 1000 === 0) {
-        console.log('[sim] iter', safety, 'turn', game.turn, 'finished', game.finished, 'halftime', game.halftimePending, 'team', game.currentTeam && game.currentTeam.name, 'pts', JSON.stringify(game.actionPoints), 'deferred', deferredPlayActive);
-      }
       if (game.halftimePending) {
         const kickoffTeam = board.nextKickoffTeam();
         resetForRestart(kickoffTeam);
@@ -822,7 +822,6 @@ function simulateMatch(homeName, awayName) {
         stalls++;
         if (stalls > 5) {
           const stuckTeam = game.currentTeam;
-          console.warn('[sim] turn stalled — forcing skip', { turn: game.turn, team: stuckTeam && stuckTeam.name, card: lastSimAction && lastSimAction.constructor.name, pts: JSON.stringify(game.actionPoints) });
           logMatch(stuckTeam ? stuckTeam.name : '', 'Turn stalled in simulation — forcing a skip.');
           try { game.skip(stuckTeam); } catch (skipErr) { logMatch('', `Simulation error: ${skipErr.message}`); break; }
           stalls = 0;
@@ -851,7 +850,6 @@ function simulateMatch(homeName, awayName) {
     panels.forEach((el) => (el.style.display = ''));
     if (pitchEl) {
       const toRemove = [...pitchEl.querySelectorAll('.player-token, .ball')];
-      if (typeof window.SIM_CLEAR_HOOK === 'function') window.SIM_CLEAR_HOOK(toRemove.length);
       for (const el of toRemove) el.remove();
     }
   }

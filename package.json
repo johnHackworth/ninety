@@ -1,0 +1,14 @@
+{
+  "name": "ninety",
+  "productName": "Ninety",
+  "version": "0.1.0",
+  "description": "A tactical card-match game",
+  "main": "electron/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}

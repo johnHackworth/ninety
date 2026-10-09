@@ -1,4 +1,4 @@
-// Card playability validation — extracted from app.js
+// Card playability validation
 
 function opponentInCell(x, y, team) {
   return board.getPlayersAt(x, y).find((p) => p.team !== team.name) || null;

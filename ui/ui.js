@@ -1,4 +1,4 @@
-// UI layer — extracted from app.js
+// UI layer
 
 const WIDTH = 9;
 const HEIGHT = 7;
@@ -11,7 +11,6 @@ for (let y = 0; y < HEIGHT; y++) {
     cell.className = 'cell';
     cell.dataset.x = x;
     cell.dataset.y = y;
-    if (x >= WIDTH - 2) cell.classList.add('shooting-zone');
     pitch.appendChild(cell);
   }
 }
@@ -27,18 +26,6 @@ if (pitchWrapper) {
     colTicks.appendChild(tick);
   }
   pitchWrapper.insertBefore(colTicks, pitch);
-
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = WIDTH - 2; x < WIDTH; x++) {
-      const cellEl = pitch.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
-      if (!cellEl) continue;
-      if (y !== Math.floor(HEIGHT / 2)) continue;
-      const label = document.createElement('div');
-      label.className = 'shooting-zone-label';
-      label.textContent = 'SHOOT';
-      cellEl.appendChild(label);
-    }
-  }
 }
 
 const marks = [
@@ -1648,8 +1635,6 @@ function refreshCellLayout(cellEl) {
     tokens[0].classList.remove('half-left', 'half-right');
     tokens[0].classList.add('alone');
   }
-  const teams = new Set(tokens.map((el) => el._token && el._token.player.team).filter((t) => t && TEAMS[t]));
-  cellEl.classList.toggle('duel', tokens.length >= 2 && teams.size >= 2);
 }
 
 function nearestEmptyCellFor(player, x, y) {
@@ -2135,7 +2120,6 @@ let handoffScheduled = false;
 let handoffCaptured = null;
 let simulationMode = false;
 let substitutionWindowOpen = false;
-let lastSimAction = null;
 
 
 function dogInterruptRoll(team, action) {
@@ -2919,12 +2903,6 @@ async function showGameOverModal(onFinish) {
   document.body.appendChild(overlay);
 }
 
-// ---- Persistent player availability across tournament / world-cup matches ----
-// Injured players and players sent off (red card) in one match are unavailable
-// for the team's NEXT match. They are kept on the bench but ineligible to be
-// used as a substitute, and are replaced in the starting XI by a substitute.
-
-
 function showSimResultModal() {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -2978,8 +2956,6 @@ function showSimResultModal() {
   document.addEventListener('keydown', onKey);
   document.body.appendChild(overlay);
 }
-
-// ---- Main menu / match setup ----
 
 function renderTournamentView() {
   const standings = getSortedStandings();
@@ -3220,4 +3196,112 @@ function updateTourStartBtn() {
   const btn = document.getElementById('tour-start');
   btn.disabled = unique.size !== 4;
   btn.textContent = unique.size === 4 ? 'Start Tournament' : 'Pick four different teams';
+}
+
+// ---- Public debug API ----
+// Run `exportMatchState()` from the console during a match to get a plain-JSON
+// snapshot of the board: every player's cell, the ball, scores, turns and each
+// team's lineup with current stats/effects. `copy(exportMatchState())` pastes
+// it to the clipboard.
+
+function exportMatchState() {
+  const out = {
+    schema: 1,
+    exportedAt: new Date().toISOString(),
+  };
+
+  const noGame = typeof game === 'undefined' || !game;
+  if (noGame) {
+    out.game = null;
+    return out;
+  }
+
+  const holderEl = matchState && matchState.possession;
+  const holder = holderEl && holderEl._token ? holderEl._token.player : null;
+
+  out.game = {
+    turn: game.turn,
+    maxTurns: game.maxTurns,
+    half: game.half,
+    finished: game.finished,
+    currentTeam: game.currentTeam ? game.currentTeam.name : null,
+    score: { ...(game.score || {}) },
+    actionPoints: { ...(game.actionPoints || {}) },
+    ballStasisTurns: game.ballStasisTurns || 0,
+    possessionTeam: holder ? holder.team : null,
+    possessionPlayer: holder ? holder.name : null,
+    lastBallMove: matchState ? matchState.lastBallMove : null,
+    lastDribbledPlayer: matchState ? matchState.lastDribbledPlayer : null,
+    freeKickProtection: game.freeKickProtection || null,
+  };
+
+  if (typeof ball !== 'undefined' && ball) {
+    out.ball = { x: ball.x, y: ball.y };
+  } else {
+    out.ball = null;
+  }
+
+  // Grid of the pitch: board[y][x] → [{ name, team, position }, ...]
+  if (typeof pitch !== 'undefined' && pitch && typeof HEIGHT !== 'undefined' && typeof WIDTH !== 'undefined') {
+    const grid = [];
+    for (let y = 0; y < HEIGHT; y++) {
+      const row = [];
+      for (let x = 0; x < WIDTH; x++) {
+        row.push(
+          getTokensInCell(x, y)
+            .map((tok) => {
+              const p = tok._token && tok._token.player;
+              return p ? { name: p.name, team: p.team, position: p.position } : null;
+            })
+            .filter(Boolean)
+        );
+      }
+      grid.push(row);
+    }
+    out.board = grid;
+  }
+
+  const unwrap = (p) => (p && p.__original ? p.__original : p);
+  const STAT_KEYS = ['speed', 'marking', 'tackling', 'shooting', 'passing', 'dribbling', 'tacticalThinking', 'heading', 'goalkeeping'];
+
+  out.teams = {};
+  for (const name of Object.keys(TEAMS)) {
+    const team = TEAMS[name];
+    if (!team || !team.squad) continue;
+    const currentRefs = (team.currentPlayers || []).map(unwrap);
+    const subbedOut = new Set((team.substitutedOut || []).map(unwrap));
+
+    out.teams[name] = {
+      name: team.name,
+      side: team.side,
+      controller: team.controller ? team.controller.type : null,
+      score: (game.score && game.score[name]) || 0,
+      actionPoints: (game.actionPoints && game.actionPoints[name]) || 0,
+      teamEffects: (team.teamEffects || []).slice(),
+      formation: { ...(team.formation || {}) },
+      players: team.squad.map((p) => {
+        const cell = getPlayerCell(p);
+        const stats = {};
+        for (const key of STAT_KEYS) stats[key] = p[key];
+        return {
+          name: p.name,
+          position: p.position,
+          isStar: Boolean(p.isStar),
+          inXI: currentRefs.includes(p),
+          subbedOut: subbedOut.has(p),
+          onPitch: cell ? { x: cell.x, y: cell.y } : null,
+          stats,
+          effects: (p.effects || []).map((e) => ({ type: e.type, turns: e.turns })),
+          yellowCards: p.yellowCards || 0,
+          sentOff: Boolean(p.sentOff),
+        };
+      }),
+    };
+  }
+
+  return out;
+}
+
+if (typeof window !== 'undefined') {
+  window.exportMatchState = exportMatchState;
 }

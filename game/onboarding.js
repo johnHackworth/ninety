@@ -766,24 +766,5 @@
     isDone: function (id) {
       return done(id);
     },
-
-    // testing / console helpers
-    DEBUG_reset: function () {
-      store = { steps: {} };
-      persist();
-    },
-    DEBUG_state: function () {
-      return JSON.parse(JSON.stringify(store.steps));
-    },
-    // opens a step's sheet directly without marking/scheduling (for review)
-    DEBUG_open: function (id) {
-      var isMatch = id.indexOf('match.') === 0;
-      var cfg = isMatch
-        ? matchSheets().find(function (s) { return s.id === id; })
-        : wcSheet(id, WC_STEP_IDS.indexOf(id));
-      if (!cfg) return false;
-      openStep = { id: id };
-      return openSheet(cfg);
-    },
   };
 })();

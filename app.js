@@ -700,19 +700,7 @@ function dispatchActionPlay(team, action, isPending = false) {
 
 
 
-
-
 let aiTurnTimeout = null;
-
-
-
-
-
-
-// ---- Persistent player availability across tournament / world-cup matches ----
-// Injured players and players sent off (red card) in one match are unavailable
-// for the team's NEXT match. They are kept on the bench but ineligible to be
-// used as a substitute, and are replaced in the starting XI by a substitute.
 
 
 
@@ -1502,18 +1490,4 @@ populateTeamSelect(tourTeamSelects[2], 'Brazil');
 populateTeamSelect(tourTeamSelects[3], 'England');
 updateTourStartBtn();
 
-const autoStart = window.__AUTO_START_MATCH;
-if (autoStart) {
-  const opts = autoStart === true ? {} : autoStart;
-  const home = opts.home || 'Spain';
-  const away = opts.away || 'Argentina';
-  startMatch(
-    home,
-    away,
-    opts.homeController ? controllerFromSelect(opts.homeController) : null,
-    opts.awayController ? controllerFromSelect(opts.awayController) : null
-  );
-  showBoard();
-} else {
-  showMainMenu();
-}
+showMainMenu();
